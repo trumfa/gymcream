@@ -380,19 +380,73 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
                         <input type="text" x-model="editingProduct.badge" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="Ex: NOU DROP, REBAIXAT..." />
                     </div>
 
-                    <div class="sm:col-span-2">
-                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Foto Principal (Front Image URL) *</label>
-                        <input type="text" x-model="editingProduct.imageFront" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="https://..." />
+                    <div class="sm:col-span-2 space-y-2 bg-black/40 p-4 border border-gray-900 rounded">
+                        <label class="block text-gcYellow font-display uppercase tracking-wider text-xs font-bold mb-1">Foto Principal (Front Image) *</label>
+                        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                            <template x-if="editingProduct.imageFront">
+                                <div class="relative w-20 h-24 bg-gray-950 border border-gray-800 shrink-0 group overflow-hidden rounded">
+                                    <img :src="editingProduct.imageFront" class="w-full h-full object-cover" />
+                                    <button type="button" @click="editingProduct.imageFront = ''" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] hover:bg-red-700 cursor-pointer shadow">✕</button>
+                                </div>
+                            </template>
+                            <div class="flex-1 w-full space-y-2">
+                                <div class="flex gap-2">
+                                    <label class="cursor-pointer bg-gcYellow text-black hover:bg-white font-display font-extrabold text-xs uppercase tracking-wider px-4 py-2.5 flex items-center gap-2 transition-colors shrink-0">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                        <span>Pujar d'ordinador</span>
+                                        <input type="file" accept="image/*" class="hidden" @change="handleProductImageUpload($event, 'imageFront')" />
+                                    </label>
+                                    <input type="text" x-model="editingProduct.imageFront" class="flex-1 bg-black border border-gray-800 p-2.5 text-white text-xs focus:border-gcYellow focus:outline-none" placeholder="O enganxa una URL (https://...)" />
+                                </div>
+                                <p class="text-[10px] text-gray-500">Puja directament un fitxer d'imatge (JPG, PNG, WEBP) o enganxa un enllaç web.</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="sm:col-span-2">
-                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Foto Posterior (Back Image URL)</label>
-                        <input type="text" x-model="editingProduct.imageBack" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="https://..." />
+                    <div class="sm:col-span-2 space-y-2 bg-black/40 p-4 border border-gray-900 rounded">
+                        <label class="block text-gray-300 font-display uppercase tracking-wider text-xs font-bold mb-1">Foto Posterior (Back Image)</label>
+                        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                            <template x-if="editingProduct.imageBack">
+                                <div class="relative w-20 h-24 bg-gray-950 border border-gray-800 shrink-0 group overflow-hidden rounded">
+                                    <img :src="editingProduct.imageBack" class="w-full h-full object-cover" />
+                                    <button type="button" @click="editingProduct.imageBack = ''" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] hover:bg-red-700 cursor-pointer shadow">✕</button>
+                                </div>
+                            </template>
+                            <div class="flex-1 w-full space-y-2">
+                                <div class="flex gap-2">
+                                    <label class="cursor-pointer bg-gray-800 text-white hover:bg-gray-700 font-display font-extrabold text-xs uppercase tracking-wider px-4 py-2.5 flex items-center gap-2 transition-colors shrink-0">
+                                        <svg class="w-4 h-4 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                        <span>Pujar d'ordinador</span>
+                                        <input type="file" accept="image/*" class="hidden" @change="handleProductImageUpload($event, 'imageBack')" />
+                                    </label>
+                                    <input type="text" x-model="editingProduct.imageBack" class="flex-1 bg-black border border-gray-800 p-2.5 text-white text-xs focus:border-gcYellow focus:outline-none" placeholder="O enganxa una URL (https://...)" />
+                                </div>
+                                <p class="text-[10px] text-gray-500">Foto del darrere o detall secundari del producte.</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="sm:col-span-2">
-                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Altres Fotos (Galeria, separades per coma)</label>
-                        <input type="text" x-model="editingProduct.imagesString" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="https://img1.jpg, https://img2.jpg" />
+                    <div class="sm:col-span-2 space-y-2 bg-black/40 p-4 border border-gray-900 rounded">
+                        <label class="block text-gray-300 font-display uppercase tracking-wider text-xs font-bold mb-1">Galeria de Fotos Extres</label>
+                        
+                        <!-- Previsualització de la Galeria -->
+                        <div class="flex flex-wrap gap-2 mb-2" x-show="getGalleryList().length > 0">
+                            <template x-for="(imgUrl, idx) in getGalleryList()" :key="idx">
+                                <div class="relative w-16 h-20 bg-gray-950 border border-gray-800 shrink-0 group overflow-hidden rounded">
+                                    <img :src="imgUrl" class="w-full h-full object-cover" />
+                                    <button type="button" @click="removeGalleryImage(idx)" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] hover:bg-red-700 cursor-pointer shadow">✕</button>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <label class="cursor-pointer bg-gray-800 text-white hover:bg-gray-700 font-display font-extrabold text-xs uppercase tracking-wider px-4 py-2.5 flex items-center gap-2 transition-colors shrink-0">
+                                <svg class="w-4 h-4 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                <span>Afegir fotos (múltiple)</span>
+                                <input type="file" accept="image/*" multiple class="hidden" @change="handleGalleryUpload($event)" />
+                            </label>
+                            <input type="text" x-model="editingProduct.imagesString" class="flex-1 bg-black border border-gray-800 p-2.5 text-white text-xs focus:border-gcYellow focus:outline-none" placeholder="O enganxa URLs separades per coma" />
+                        </div>
                     </div>
 
                     <div class="sm:col-span-2">
@@ -449,9 +503,30 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
                         </select>
                     </div>
 
-                    <div>
-                        <label class="block text-gray-400 font-display uppercase mb-1">URL del Mitjà (Imatge o Vídeo) *</label>
-                        <input type="text" x-model="editingSlide.url" class="w-full bg-black border border-gray-800 p-2.5 text-white" placeholder="https://..." />
+                    <div class="space-y-2 bg-black/40 p-3 border border-gray-900 rounded">
+                        <label class="block text-gcYellow font-display uppercase font-bold tracking-wider mb-1">Mitjà de la Diapositiva (Imatge / Vídeo) *</label>
+                        <div class="flex flex-col gap-3">
+                            <template x-if="editingSlide.url">
+                                <div class="relative w-full h-32 bg-gray-950 border border-gray-800 overflow-hidden rounded flex items-center justify-center">
+                                    <template x-if="editingSlide.type === 'video'">
+                                        <video :src="editingSlide.url" class="w-full h-full object-cover" autoplay loop muted></video>
+                                    </template>
+                                    <template x-if="editingSlide.type !== 'video'">
+                                        <img :src="editingSlide.url" class="w-full h-full object-cover" />
+                                    </template>
+                                    <button type="button" @click="editingSlide.url = ''" class="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 cursor-pointer shadow">✕</button>
+                                </div>
+                            </template>
+
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer bg-gcYellow text-black hover:bg-white font-display font-extrabold text-xs uppercase tracking-wider px-4 py-2.5 flex items-center gap-2 transition-colors shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                    <span>Pujar fitxer</span>
+                                    <input type="file" accept="image/*,video/*" class="hidden" @change="handleSlideFileUpload($event)" />
+                                </label>
+                                <input type="text" x-model="editingSlide.url" class="flex-1 bg-black border border-gray-800 p-2.5 text-white text-xs focus:border-gcYellow focus:outline-none" placeholder="O enganxa una URL (https://...)" />
+                            </div>
+                        </div>
                     </div>
 
                     <div>
@@ -548,6 +623,65 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
                     this.loadAllData();
                     this.showToast('S\'han restablit les dades inicials!');
                 }
+            },
+
+            // --- FILE UPLOAD HELPERS ---
+            handleProductImageUpload(event, field) {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.editingProduct[field] = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            },
+
+            handleGalleryUpload(event) {
+                const files = Array.from(event.target.files);
+                if (!files.length) return;
+
+                let currentList = this.getGalleryList();
+                let loadedCount = 0;
+
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        currentList.push(e.target.result);
+                        loadedCount++;
+                        if (loadedCount === files.length) {
+                            this.editingProduct.imagesString = currentList.join(', ');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            },
+
+            getGalleryList() {
+                if (!this.editingProduct || !this.editingProduct.imagesString) return [];
+                return this.editingProduct.imagesString.split(',').map(s => s.trim()).filter(Boolean);
+            },
+
+            removeGalleryImage(index) {
+                let list = this.getGalleryList();
+                list.splice(index, 1);
+                this.editingProduct.imagesString = list.join(', ');
+            },
+
+            handleSlideFileUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                if (file.type.startsWith('video/')) {
+                    this.editingSlide.type = 'video';
+                } else if (file.type.startsWith('image/')) {
+                    this.editingSlide.type = 'image';
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.editingSlide.url = e.target.result;
+                };
+                reader.readAsDataURL(file);
             },
 
             // --- PHRASES MANAGEMENT ---
