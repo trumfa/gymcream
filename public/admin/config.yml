@@ -6,6 +6,8 @@ backend:
     name: github
     repo: trumfa/gymcream
     branch: main
+    base_url: https://gymcream.vercel.app
+    auth_endpoint: api/auth
 
 media_folder: "src/assets/images"
 public_folder: "@assets/images"
