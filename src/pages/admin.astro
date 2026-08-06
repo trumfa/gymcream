@@ -1,0 +1,771 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
+---
+
+<Layout title="Gestor de Contingut (CMS) | Gym Cream">
+    <div x-data="cmsApp" class="min-h-screen bg-black text-white pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        
+        <!-- HEADER DEL CMS -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-gray-800 pb-8 mb-8">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="bg-gcYellow text-black text-[10px] font-black uppercase tracking-widest px-2.5 py-1">
+                        Panell Administratiu
+                    </span>
+                    <span class="text-xs text-gray-400 font-mono">v2.0 • Local Storage Persistence</span>
+                </div>
+                <h1 class="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-white flex items-center gap-3">
+                    Gestor de Continguts (CMS)
+                </h1>
+                <p class="text-gray-400 text-sm mt-1">Gestiona frases iròniques, menú/filtres, carrusel d'inici i articles del catàleg en temps real.</p>
+            </div>
+
+            <div class="flex items-center gap-3 flex-wrap">
+                <a href="/" class="bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 font-display text-xs uppercase tracking-wider px-5 py-3 transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Tornar a la Botiga
+                </a>
+                <button 
+                    @click="resetDefaults()" 
+                    class="bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-800 font-display text-xs uppercase tracking-wider px-4 py-3 transition-colors flex items-center gap-2"
+                    title="Restablir dades inicials"
+                >
+                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Restablir Inicials
+                </button>
+            </div>
+        </div>
+
+        <!-- NOTIFICACIÓ TOAST CMS -->
+        <div 
+            x-show="toast.show" 
+            x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="translate-y-full opacity-0"
+            x-transition:enter-end="translate-y-0 opacity-100"
+            x-transition:leave="transition ease-in duration-200 transform"
+            x-transition:leave-start="translate-y-0 opacity-100"
+            x-transition:leave-end="translate-y-full opacity-0"
+            class="fixed bottom-6 right-6 z-[200] max-w-md bg-gcDark border-2 border-gcYellow text-white p-4 shadow-2xl flex items-center gap-3"
+            x-cloak
+        >
+            <div class="bg-gcYellow text-black p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <p class="font-sans text-sm font-semibold" x-text="toast.message"></p>
+        </div>
+
+        <!-- NAVEGACIÓ PER PESTANYES / TABS -->
+        <div class="flex border-b border-gray-800 mb-8 overflow-x-auto gap-2">
+            <button 
+                @click="activeTab = 'products'" 
+                :class="activeTab === 'products' ? 'border-gcYellow text-gcYellow bg-gray-900/80 font-bold' : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-950'"
+                class="px-6 py-4 font-display text-xs uppercase tracking-widest border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
+            >
+                <span>📦</span> Articles / Productes (<span x-text="products.length"></span>)
+            </button>
+            <button 
+                @click="activeTab = 'phrases'" 
+                :class="activeTab === 'phrases' ? 'border-gcYellow text-gcYellow bg-gray-900/80 font-bold' : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-950'"
+                class="px-6 py-4 font-display text-xs uppercase tracking-widest border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
+            >
+                <span>📢</span> Frases Ticker (<span x-text="phrases.length"></span>)
+            </button>
+            <button 
+                @click="activeTab = 'categories'" 
+                :class="activeTab === 'categories' ? 'border-gcYellow text-gcYellow bg-gray-900/80 font-bold' : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-950'"
+                class="px-6 py-4 font-display text-xs uppercase tracking-widest border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
+            >
+                <span>🏷️</span> Menú / Categories (<span x-text="categories.length"></span>)
+            </button>
+            <button 
+                @click="activeTab = 'slides'" 
+                :class="activeTab === 'slides' ? 'border-gcYellow text-gcYellow bg-gray-900/80 font-bold' : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-950'"
+                class="px-6 py-4 font-display text-xs uppercase tracking-widest border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer"
+            >
+                <span>🎬</span> Carrusel d'Inici (<span x-text="slides.length"></span>)
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: ARTICLES / PRODUCTES -->
+        <!-- ========================================== -->
+        <div x-show="activeTab === 'products'" class="space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-gray-950 p-4 border border-gray-900">
+                <div class="relative flex-1">
+                    <input 
+                        type="text" 
+                        x-model="productSearch" 
+                        placeholder="Buscar per nom, categoria o SKU..." 
+                        class="w-full bg-black border border-gray-800 text-white px-4 py-2.5 text-sm focus:border-gcYellow focus:outline-none"
+                    />
+                </div>
+                <button 
+                    @click="openProductModal()" 
+                    class="bg-gcYellow text-black font-display font-extrabold text-xs uppercase tracking-wider px-6 py-3 hover:bg-white transition-colors flex items-center justify-center gap-2 cursor-pointer shadow"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                    Afegir Nou Article
+                </button>
+            </div>
+
+            <!-- TAULA DE PRODUCTES -->
+            <div class="overflow-x-auto border border-gray-900 bg-gray-950">
+                <table class="w-full text-left text-xs font-sans">
+                    <thead class="bg-gray-900 text-gray-300 font-display uppercase tracking-wider text-[11px] border-b border-gray-800">
+                        <tr>
+                            <th class="p-3">Foto</th>
+                            <th class="p-3">Nom / SKU</th>
+                            <th class="p-3">Categoria</th>
+                            <th class="p-3">Preu / Descompte</th>
+                            <th class="p-3">Estoc</th>
+                            <th class="p-3">Etiqueta</th>
+                            <th class="p-3 text-right">Accions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-900">
+                        <template x-for="(prod, index) in filteredProducts" :key="prod.id">
+                            <tr class="hover:bg-gray-900/60 transition-colors">
+                                <td class="p-3">
+                                    <img :src="prod.imageFront" :alt="prod.name" class="w-12 h-14 object-cover bg-black border border-gray-800" />
+                                </td>
+                                <td class="p-3">
+                                    <div class="font-bold text-white text-sm" x-text="prod.name"></div>
+                                    <div class="text-[10px] text-gray-500 font-mono" x-text="prod.sku || 'Sense SKU'"></div>
+                                </td>
+                                <td class="p-3">
+                                    <span class="bg-gray-900 border border-gray-800 text-gray-300 text-[10px] uppercase font-bold px-2 py-1" x-text="prod.category"></span>
+                                </td>
+                                <td class="p-3">
+                                    <div class="font-bold text-gcYellow" x-text="`${prod.price.toFixed(2)} €`"></div>
+                                    <template x-if="prod.oldPrice">
+                                        <div class="text-[10px] text-gray-500 line-through" x-text="`${prod.oldPrice.toFixed(2)} € (${prod.discountPercent || 0}% desc)`"></div>
+                                    </template>
+                                </td>
+                                <td class="p-3">
+                                    <span 
+                                        :class="prod.stock <= 0 ? 'bg-red-950 text-red-400 border-red-800' : 'bg-emerald-950 text-emerald-300 border-emerald-800'"
+                                        class="px-2.5 py-1 text-[10px] font-bold border uppercase"
+                                        x-text="prod.stock <= 0 ? '0 (ESGOTAT)' : `${prod.stock} unitats`"
+                                    ></span>
+                                </td>
+                                <td class="p-3">
+                                    <template x-if="prod.badge">
+                                        <span class="bg-gcYellow text-black font-extrabold text-[9px] px-2 py-0.5 uppercase tracking-wider" x-text="prod.badge"></span>
+                                    </template>
+                                    <template x-if="!prod.badge">
+                                        <span class="text-gray-600 italic text-[10px]">-</span>
+                                    </template>
+                                </td>
+                                <td class="p-3 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button 
+                                            @click="openProductModal(prod)" 
+                                            class="bg-gray-900 hover:bg-gcYellow hover:text-black text-gray-300 px-3 py-1.5 border border-gray-700 transition-colors text-[10px] font-bold uppercase cursor-pointer"
+                                        >
+                                            Editar
+                                        </button>
+                                        <button 
+                                            @click="deleteProduct(prod.id)" 
+                                            class="bg-red-950 hover:bg-red-800 text-red-200 px-3 py-1.5 border border-red-900 transition-colors text-[10px] font-bold uppercase cursor-pointer"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: FRASES TICKER IRÒNIQUES -->
+        <!-- ========================================== -->
+        <div x-show="activeTab === 'phrases'" class="space-y-6">
+            <div class="bg-gray-950 p-6 border border-gray-900 space-y-4">
+                <h3 class="font-display text-sm font-bold uppercase tracking-wider text-gcYellow">Afegir Nova Frase Irònica</h3>
+                <div class="flex gap-3">
+                    <input 
+                        type="text" 
+                        x-model="newPhrase" 
+                        placeholder="Exemple: 'NO ET RENDIXIS, EL DIA DE CAMA ÉS NOMÉS EL COMENÇAMENT...'" 
+                        class="flex-1 bg-black border border-gray-800 text-white p-3 text-sm focus:border-gcYellow focus:outline-none"
+                    />
+                    <button 
+                        @click="addPhrase()" 
+                        class="bg-gcYellow text-black font-display font-black text-xs uppercase tracking-wider px-6 py-3 hover:bg-white transition-colors cursor-pointer"
+                    >
+                        Afegir Frase
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <template x-for="(phrase, index) in phrases" :key="index">
+                    <div class="flex items-center justify-between gap-4 bg-gray-950 p-4 border border-gray-900 hover:border-gray-800">
+                        <div class="flex items-center gap-3 flex-1">
+                            <span class="font-mono text-xs text-gcYellow/70 font-bold" x-text="`#${index + 1}`"></span>
+                            <input 
+                                type="text" 
+                                x-model="phrases[index]" 
+                                @change="savePhrases()" 
+                                class="w-full bg-black border border-gray-800 text-gray-200 p-2.5 text-sm focus:border-gcYellow focus:outline-none"
+                            />
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button @click="movePhrase(index, -1)" :disabled="index === 0" class="p-2 text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer">▲</button>
+                            <button @click="movePhrase(index, 1)" :disabled="index === phrases.length - 1" class="p-2 text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer">▼</button>
+                            <button @click="deletePhrase(index)" class="p-2 text-red-500 hover:text-red-400 cursor-pointer">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: MENÚ DE CATEGORIES / FILTRES -->
+        <!-- ========================================== -->
+        <div x-show="activeTab === 'categories'" class="space-y-6">
+            <div class="bg-gray-950 p-6 border border-gray-900 space-y-4">
+                <h3 class="font-display text-sm font-bold uppercase tracking-wider text-gcYellow">Afegir Nova Categoria al Menú</h3>
+                <div class="flex gap-3">
+                    <input 
+                        type="text" 
+                        x-model="newCategoryName" 
+                        placeholder="Exemple: 'SUPLEMENTS', 'EDICIÓ LIMITADA'..." 
+                        class="flex-1 bg-black border border-gray-800 text-white p-3 text-sm focus:border-gcYellow focus:outline-none uppercase"
+                    />
+                    <button 
+                        @click="addCategory()" 
+                        class="bg-gcYellow text-black font-display font-black text-xs uppercase tracking-wider px-6 py-3 hover:bg-white transition-colors cursor-pointer"
+                    >
+                        Afegir Categoria
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <template x-for="(cat, index) in categories" :key="cat.id">
+                    <div class="bg-gray-950 p-4 border border-gray-900 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 flex-1">
+                            <span class="font-mono text-xs text-gcYellow font-bold" x-text="`#${index + 1}`"></span>
+                            <input 
+                                type="text" 
+                                x-model="cat.name" 
+                                @change="saveCategories()" 
+                                class="bg-black border border-gray-800 text-white p-2.5 text-sm font-display uppercase tracking-wider w-full focus:border-gcYellow focus:outline-none"
+                            />
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button @click="moveCategory(index, -1)" :disabled="index === 0" class="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer">▲</button>
+                            <button @click="moveCategory(index, 1)" :disabled="index === categories.length - 1" class="p-1.5 text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer">▼</button>
+                            <button @click="deleteCategory(index)" class="p-1.5 text-red-500 hover:text-red-400 cursor-pointer">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: CARRUSEL D'INICI (HERO SLIDES) -->
+        <!-- ========================================== -->
+        <div x-show="activeTab === 'slides'" class="space-y-6">
+            <div class="flex justify-between items-center bg-gray-950 p-4 border border-gray-900">
+                <h3 class="font-display text-sm font-bold uppercase tracking-wider text-gcYellow">Gestió de Diapositives (Fotos i Vídeos)</h3>
+                <button 
+                    @click="openSlideModal()" 
+                    class="bg-gcYellow text-black font-display font-black text-xs uppercase tracking-wider px-6 py-3 hover:bg-white transition-colors cursor-pointer"
+                >
+                    Afegir Diapositiva
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <template x-for="(slide, index) in slides" :key="slide.id">
+                    <div class="bg-gray-950 border border-gray-900 flex flex-col justify-between overflow-hidden">
+                        <div class="relative aspect-video bg-black">
+                            <template x-if="slide.type === 'image'">
+                                <img :src="slide.url" class="w-full h-full object-cover" />
+                            </template>
+                            <template x-if="slide.type === 'video'">
+                                <video :src="slide.url" class="w-full h-full object-cover" autoplay loop muted playsinline></video>
+                            </template>
+                            <span class="absolute top-2 left-2 bg-black/80 text-gcYellow text-[9px] font-bold px-2 py-0.5 uppercase border border-gcYellow/40" x-text="slide.type"></span>
+                        </div>
+                        <div class="p-4 space-y-2 flex-1">
+                            <span class="text-[10px] text-gcYellow font-display tracking-widest uppercase block" x-text="slide.subtitle"></span>
+                            <h4 class="font-display font-black text-white text-lg uppercase leading-tight" x-text="slide.title"></h4>
+                            <div class="text-xs text-gray-400 font-mono text-[10px] truncate" x-text="slide.url"></div>
+                        </div>
+                        <div class="p-4 border-t border-gray-900 flex justify-between items-center bg-black/40">
+                            <div class="flex items-center gap-1">
+                                <button @click="moveSlide(index, -1)" :disabled="index === 0" class="p-1 text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer">▲</button>
+                                <button @click="moveSlide(index, 1)" :disabled="index === slides.length - 1" class="p-1 text-gray-400 hover:text-white disabled:opacity-30 cursor-pointer">▼</button>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button @click="openSlideModal(slide)" class="text-xs font-bold text-gcYellow hover:underline cursor-pointer">Editar</button>
+                                <button @click="deleteSlide(index)" class="text-xs font-bold text-red-500 hover:underline cursor-pointer">Eliminar</button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODAL D'EDICIÓ / CREACIÓ D'ARTICLE -->
+        <!-- ========================================== -->
+        <div 
+            x-show="productModalOpen" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black/90 z-[150] flex items-center justify-center p-4 backdrop-blur-md overflow-y-auto"
+            x-cloak
+        >
+            <div class="bg-gcDark border-2 border-gcYellow/60 w-full max-w-3xl p-6 my-8 space-y-6 text-white max-h-[90vh] overflow-y-auto shadow-2xl">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-4">
+                    <h3 class="font-display font-black text-xl uppercase text-gcYellow" x-text="editingProduct.id ? 'Editar Article' : 'Crear Nou Article'"></h3>
+                    <button @click="productModalOpen = false" class="text-gray-400 hover:text-white p-1">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Nom de l'Article *</label>
+                        <input type="text" x-model="editingProduct.name" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="Ex: Samarreta Oversize 'Carbs'" />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Categoria *</label>
+                        <select x-model="editingProduct.category" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none">
+                            <template x-for="cat in categories.filter(c => !c.isSpecial)" :key="cat.id">
+                                <option :value="cat.name" x-text="cat.name"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Codi SKU / Referència</label>
+                        <input type="text" x-model="editingProduct.sku" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="Ex: GC-TS-01" />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Preu (€) *</label>
+                        <input type="number" step="0.01" x-model.number="editingProduct.price" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Preu Anterior (€) (Opcional)</label>
+                        <input type="number" step="0.01" x-model.number="editingProduct.oldPrice" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="Per calcular descompte" />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Estoc (Unitats) *</label>
+                        <input type="number" x-model.number="editingProduct.stock" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="0 = ESGOTAT" />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Etiqueta / Badge</label>
+                        <input type="text" x-model="editingProduct.badge" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="Ex: NOU DROP, REBAIXAT..." />
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Foto Principal (Front Image URL) *</label>
+                        <input type="text" x-model="editingProduct.imageFront" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="https://..." />
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Foto Posterior (Back Image URL)</label>
+                        <input type="text" x-model="editingProduct.imageBack" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="https://..." />
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Altres Fotos (Galeria, separades per coma)</label>
+                        <input type="text" x-model="editingProduct.imagesString" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="https://img1.jpg, https://img2.jpg" />
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Talles (Separades per coma)</label>
+                        <input type="text" x-model="editingProduct.sizesString" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="S, M, L, XL, XXL" />
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Descripció Completa</label>
+                        <textarea rows="3" x-model="editingProduct.description" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="Explicació de la peça, composició..."></textarea>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-gray-400 font-display uppercase tracking-wider mb-1">Detalls Tècnics (Un per línia)</label>
+                        <textarea rows="3" x-model="editingProduct.detailsString" class="w-full bg-black border border-gray-800 p-3 text-white text-sm focus:border-gcYellow focus:outline-none" placeholder="240 GSM Cotó Orgànic&#10;Costures reforçades"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 border-t border-gray-800 pt-4">
+                    <button @click="productModalOpen = false" class="px-6 py-3 bg-gray-900 text-gray-300 font-display text-xs uppercase cursor-pointer hover:bg-gray-800">Cancel·lar</button>
+                    <button @click="saveProduct()" class="px-8 py-3 bg-gcYellow text-black font-display font-black text-xs uppercase tracking-wider cursor-pointer hover:bg-white shadow">Desar Article</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODAL D'EDICIÓ / CREACIÓ DE DIAPOSITIVA (HERO) -->
+        <!-- ========================================== -->
+        <div 
+            x-show="slideModalOpen" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black/90 z-[150] flex items-center justify-center p-4 backdrop-blur-md"
+            x-cloak
+        >
+            <div class="bg-gcDark border-2 border-gcYellow/60 w-full max-w-lg p-6 space-y-4 text-white shadow-2xl">
+                <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                    <h3 class="font-display font-black text-lg uppercase text-gcYellow" x-text="editingSlide.id ? 'Editar Diapositiva' : 'Nova Diapositiva'"></h3>
+                    <button @click="slideModalOpen = false" class="text-gray-400 hover:text-white p-1">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase mb-1">Tipus de Mitjà</label>
+                        <select x-model="editingSlide.type" class="w-full bg-black border border-gray-800 p-2.5 text-white">
+                            <option value="image">Imatge (Photo)</option>
+                            <option value="video">Vídeo (MP4/WebM Loop)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase mb-1">URL del Mitjà (Imatge o Vídeo) *</label>
+                        <input type="text" x-model="editingSlide.url" class="w-full bg-black border border-gray-800 p-2.5 text-white" placeholder="https://..." />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase mb-1">Subtítol / Tag Superior</label>
+                        <input type="text" x-model="editingSlide.subtitle" class="w-full bg-black border border-gray-800 p-2.5 text-white" placeholder="Ex: COL·LECCIÓ 2026" />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase mb-1">Títol Principal</label>
+                        <input type="text" x-model="editingSlide.title" class="w-full bg-black border border-gray-800 p-2.5 text-white" placeholder="Ex: GYM CREAM" />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase mb-1">Text del Botó</label>
+                        <input type="text" x-model="editingSlide.buttonText" class="w-full bg-black border border-gray-800 p-2.5 text-white" placeholder="Ex: Entra a la Botiga" />
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 font-display uppercase mb-1">Enllaç del Botó</label>
+                        <input type="text" x-model="editingSlide.buttonLink" class="w-full bg-black border border-gray-800 p-2.5 text-white" placeholder="#catalog" />
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 border-t border-gray-800 pt-3">
+                    <button @click="slideModalOpen = false" class="px-5 py-2.5 bg-gray-900 text-gray-300 font-display text-xs uppercase cursor-pointer">Cancel·lar</button>
+                    <button @click="saveSlide()" class="px-6 py-2.5 bg-gcYellow text-black font-display font-black text-xs uppercase cursor-pointer">Desar Diapositiva</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</Layout>
+
+<script is:inline define:vars={{ defaultPhrases: DEFAULT_PHRASES, defaultCategories: DEFAULT_CATEGORIES, defaultSlides: DEFAULT_SLIDES, defaultProducts: DEFAULT_PRODUCTS }}>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('cmsApp', () => ({
+            activeTab: 'products',
+            toast: { show: false, message: '' },
+            productSearch: '',
+            
+            // DATA ARRAYS
+            phrases: [],
+            categories: [],
+            slides: [],
+            products: [],
+
+            // FORM MODAL STATES
+            newPhrase: '',
+            newCategoryName: '',
+            
+            productModalOpen: false,
+            editingProduct: {},
+
+            slideModalOpen: false,
+            editingSlide: {},
+
+            init() {
+                this.loadAllData();
+            },
+
+            loadAllData() {
+                try {
+                    // 1. Phrases
+                    const p = localStorage.getItem('gymcream_phrases');
+                    this.phrases = p ? JSON.parse(p) : [...defaultPhrases];
+
+                    // 2. Categories
+                    const c = localStorage.getItem('gymcream_categories');
+                    this.categories = c ? JSON.parse(c) : [...defaultCategories];
+
+                    // 3. Slides
+                    const s = localStorage.getItem('gymcream_slides');
+                    this.slides = s ? JSON.parse(s) : [...defaultSlides];
+
+                    // 4. Products
+                    const prod = localStorage.getItem('gymcream_products');
+                    this.products = prod ? JSON.parse(prod) : [...defaultProducts];
+                } catch (e) {
+                    console.error('Error carregant dades CMS de localStorage', e);
+                }
+            },
+
+            showToast(msg) {
+                this.toast = { show: true, message: msg };
+                setTimeout(() => { this.toast.show = false; }, 3000);
+            },
+
+            resetDefaults() {
+                if (confirm('Això restablirà totes les dades del CMS als valors de fàbrica. Vols continuar?')) {
+                    localStorage.setItem('gymcream_phrases', JSON.stringify(defaultPhrases));
+                    localStorage.setItem('gymcream_categories', JSON.stringify(defaultCategories));
+                    localStorage.setItem('gymcream_slides', JSON.stringify(defaultSlides));
+                    localStorage.setItem('gymcream_products', JSON.stringify(defaultProducts));
+                    this.loadAllData();
+                    this.showToast('S\'han restablit les dades inicials!');
+                }
+            },
+
+            // --- PHRASES MANAGEMENT ---
+            savePhrases() {
+                localStorage.setItem('gymcream_phrases', JSON.stringify(this.phrases));
+                this.showToast('Frases de la barra superior desades!');
+            },
+            addPhrase() {
+                if (!this.newPhrase.trim()) return;
+                this.phrases.push(this.newPhrase.trim());
+                this.newPhrase = '';
+                this.savePhrases();
+            },
+            deletePhrase(index) {
+                this.phrases.splice(index, 1);
+                this.savePhrases();
+            },
+            movePhrase(index, delta) {
+                const target = index + delta;
+                if (target >= 0 && target < this.phrases.length) {
+                    const temp = this.phrases[index];
+                    this.phrases[index] = this.phrases[target];
+                    this.phrases[target] = temp;
+                    this.savePhrases();
+                }
+            },
+
+            // --- CATEGORIES MANAGEMENT ---
+            saveCategories() {
+                localStorage.setItem('gymcream_categories', JSON.stringify(this.categories));
+                this.showToast('Categories i filtres desats!');
+            },
+            addCategory() {
+                if (!this.newCategoryName.trim()) return;
+                const name = this.newCategoryName.trim().toUpperCase();
+                this.categories.push({
+                    id: Date.now().toString(),
+                    name: name,
+                    isSpecial: false
+                });
+                this.newCategoryName = '';
+                this.saveCategories();
+            },
+            deleteCategory(index) {
+                this.categories.splice(index, 1);
+                this.saveCategories();
+            },
+            moveCategory(index, delta) {
+                const target = index + delta;
+                if (target >= 0 && target < this.categories.length) {
+                    const temp = this.categories[index];
+                    this.categories[index] = this.categories[target];
+                    this.categories[target] = temp;
+                    this.saveCategories();
+                }
+            },
+
+            // --- SLIDES MANAGEMENT ---
+            saveSlides() {
+                localStorage.setItem('gymcream_slides', JSON.stringify(this.slides));
+                this.showToast('Carrusel d\'inici desat!');
+            },
+            openSlideModal(slide = null) {
+                if (slide) {
+                    this.editingSlide = { ...slide };
+                } else {
+                    this.editingSlide = {
+                        id: '',
+                        type: 'image',
+                        url: '',
+                        subtitle: 'COL·LECCIÓ 2026',
+                        title: 'GYM CREAM',
+                        buttonText: 'Entra a la Botiga',
+                        buttonLink: '#catalog'
+                    };
+                }
+                this.slideModalOpen = true;
+            },
+            saveSlide() {
+                if (!this.editingSlide.url) {
+                    alert('S\'il us plau, introdueix la URL de la foto o vídeo.');
+                    return;
+                }
+                if (this.editingSlide.id) {
+                    const idx = this.slides.findIndex(s => s.id === this.editingSlide.id);
+                    if (idx !== -1) this.slides[idx] = { ...this.editingSlide };
+                } else {
+                    this.editingSlide.id = Date.now().toString();
+                    this.slides.push({ ...this.editingSlide });
+                }
+                this.saveSlides();
+                this.slideModalOpen = false;
+            },
+            deleteSlide(index) {
+                this.slides.splice(index, 1);
+                this.saveSlides();
+            },
+            moveSlide(index, delta) {
+                const target = index + delta;
+                if (target >= 0 && target < this.slides.length) {
+                    const temp = this.slides[index];
+                    this.slides[index] = this.slides[target];
+                    this.slides[target] = temp;
+                    this.saveSlides();
+                }
+            },
+
+            // --- PRODUCTS MANAGEMENT ---
+            get filteredProducts() {
+                if (!this.productSearch.trim()) return this.products;
+                const q = this.productSearch.toLowerCase();
+                return this.products.filter(p => 
+                    p.name.toLowerCase().includes(q) ||
+                    p.category.toLowerCase().includes(q) ||
+                    (p.sku && p.sku.toLowerCase().includes(q))
+                );
+            },
+            saveProducts() {
+                localStorage.setItem('gymcream_products', JSON.stringify(this.products));
+                this.showToast('Articles del catàleg desats!');
+            },
+            openProductModal(prod = null) {
+                if (prod) {
+                    this.editingProduct = {
+                        ...prod,
+                        imagesString: prod.images ? prod.images.join(', ') : '',
+                        sizesString: prod.sizes ? prod.sizes.join(', ') : '',
+                        detailsString: prod.details ? prod.details.join('\n') : ''
+                    };
+                } else {
+                    const defaultCat = this.categories.find(c => !c.isSpecial)?.name || 'ROBA';
+                    this.editingProduct = {
+                        id: '',
+                        name: '',
+                        category: defaultCat,
+                        sku: '',
+                        price: 30.00,
+                        oldPrice: null,
+                        stock: 10,
+                        badge: 'NOU DROP',
+                        imageFront: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop',
+                        imageBack: '',
+                        imagesString: '',
+                        sizesString: 'S, M, L, XL',
+                        description: 'Descripció del nou article...',
+                        detailsString: '100% Cotó Premium\nFet localment'
+                    };
+                }
+                this.productModalOpen = true;
+            },
+            saveProduct() {
+                if (!this.editingProduct.name || !this.editingProduct.price) {
+                    alert('S\'il us plau, omple el nom i el preu.');
+                    return;
+                }
+
+                const stockNum = Number(this.editingProduct.stock || 0);
+                const isSoldOut = stockNum <= 0;
+                
+                // Parse helper strings to arrays
+                const imagesArr = this.editingProduct.imagesString
+                    ? this.editingProduct.imagesString.split(',').map(s => s.trim()).filter(Boolean)
+                    : [this.editingProduct.imageFront];
+                if (!imagesArr.includes(this.editingProduct.imageFront)) {
+                    imagesArr.unshift(this.editingProduct.imageFront);
+                }
+
+                const sizesArr = this.editingProduct.sizesString
+                    ? this.editingProduct.sizesString.split(',').map(s => s.trim()).filter(Boolean)
+                    : ['S', 'M', 'L'];
+
+                const detailsArr = this.editingProduct.detailsString
+                    ? this.editingProduct.detailsString.split('\n').map(s => s.trim()).filter(Boolean)
+                    : [];
+
+                let discountPercent = undefined;
+                let isSale = false;
+                if (this.editingProduct.oldPrice && this.editingProduct.oldPrice > this.editingProduct.price) {
+                    isSale = true;
+                    discountPercent = Math.round(((this.editingProduct.oldPrice - this.editingProduct.price) / this.editingProduct.oldPrice) * 100);
+                }
+
+                const finalObj = {
+                    id: this.editingProduct.id || Date.now().toString(),
+                    name: this.editingProduct.name,
+                    category: this.editingProduct.category || 'ROBA',
+                    sku: this.editingProduct.sku || `GC-ART-${Date.now().toString().slice(-4)}`,
+                    price: Number(this.editingProduct.price),
+                    oldPrice: this.editingProduct.oldPrice ? Number(this.editingProduct.oldPrice) : undefined,
+                    isSale: isSale,
+                    discountPercent: discountPercent,
+                    stock: stockNum,
+                    isSoldOut: isSoldOut,
+                    badge: isSoldOut ? 'ESGOTAT' : (this.editingProduct.badge || ''),
+                    imageFront: this.editingProduct.imageFront,
+                    imageBack: this.editingProduct.imageBack || this.editingProduct.imageFront,
+                    images: imagesArr,
+                    sizes: sizesArr,
+                    description: this.editingProduct.description || '',
+                    details: detailsArr
+                };
+
+                if (this.editingProduct.id) {
+                    const idx = this.products.findIndex(p => p.id === this.editingProduct.id);
+                    if (idx !== -1) this.products[idx] = finalObj;
+                } else {
+                    this.products.unshift(finalObj);
+                }
+
+                this.saveProducts();
+                this.productModalOpen = false;
+            },
+            deleteProduct(id) {
+                if (confirm('Segur que vols eliminar aquest article?')) {
+                    this.products = this.products.filter(p => p.id !== id);
+                    this.saveProducts();
+                }
+            }
+        }));
+    });
+</script>

@@ -1,35 +1,51 @@
 ---
+import { DEFAULT_SLIDES } from "@src/data/cmsDefaults";
 ---
 
-<!-- HERO SECTION AMB CARRUSEL I OVERLAY DE TEXT -->
-<section class="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-gcDark">
+<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS) I OVERLAY DE TEXT -->
+<section x-data="heroState" class="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-gcDark">
     
-    <!-- CAPA 1: CARRUSEL D'IMATGES -->
-    <div id="hero-carousel" class="absolute inset-0 z-0">
-        <!-- Slide 1 -->
-        <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-100">
-            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover opacity-60" alt="Gym 1">
-        </div>
-        <!-- Slide 2 -->
-        <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
-            <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover opacity-60" alt="Gym 2">
-        </div>
-        <!-- Slide 3 -->
-        <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
-            <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover opacity-60" alt="Gym 3">
-        </div>
+    <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS -->
+    <div class="absolute inset-0 z-0">
+        <template x-for="(slide, index) in slides" :key="slide.id || index">
+            <div 
+                x-show="activeSlide === index"
+                x-transition:enter="transition-opacity duration-1000"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition-opacity duration-1000"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="absolute inset-0"
+            >
+                <template x-if="slide.type === 'video'">
+                    <video :src="slide.url" class="w-full h-full object-cover opacity-60" autoplay loop muted playsinline></video>
+                </template>
+                <template x-if="slide.type !== 'video'">
+                    <img :src="slide.url" class="w-full h-full object-cover opacity-60" :alt="slide.title || 'Hero slide'" />
+                </template>
+            </div>
+        </template>
     </div>
 
-    <!-- CAPA 2: LLETRES DE LA MARCA NEÓ (Vora directa sobre la imatge, animació via JS) -->
-    <div class="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
-        <h1 id="neonText" class="font-display text-[18vw] md:text-[14vw] font-black uppercase tracking-tighter leading-none neon-text-overlay text-center px-4 mt-20" style="opacity: 0;">
-            GYM<br>CREAM
-        </h1>
+    <!-- CAPA 2: LLETRES DE LA MARCA NEÓ (Vora directa sobre la imatge) -->
+    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none text-center px-4 mt-12">
+        <template x-if="currentSlideData">
+            <div>
+                <span class="font-display text-xs sm:text-sm text-gcYellow uppercase tracking-[0.3em] font-extrabold mb-2 block drop-shadow-lg" x-text="currentSlideData.subtitle || 'COL·LECCIÓ 2026'"></span>
+                <h1 id="neonText" class="font-display text-[15vw] md:text-[12vw] font-black uppercase tracking-tighter leading-none neon-text-overlay text-center" x-text="currentSlideData.title || 'GYM CREAM'">
+                </h1>
+            </div>
+        </template>
     </div>
 
     <!-- CAPA 3: BOTÓ D'ACCIÓ -->
     <div class="absolute bottom-12 sm:bottom-20 z-20 w-full text-center px-4">
-        <a href="#catalog" class="inline-block bg-gcYellow text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-8 sm:px-12 py-4 sm:py-5 hover:bg-white transition-all duration-300 shadow-[0_0_25px_rgba(255,230,0,0.5)]">
+        <a 
+            :href="currentSlideData?.buttonLink || '#catalog'" 
+            class="inline-block bg-gcYellow text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-8 sm:px-12 py-4 sm:py-5 hover:bg-white transition-all duration-300 shadow-[0_0_25px_rgba(255,230,0,0.5)] cursor-pointer"
+            x-text="currentSlideData?.buttonText || 'Entra a la Botiga'"
+        >
             Entra a la Botiga
         </a>
     </div>
@@ -41,34 +57,43 @@
     </div>
 </section>
 
-<script>
-    // CARRUSEL D'IMATGES I ANIMACIÓ DE TEXT NEÓ
-    const slides = document.querySelectorAll('#hero-carousel .slide');
-    const neonText = document.getElementById('neonText');
-    let currentSlide = 0;
-    
-    function triggerNeonFade() {
-        if (!neonText) return;
-        neonText.style.transition = 'none';
-        neonText.style.opacity = '0';
-        void neonText.offsetWidth;
-        neonText.style.transition = 'opacity 3.8s ease-in';
-        neonText.style.opacity = '1';
-    }
+<script is:inline define:vars={{ defaultSlides: DEFAULT_SLIDES }}>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('heroState', () => ({
+            slides: [],
+            activeSlide: 0,
+            intervalId: null,
 
-    setTimeout(triggerNeonFade, 100);
+            init() {
+                try {
+                    const saved = localStorage.getItem('gymcream_slides');
+                    this.slides = saved ? JSON.parse(saved) : defaultSlides;
+                } catch(e) {
+                    this.slides = defaultSlides;
+                }
 
-    if (slides.length > 1) {
-        setInterval(() => {
-            slides[currentSlide].classList.remove('opacity-100');
-            slides[currentSlide].classList.add('opacity-0');
-            
-            currentSlide = (currentSlide + 1) % slides.length;
-            
-            slides[currentSlide].classList.remove('opacity-0');
-            slides[currentSlide].classList.add('opacity-100');
-            
-            triggerNeonFade();
-        }, 4000); 
-    }
+                if (!this.slides || this.slides.length === 0) {
+                    this.slides = defaultSlides;
+                }
+
+                this.startCarousel();
+            },
+
+            get currentSlideData() {
+                if (this.slides && this.slides[this.activeSlide]) {
+                    return this.slides[this.activeSlide];
+                }
+                return defaultSlides[0];
+            },
+
+            startCarousel() {
+                if (this.intervalId) clearInterval(this.intervalId);
+                if (this.slides.length > 1) {
+                    this.intervalId = setInterval(() => {
+                        this.activeSlide = (this.activeSlide + 1) % this.slides.length;
+                    }, 5000);
+                }
+            }
+        }));
+    });
 </script>

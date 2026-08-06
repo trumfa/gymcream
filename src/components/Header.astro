@@ -1,5 +1,5 @@
 ---
-import { PRODUCTS } from "@src/data/products";
+import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
 ---
 
 <!-- Header Component with Logos, Live Search, Cart Drawer, +INFO Detail Modal, & Restock Alert Modal -->
@@ -145,10 +145,6 @@ import { PRODUCTS } from "@src/data/products";
             <a href="/" class="hover:text-gcYellow transition-colors">Inici</a>
             <a href="#catalog" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Catàleg / Drops</a>
             <a href="#filosofia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">La Nostra Filosofia</a>
-            <a href="/admin/" class="text-xs text-gcYellow/80 hover:text-gcYellow transition-colors mt-4 pt-4 border-t border-gray-800 flex items-center gap-2">
-                <svg class="w-4 h-4 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                Gestor de Contingut (CMS)
-            </a>
         </nav>
     </div>
 
@@ -186,11 +182,15 @@ import { PRODUCTS } from "@src/data/products";
                             <span class="text-sm font-bold text-gcYellow font-sans" x-text="`${item.price.toFixed(2)} €`"></span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs text-gray-400 font-bold" x-text="`x${item.qty}`"></span>
-                        <button @click="removeFromCart(index)" class="text-gray-600 hover:text-red-500 transition-colors p-1.5" title="Eliminar del carret">
+                    <div class="flex flex-col items-end gap-2">
+                        <button @click="removeFromCart(index)" class="text-gray-600 hover:text-red-500 transition-colors p-1" title="Eliminar del carret">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
+                        <div class="flex items-center border border-gray-800 bg-gray-950 text-xs">
+                            <button @click="updateQty(index, -1)" class="px-2 py-0.5 text-gray-400 hover:text-gcYellow hover:bg-gray-800 font-bold" title="Reduir quantitat">-</button>
+                            <span class="px-2 font-bold text-white" x-text="item.qty"></span>
+                            <button @click="updateQty(index, 1)" class="px-2 py-0.5 text-gray-400 hover:text-gcYellow hover:bg-gray-800 font-bold" title="Augmentar quantitat">+</button>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -486,14 +486,21 @@ import { PRODUCTS } from "@src/data/products";
                     </a>
                 </div>
 
-                <nav class="hidden lg:flex gap-8 font-display text-sm tracking-widest uppercase font-bold">
-                    <a href="#catalog" @click="$dispatch('filter-category', 'Tots')" class="text-gcYellow border-b-2 border-gcYellow pb-1">Tot</a>
-                    <a href="#catalog" @click="$dispatch('filter-category', 'Dona')" class="hover:text-gcYellow transition-colors pb-1">Dona</a>
-                    <a href="#catalog" @click="$dispatch('filter-category', 'Home')" class="hover:text-gcYellow transition-colors pb-1">Home</a>
-                    <a href="#catalog" @click="$dispatch('filter-category', 'Accessoris')" class="hover:text-gcYellow transition-colors pb-1">Accessoris</a>
-                    <a href="#catalog" @click="$dispatch('filter-category', 'Rebaixats')" class="text-red-400 hover:text-red-300 transition-colors pb-1 flex items-center gap-1">
-                        🔥 Rebaixats
-                    </a>
+                <nav class="hidden lg:flex gap-6 font-display text-sm tracking-widest uppercase font-bold items-center">
+                    <template x-for="cat in categories" :key="cat.id">
+                        <a 
+                            href="#catalog" 
+                            @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)" 
+                            :class="[
+                                cat.name === 'REBAIXATS' ? (activeCategory === cat.name ? 'text-red-500 border-b-2 border-red-500 pb-1' : 'text-red-400 hover:text-red-300 pb-1') :
+                                (activeCategory === cat.name ? 'text-gcYellow border-b-2 border-gcYellow pb-1' : 'hover:text-gcYellow text-gray-200 transition-colors pb-1')
+                            ]"
+                            class="transition-colors flex items-center gap-1 cursor-pointer"
+                        >
+                            <template x-if="cat.name === 'REBAIXATS'"><span>🔥</span></template>
+                            <span x-text="cat.name"></span>
+                        </a>
+                    </template>
                 </nav>
 
                 <div class="flex items-center gap-4 sm:gap-6">
@@ -513,13 +520,14 @@ import { PRODUCTS } from "@src/data/products";
 
 </div>
 
-<script is:inline define:vars={{ productsData: PRODUCTS }}>
+<script is:inline define:vars={{ defaultPhrases: DEFAULT_PHRASES, defaultCategories: DEFAULT_CATEGORIES, defaultProducts: DEFAULT_PRODUCTS }}>
     document.addEventListener('alpine:init', () => {
         Alpine.data('appState', () => ({
             searchOpen: false,
             menuOpen: false,
             cartOpen: false,
             searchQuery: '',
+            activeCategory: 'TOT',
             
             // Modal Product Detail (+info)
             productModalOpen: false,
@@ -538,14 +546,55 @@ import { PRODUCTS } from "@src/data/products";
             toast: { show: false, message: '', type: 'success' },
             
             // Cart
-            cart: [
-                { id: '1', name: "Samarreta 'Carbs' Oversize", size: 'M', price: 35.00, oldPrice: 45.00, qty: 1, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop' }
-            ],
+            cart: [],
             
-            // Products list
-            products: productsData,
+            // Data loaded from CMS / LocalStorage
+            products: [],
+            categories: [],
+            phrases: [],
             
             init() {
+                // Load products
+                try {
+                    const prod = localStorage.getItem('gymcream_products');
+                    this.products = prod ? JSON.parse(prod) : defaultProducts;
+                } catch(e) {
+                    this.products = defaultProducts;
+                }
+
+                // Load categories
+                try {
+                    const cat = localStorage.getItem('gymcream_categories');
+                    this.categories = cat ? JSON.parse(cat) : defaultCategories;
+                } catch(e) {
+                    this.categories = defaultCategories;
+                }
+
+                // Load phrases
+                try {
+                    const ph = localStorage.getItem('gymcream_phrases');
+                    this.phrases = ph ? JSON.parse(ph) : defaultPhrases;
+                } catch(e) {
+                    this.phrases = defaultPhrases;
+                }
+
+                // Load cart
+                try {
+                    const savedCart = localStorage.getItem('gymcream_cart');
+                    if (savedCart) {
+                        const parsed = JSON.parse(savedCart);
+                        if (Array.isArray(parsed)) {
+                            this.cart = parsed;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error carregant el carret de localStorage', e);
+                }
+
+                this.$watch('cart', () => {
+                    this.saveCart();
+                });
+
                 window.addEventListener('add-to-cart', (e) => {
                     this.addToCart(e.detail);
                 });
@@ -555,6 +604,40 @@ import { PRODUCTS } from "@src/data/products";
                 window.addEventListener('open-restock-modal', (e) => {
                     this.openRestockModal(e.detail);
                 });
+                window.addEventListener('filter-category', (e) => {
+                    this.activeCategory = e.detail;
+                });
+
+                this.startTicker();
+            },
+
+            startTicker() {
+                let currentPhrase = 0;
+                const ironicTextElement = document.getElementById('ironicText');
+                if (ironicTextElement && this.phrases && this.phrases.length > 0) {
+                    ironicTextElement.innerText = this.phrases[0];
+                    setInterval(() => {
+                        ironicTextElement.classList.remove('opacity-100');
+                        ironicTextElement.classList.add('opacity-0');
+                        
+                        setTimeout(() => {
+                            if (this.phrases.length > 0) {
+                                currentPhrase = (currentPhrase + 1) % this.phrases.length;
+                                ironicTextElement.innerText = this.phrases[currentPhrase];
+                            }
+                            ironicTextElement.classList.remove('opacity-0');
+                            ironicTextElement.classList.add('opacity-100');
+                        }, 500); 
+                    }, 5000);
+                }
+            },
+
+            saveCart() {
+                try {
+                    localStorage.setItem('gymcream_cart', JSON.stringify(this.cart));
+                } catch (e) {
+                    console.error('Error desant el carret a localStorage', e);
+                }
             },
             
             openProductModal(product) {
@@ -611,12 +694,24 @@ import { PRODUCTS } from "@src/data/products";
                 } else {
                     this.cart.push({ ...item, qty: 1 });
                 }
+                this.saveCart();
                 this.showToast(`S'ha afegit "${item.name}" (Talla: ${item.size}) al carret!`);
                 this.cartOpen = true;
             },
             
+            updateQty(index, delta) {
+                if (this.cart[index]) {
+                    this.cart[index].qty += delta;
+                    if (this.cart[index].qty <= 0) {
+                        this.cart.splice(index, 1);
+                    }
+                    this.saveCart();
+                }
+            },
+
             removeFromCart(index) {
                 this.cart.splice(index, 1);
+                this.saveCart();
             },
             
             get cartCount() {
@@ -628,29 +723,6 @@ import { PRODUCTS } from "@src/data/products";
             }
         }));
     });
-
-    // FRASES IRÒNIQUES (Ticker)
-    const phrases = [
-        '"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."',
-        '"EL TEU COS ÉS UN TEMPLE. I ELS TEMPLES TAMBÉ FAN FESTES."',
-        '"ROME WASN\'T BUILT IN A DAY, PERÒ ELLS NO TENIEN CREATINA."'
-    ];
-    let currentPhrase = 0;
-    const ironicTextElement = document.getElementById('ironicText');
-
-    if (ironicTextElement) {
-        setInterval(() => {
-            ironicTextElement.classList.remove('opacity-100');
-            ironicTextElement.classList.add('opacity-0');
-            
-            setTimeout(() => {
-                currentPhrase = (currentPhrase + 1) % phrases.length;
-                ironicTextElement.innerText = phrases[currentPhrase];
-                ironicTextElement.classList.remove('opacity-0');
-                ironicTextElement.classList.add('opacity-100');
-            }, 500); 
-        }, 5000);
-    }
 
     // Header scroll behavior
     window.addEventListener('scroll', function() {

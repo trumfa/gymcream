@@ -1,9 +1,9 @@
 ---
-import { PRODUCTS } from "@src/data/products";
+import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
 ---
 
 <!-- SECCIÓ DE PRODUCTES -->
-<section id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+<section id="catalog" x-data="catalogState" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4 border-b border-gray-900 pb-8">
         <div>
             <span class="font-display text-xs text-gcYellow uppercase tracking-widest">Col·lecció Oficial 2026</span>
@@ -12,80 +12,43 @@ import { PRODUCTS } from "@src/data/products";
             </h2>
         </div>
         
-        <!-- Filtres ràpids per categoria -->
-        <div class="flex flex-wrap gap-2 text-xs font-display uppercase tracking-wider" x-data="{ activeCategory: 'Tots' }">
-            <button 
-                @click="activeCategory = 'Tots'; $dispatch('filter-category', 'Tots')"
-                :class="activeCategory === 'Tots' ? 'bg-gcYellow text-black font-bold' : 'bg-gray-900 text-gray-300 hover:bg-gray-800'"
-                class="px-4 py-2 border border-gray-800 transition-colors"
-            >
-                Tots els Drops
-            </button>
-            <button 
-                @click="activeCategory = 'Rebaixats'; $dispatch('filter-category', 'Rebaixats')"
-                :class="activeCategory === 'Rebaixats' ? 'bg-red-600 text-white font-bold border-red-500' : 'bg-gray-900 text-red-400 border-red-900/50 hover:bg-gray-800'"
-                class="px-4 py-2 border transition-colors flex items-center gap-1"
-            >
-                🔥 Rebaixats
-            </button>
-            <button 
-                @click="activeCategory = 'Home'; $dispatch('filter-category', 'Home')"
-                :class="activeCategory === 'Home' ? 'bg-gcYellow text-black font-bold' : 'bg-gray-900 text-gray-300 hover:bg-gray-800'"
-                class="px-4 py-2 border border-gray-800 transition-colors"
-            >
-                Home
-            </button>
-            <button 
-                @click="activeCategory = 'Dona'; $dispatch('filter-category', 'Dona')"
-                :class="activeCategory === 'Dona' ? 'bg-gcYellow text-black font-bold' : 'bg-gray-900 text-gray-300 hover:bg-gray-800'"
-                class="px-4 py-2 border border-gray-800 transition-colors"
-            >
-                Dona
-            </button>
-            <button 
-                @click="activeCategory = 'Accessoris'; $dispatch('filter-category', 'Accessoris')"
-                :class="activeCategory === 'Accessoris' ? 'bg-gcYellow text-black font-bold' : 'bg-gray-900 text-gray-300 hover:bg-gray-800'"
-                class="px-4 py-2 border border-gray-800 transition-colors"
-            >
-                Accessoris
-            </button>
+        <!-- Filtres ràpids per categoria carregats des de les categories del CMS -->
+        <div class="flex flex-wrap gap-2 text-xs font-display uppercase tracking-wider">
+            <template x-for="cat in categories" :key="cat.id">
+                <button 
+                    @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)"
+                    :class="[
+                        cat.name === 'REBAIXATS' ? 
+                        (activeCategory === cat.name ? 'bg-red-600 text-white font-bold border-red-500' : 'bg-gray-900 text-red-400 border-red-900/50 hover:bg-gray-800') :
+                        (activeCategory === cat.name ? 'bg-gcYellow text-black font-bold border-gcYellow' : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border-gray-800')
+                    ]"
+                    class="px-4 py-2 border transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                    <template x-if="cat.name === 'REBAIXATS'"><span>🔥</span></template>
+                    <span x-text="cat.name"></span>
+                </button>
+            </template>
         </div>
     </div>
 
     <!-- Graella de Productes -->
-    <div 
-        x-data={`{
-            categoryFilter: 'Tots',
-            allProducts: ${JSON.stringify(PRODUCTS)},
-            init() {
-                window.addEventListener('filter-category', (e) => {
-                    this.categoryFilter = e.detail;
-                });
-            },
-            get visibleProducts() {
-                if (this.categoryFilter === 'Tots') return this.allProducts;
-                if (this.categoryFilter === 'Rebaixats') return this.allProducts.filter(p => p.isSale || p.oldPrice);
-                return this.allProducts.filter(p => p.category === this.categoryFilter);
-            }
-        }`}
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-    >
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <template x-for="product in visibleProducts" :key="product.id">
             <div class="group relative bg-black border border-gray-900 hover:border-gcYellow/60 transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-lg hover:shadow-gcYellow/5">
                 
                 <!-- Badges (Rebaixat, Bestseller, Esgotat, Nou Drop) -->
                 <div class="absolute top-3 left-3 flex flex-col gap-1 z-20">
-                    <template x-if="product.isSoldOut">
+                    <template x-if="product.isSoldOut || (product.stock !== undefined && product.stock <= 0)">
                         <span class="bg-red-600 text-white font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider shadow">
                             ESGOTAT
                         </span>
                     </template>
-                    <template x-if="!product.isSoldOut && product.isSale">
+                    <template x-if="!(product.isSoldOut || (product.stock !== undefined && product.stock <= 0)) && product.isSale">
                         <span class="bg-red-500 text-white font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider shadow flex items-center gap-1">
                             🔥 REBAIXAT <span x-text="product.discountPercent ? `-${product.discountPercent}%` : ''"></span>
                         </span>
                     </template>
-                    <template x-if="!product.isSoldOut && !product.isSale && product.badge">
+                    <template x-if="!(product.isSoldOut || (product.stock !== undefined && product.stock <= 0)) && !product.isSale && product.badge">
                         <span 
                             :class="product.badge === 'BESTSELLER' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
                             class="font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider shadow"
@@ -102,18 +65,18 @@ import { PRODUCTS } from "@src/data/products";
                     <img 
                         :src="product.imageFront" 
                         :alt="product.name" 
-                        :class="product.isSoldOut ? 'opacity-40 grayscale-[40%]' : ''"
+                        :class="product.isSoldOut || (product.stock !== undefined && product.stock <= 0) ? 'opacity-40 grayscale-[40%]' : ''"
                         class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0 absolute inset-0"
                     />
                     <img 
                         :src="product.imageBack || product.imageFront" 
                         :alt="`${product.name} detall`" 
-                        :class="product.isSoldOut ? 'opacity-30 grayscale-[40%]' : ''"
+                        :class="product.isSoldOut || (product.stock !== undefined && product.stock <= 0) ? 'opacity-30 grayscale-[40%]' : ''"
                         class="w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 absolute inset-0"
                     />
                     
                     <!-- Overlay indicator per a Esgotat -->
-                    <template x-if="product.isSoldOut">
+                    <template x-if="product.isSoldOut || (product.stock !== undefined && product.stock <= 0)">
                         <div class="absolute inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center p-4">
                             <span class="border-2 border-red-500 text-red-500 font-display font-black text-sm uppercase tracking-widest px-4 py-2 rotate-[-6deg] bg-black/80">
                                 SENSE ESTOC
@@ -122,14 +85,14 @@ import { PRODUCTS } from "@src/data/products";
                     </template>
                 </div>
 
-                <!-- Informació del Producte (SENSE Talles ni Boto d'Afegir al carret directament fora) -->
+                <!-- Informació del Producte -->
                 <div class="p-5 flex-1 flex flex-col justify-between bg-zinc-950/40">
                     <div>
                         <div class="text-[10px] font-display text-gray-500 uppercase tracking-widest mb-1" x-text="product.category"></div>
                         <h3 
                             @click="$dispatch('open-product-modal', product)"
                             class="font-display text-sm font-bold uppercase tracking-wide cursor-pointer hover:text-gcYellow transition-colors line-clamp-2 min-h-[2.5rem] flex items-center"
-                            :class="product.isSoldOut ? 'text-gray-400' : 'text-white'"
+                            :class="product.isSoldOut || (product.stock !== undefined && product.stock <= 0) ? 'text-gray-400' : 'text-white'"
                             x-text="product.name"
                         ></h3>
 
@@ -139,7 +102,7 @@ import { PRODUCTS } from "@src/data/products";
                                 <span class="font-sans text-xs text-gray-500 line-through" x-text="`${product.oldPrice ? product.oldPrice.toFixed(2) : (product.price * 1.25).toFixed(2)} €`"></span>
                             </template>
                             <span 
-                                :class="product.isSale ? 'text-red-400 font-black' : (product.isSoldOut ? 'text-gcYellow/60 font-bold' : 'text-gcYellow font-extrabold')"
+                                :class="product.isSale ? 'text-red-400 font-black' : ((product.isSoldOut || (product.stock !== undefined && product.stock <= 0)) ? 'text-gcYellow/60 font-bold' : 'text-gcYellow font-extrabold')"
                                 class="font-sans text-xl" 
                                 x-text="`${product.price.toFixed(2)} €`"
                             ></span>
@@ -160,7 +123,7 @@ import { PRODUCTS } from "@src/data/products";
                         </button>
 
                         <!-- Botó Subscriure't si el producte està ESGOTAT -->
-                        <template x-if="product.isSoldOut">
+                        <template x-if="product.isSoldOut || (product.stock !== undefined && product.stock <= 0)">
                             <button 
                                 @click="$dispatch('open-restock-modal', product)"
                                 class="w-full bg-red-950/60 text-red-300 hover:bg-red-900 hover:text-white font-display text-[11px] font-bold uppercase py-2.5 border border-red-900/60 transition-all cursor-pointer flex items-center justify-center gap-1.5"
@@ -178,3 +141,48 @@ import { PRODUCTS } from "@src/data/products";
         </template>
     </div>
 </section>
+
+<script is:inline define:vars={{ defaultCategories: DEFAULT_CATEGORIES, defaultProducts: DEFAULT_PRODUCTS }}>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('catalogState', () => ({
+            activeCategory: 'TOT',
+            allProducts: [],
+            categories: [],
+
+            init() {
+                this.loadData();
+
+                window.addEventListener('filter-category', (e) => {
+                    this.activeCategory = e.detail;
+                });
+            },
+
+            loadData() {
+                try {
+                    const prod = localStorage.getItem('gymcream_products');
+                    this.allProducts = prod ? JSON.parse(prod) : defaultProducts;
+                } catch(e) {
+                    this.allProducts = defaultProducts;
+                }
+
+                try {
+                    const cat = localStorage.getItem('gymcream_categories');
+                    this.categories = cat ? JSON.parse(cat) : defaultCategories;
+                } catch(e) {
+                    this.categories = defaultCategories;
+                }
+            },
+
+            get visibleProducts() {
+                const cat = (this.activeCategory || 'TOT').toUpperCase();
+                if (cat === 'TOT' || cat === 'TOTS') {
+                    return this.allProducts;
+                }
+                if (cat === 'REBAIXATS' || cat === 'REBAIXAT') {
+                    return this.allProducts.filter(p => p.isSale || (p.oldPrice && p.oldPrice > p.price));
+                }
+                return this.allProducts.filter(p => p.category && p.category.toUpperCase() === cat);
+            }
+        }));
+    });
+</script>
