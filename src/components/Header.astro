@@ -132,7 +132,10 @@ import { PRODUCTS } from "@src/data/products";
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
             <!-- LOGO EN DIRECTE AL MENÚ -->
             <a href="/" class="flex items-center gap-2">
-                <img src="/logos/gymcream-logo.svg" alt="Gymcream Logo" class="h-8 w-auto" />
+                <img src="/logos/logo-gc-white.png" alt="Gym Cream Logo" class="h-8 w-auto object-contain" />
+                <span class="font-display font-black text-lg tracking-tighter uppercase leading-none">
+                    <span class="text-white">GYM</span> <span class="text-gcYellow">CREAM</span>
+                </span>
             </a>
             <button @click="menuOpen = false" class="text-white hover:text-gcYellow transition-colors">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -475,8 +478,11 @@ import { PRODUCTS } from "@src/data/products";
                     </button>
 
                     <!-- LOGO INTEGRAT DES DE /public/logos/ -->
-                    <a href="/" class="flex items-center gap-3 group">
-                        <img src="/logos/gymcream-logo.svg" alt="Gym Cream Logo" class="h-9 sm:h-12 w-auto transition-transform group-hover:scale-105" />
+                    <a href="/" class="flex items-center gap-2 sm:gap-3 group">
+                        <img src="/logos/logo-gc-primary.png" alt="Gym Cream Logo" class="h-9 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
+                        <span class="font-display font-black text-xl sm:text-2xl tracking-tighter uppercase leading-none">
+                            <span class="text-white">GYM</span> <span class="text-gcYellow">CREAM</span>
+                        </span>
                     </a>
                 </div>
 
