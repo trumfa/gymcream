@@ -3,6 +3,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import alpinejs from "@astrojs/alpinejs";
+import node from "@astrojs/node";
 import { i18n, filterSitemapByDefaultLocale } from "astro-i18n-aut/integration";
 import { DEFAULT_LOCALE, LOCALES, SITE_URL } from "./src/consts";
 
@@ -12,6 +13,10 @@ const locales = LOCALES;
 // https://astro.build/config
 export default defineConfig({
 	site: SITE_URL,
+	output: "hybrid",
+	adapter: node({
+		mode: "standalone",
+	}),
 	trailingSlash: "always",
 	build: {
 		format: "directory",

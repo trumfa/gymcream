@@ -6,36 +6,99 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
 <Layout title="Gestor de Contingut (CMS) | Gym Cream">
     <div x-data="cmsApp" class="min-h-screen bg-black text-white pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        <!-- HEADER DEL CMS -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-gray-800 pb-8 mb-8">
-            <div>
-                <div class="flex items-center gap-3 mb-2">
-                    <span class="bg-gcYellow text-black text-[10px] font-black uppercase tracking-widest px-2.5 py-1">
-                        Panell Administratiu
-                    </span>
-                    <span class="text-xs text-gray-400 font-mono">v2.0 • Local Storage Persistence</span>
-                </div>
-                <h1 class="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-white flex items-center gap-3">
-                    Gestor de Continguts (CMS)
-                </h1>
-                <p class="text-gray-400 text-sm mt-1">Gestiona frases iròniques, menú/filtres, carrusel d'inici i articles del catàleg en temps real.</p>
-            </div>
+        <!-- LOGIN GATE: SI NO ESTÀ AUTENTICAT -->
+        <template x-if="!authenticatedUser">
+            <div class="min-h-[65vh] flex flex-col items-center justify-center text-center px-4">
+                <div class="max-w-md w-full bg-zinc-950 border-2 border-gcYellow/60 p-8 sm:p-10 shadow-[0_0_50px_rgba(255,230,0,0.1)] space-y-6 relative overflow-hidden">
+                    <div class="absolute -right-12 -top-12 w-32 h-32 bg-gcYellow/10 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="inline-flex p-4 bg-black border border-gcYellow/40 rounded-full shadow-inner mb-2">
+                        <svg class="w-12 h-12 text-gcYellow" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                    </div>
+                    
+                    <div>
+                        <span class="bg-gcYellow text-black text-[10px] font-black uppercase tracking-widest px-2.5 py-1">
+                            Accés Protegit (OAuth)
+                        </span>
+                        <h2 class="font-display text-2xl font-black uppercase tracking-tight text-white mt-3">
+                            Panell de Control CMS
+                        </h2>
+                        <p class="text-gray-400 text-xs mt-2 leading-relaxed">
+                            Per accedir al gestor de continguts de GYM CREAM cal autenticar-se amb GitHub.
+                        </p>
+                    </div>
 
-            <div class="flex items-center gap-3 flex-wrap">
-                <a href="/" class="bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 font-display text-xs uppercase tracking-wider px-5 py-3 transition-colors flex items-center gap-2">
-                    <svg class="w-4 h-4 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Tornar a la Botiga
-                </a>
-                <button 
-                    @click="resetDefaults()" 
-                    class="bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-800 font-display text-xs uppercase tracking-wider px-4 py-3 transition-colors flex items-center gap-2"
-                    title="Restablir dades inicials"
-                >
-                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Restablir Inicials
-                </button>
+                    <button 
+                        @click="loginWithGithub()" 
+                        :disabled="isAuthenticating"
+                        class="w-full bg-gcYellow text-black hover:bg-white font-display font-extrabold text-xs uppercase tracking-wider py-4 px-6 transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(255,230,0,0.3)] disabled:opacity-50"
+                    >
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                        <span x-text="isAuthenticating ? 'Obrint GitHub...' : 'Inicia Sessió amb GitHub'"></span>
+                    </button>
+
+                    <div class="pt-3 border-t border-gray-900 flex justify-between items-center text-[11px] text-gray-500 font-mono">
+                        <span>OAuth Client ID:</span>
+                        <span class="text-gcYellow">Ov23lidWyRrdF40c7ANG</span>
+                    </div>
+
+                    <a href="/" class="inline-block text-xs text-gray-400 hover:text-white underline pt-2">Tornar a la Botiga</a>
+                </div>
             </div>
-        </div>
+        </template>
+
+        <!-- CMS CONTINGUT COMPLET: NOMÉS SI ESTÀ AUTENTICAT -->
+        <template x-if="authenticatedUser">
+            <div>
+                <!-- HEADER DEL CMS AMB INFORMACIÓ DE L'USUARI -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-gray-800 pb-8 mb-8">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="bg-gcYellow text-black text-[10px] font-black uppercase tracking-widest px-2.5 py-1">
+                                Panell Administratiu
+                            </span>
+                            <span class="text-xs text-gray-400 font-mono">v2.0 • GitHub Authenticated</span>
+                        </div>
+                        <h1 class="font-display text-3xl sm:text-4xl font-black uppercase tracking-tight text-white flex items-center gap-3">
+                            Gestor de Continguts (CMS)
+                        </h1>
+                        <p class="text-gray-400 text-sm mt-1">Gestiona frases iròniques, menú/filtres, carrusel d'inici i articles del catàleg en temps real.</p>
+                    </div>
+
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <!-- TARGETA USUARI AUTENTICAT -->
+                        <div class="flex items-center gap-3 bg-zinc-900 border border-gray-800 p-2 px-3 rounded">
+                            <img :src="authenticatedUser.avatar_url" class="w-8 h-8 rounded-full border border-gcYellow" :alt="authenticatedUser.login" />
+                            <div class="text-left">
+                                <div class="font-bold text-white text-xs flex items-center gap-1">
+                                    <span x-text="authenticatedUser.name"></span>
+                                    <span class="text-gray-500 font-mono text-[10px]" x-text="`(@${authenticatedUser.login})`"></span>
+                                </div>
+                                <div class="text-[10px] text-emerald-400 font-mono">● Sessió de GitHub Activa</div>
+                            </div>
+                            <button 
+                                @click="logout()" 
+                                class="ml-2 bg-red-950 hover:bg-red-900 text-red-200 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 border border-red-800 rounded transition-colors cursor-pointer"
+                                title="Tancar Sessió"
+                            >
+                                Surt
+                            </button>
+                        </div>
+
+                        <a href="/" class="bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-700 font-display text-xs uppercase tracking-wider px-4 py-3 transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Botiga
+                        </a>
+                        <button 
+                            @click="resetDefaults()" 
+                            class="bg-red-950/80 hover:bg-red-900 text-red-200 border border-red-800 font-display text-xs uppercase tracking-wider px-4 py-3 transition-colors flex items-center gap-2"
+                            title="Restablir dades inicials"
+                        >
+                            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            Restablir Dades
+                        </button>
+                    </div>
+                </div>
 
         <!-- NOTIFICACIÓ TOAST CMS -->
         <div 
@@ -555,7 +618,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
                     <button @click="saveSlide()" class="px-6 py-2.5 bg-gcYellow text-black font-display font-black text-xs uppercase cursor-pointer">Desar Diapositiva</button>
                 </div>
             </div>
-        </div>
+        </template>
 
     </div>
 </Layout>
@@ -563,6 +626,9 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
 <script is:inline define:vars={{ defaultPhrases: DEFAULT_PHRASES, defaultCategories: DEFAULT_CATEGORIES, defaultSlides: DEFAULT_SLIDES, defaultProducts: DEFAULT_PRODUCTS }}>
     document.addEventListener('alpine:init', () => {
         Alpine.data('cmsApp', () => ({
+            authenticatedUser: null,
+            isAuthenticating: false,
+            
             activeTab: 'products',
             toast: { show: false, message: '' },
             productSearch: '',
@@ -584,7 +650,50 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
             editingSlide: {},
 
             init() {
+                // Check saved user session
+                try {
+                    const savedUser = localStorage.getItem('gymcream_admin_user');
+                    if (savedUser) {
+                        this.authenticatedUser = JSON.parse(savedUser);
+                    }
+                } catch(e) {
+                    this.authenticatedUser = null;
+                }
+
+                // Listen for postMessage from OAuth popup
+                window.addEventListener('message', (e) => {
+                    if (e.data && e.data.type === 'GITHUB_AUTH_SUCCESS' && e.data.user) {
+                        this.authenticatedUser = e.data.user;
+                        localStorage.setItem('gymcream_admin_user', JSON.stringify(e.data.user));
+                        this.isAuthenticating = false;
+                        this.showToast(`Sessió iniciada com a @${e.data.user.login}`);
+                    }
+                });
+
                 this.loadAllData();
+            },
+
+            loginWithGithub() {
+                this.isAuthenticating = true;
+                const width = 600, height = 700;
+                const left = (window.screen.width - width) / 2;
+                const top = (window.screen.height - height) / 2;
+                
+                const popup = window.open(
+                    '/api/auth/github/',
+                    'github_oauth',
+                    `width=${width},height=${height},left=${left},top=${top}`
+                );
+
+                if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+                    window.location.href = '/api/auth/github/';
+                }
+            },
+
+            logout() {
+                this.authenticatedUser = null;
+                localStorage.removeItem('gymcream_admin_user');
+                this.showToast('Sessió tancada correctament.');
             },
 
             loadAllData() {
