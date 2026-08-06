@@ -1,0 +1,667 @@
+---
+import { PRODUCTS } from "@src/data/products";
+---
+
+<!-- Header Component with Logos, Live Search, Cart Drawer, +INFO Detail Modal, & Restock Alert Modal -->
+<div x-data="appState" class="relative">
+
+    <!-- OVERLAYS PER MODALS I DRAWERS -->
+    <div 
+        x-show="searchOpen || menuOpen || cartOpen || productModalOpen || restockModalOpen || modalZoomOpen" 
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        @click="searchOpen = false; menuOpen = false; cartOpen = false; productModalOpen = false; restockModalOpen = false; modalZoomOpen = false" 
+        class="fixed inset-0 bg-black/85 z-[90] backdrop-blur-md"
+        x-cloak
+    ></div>
+
+    <!-- TOAST FEEDBACK NOTIFICATION -->
+    <div 
+        x-show="toast.show" 
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="translate-y-full opacity-0"
+        x-transition:enter-end="translate-y-0 opacity-100"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="translate-y-0 opacity-100"
+        x-transition:leave-end="translate-y-full opacity-0"
+        class="fixed bottom-6 right-6 z-[200] max-w-md bg-gcDark border-2 border-gcYellow text-white p-4 shadow-2xl flex items-center gap-3"
+        x-cloak
+    >
+        <div class="bg-gcYellow text-black p-2 rounded-full">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <p class="font-sans text-sm font-semibold" x-text="toast.message"></p>
+    </div>
+
+    <!-- 🔍 PANEL DE CERCA EN DIRECTE (A LA LUPA - Real-Time Search Drawer) -->
+    <div 
+        :class="searchOpen ? 'translate-x-0' : 'translate-x-full'" 
+        class="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-gcDark border-l border-gcYellow/30 z-[100] transform transition-transform duration-300 flex flex-col p-6 shadow-2xl"
+    >
+        <div class="flex justify-between items-center pb-6 border-b border-gray-800">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <h3 class="font-display text-sm uppercase text-gcYellow tracking-widest font-black">Cerca en temps real</h3>
+            </div>
+            <button @click="searchOpen = false" class="text-white hover:text-gcYellow transition-colors p-1">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div class="mt-6">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    x-model="searchQuery" 
+                    placeholder="Escriu qualsevol paraula (p. ex. Carbs, Belt, Sudadera...)" 
+                    class="w-full bg-black border border-gray-800 focus:border-gcYellow text-white p-4 pr-10 font-sans text-sm focus:outline-none transition-colors"
+                    x-ref="searchInput"
+                >
+                <template x-if="searchQuery">
+                    <button @click="searchQuery = ''" class="absolute right-3 top-4 text-gray-500 hover:text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </template>
+            </div>
+            <p class="text-gray-500 mt-2 text-xs">Apareixeran tots els articles que convinguin amb les paraules cercades.</p>
+        </div>
+
+        <!-- LISTA EN DIRECTO DE RESULTADOS DE BÚSQUEDA -->
+        <div class="flex-1 overflow-y-auto my-6 space-y-3 pr-1">
+            <template x-if="searchQuery.trim() !== '' && filteredProducts.length === 0">
+                <div class="text-center py-12 text-gray-400 font-sans text-sm border border-dashed border-gray-800 p-6">
+                    <svg class="w-10 h-10 text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    No s'han trobat articles amb "<span class="text-gcYellow" x-text="searchQuery"></span>".
+                </div>
+            </template>
+
+            <template x-if="searchQuery.trim() === ''">
+                <div class="space-y-4 pt-2">
+                    <span class="text-xs font-display text-gray-500 uppercase tracking-widest">Etiquetes Populars:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button @click="searchQuery = 'Carbs'" class="text-xs bg-gray-900 border border-gray-800 hover:border-gcYellow hover:text-gcYellow px-3 py-1.5 text-gray-300 transition-colors">#Carbs</button>
+                        <button @click="searchQuery = 'Rebaixat'" class="text-xs bg-red-950/60 border border-red-900 text-red-300 hover:bg-red-900 px-3 py-1.5 transition-colors">🔥 #Rebaixat</button>
+                        <button @click="searchQuery = 'Cinturó'" class="text-xs bg-gray-900 border border-gray-800 hover:border-gcYellow hover:text-gcYellow px-3 py-1.5 text-gray-300 transition-colors">#Cinturó</button>
+                        <button @click="searchQuery = 'Sudadera'" class="text-xs bg-gray-900 border border-gray-800 hover:border-gcYellow hover:text-gcYellow px-3 py-1.5 text-gray-300 transition-colors">#Sudadera</button>
+                        <button @click="searchQuery = 'Straps'" class="text-xs bg-gray-900 border border-gray-800 hover:border-gcYellow hover:text-gcYellow px-3 py-1.5 text-gray-300 transition-colors">#Straps</button>
+                    </div>
+                </div>
+            </template>
+
+            <template x-for="item in filteredProducts" :key="item.id">
+                <div class="flex gap-4 items-center bg-black p-3 border border-gray-900 hover:border-gcYellow/50 transition-colors group">
+                    <img :src="item.imageFront" :alt="item.name" class="w-16 h-20 object-cover bg-gray-900 border border-gray-800 flex-shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[9px] font-display text-gray-500 uppercase tracking-wider" x-text="item.category"></span>
+                            <template x-if="item.isSoldOut">
+                                <span class="text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.5 uppercase">Esgotat</span>
+                            </template>
+                            <template x-if="!item.isSoldOut && item.isSale">
+                                <span class="text-[9px] bg-red-500 text-white font-bold px-1.5 py-0.5 uppercase">Rebaixat</span>
+                            </template>
+                        </div>
+                        <h4 class="font-display text-xs text-gray-200 group-hover:text-gcYellow transition-colors truncate" x-text="item.name"></h4>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <template x-if="item.oldPrice || item.isSale">
+                                <span class="text-xs text-gray-500 line-through font-sans" x-text="`${item.oldPrice ? item.oldPrice.toFixed(2) : (item.price * 1.25).toFixed(2)} €`"></span>
+                            </template>
+                            <span class="text-sm font-extrabold text-gcYellow font-sans" x-text="`${item.price.toFixed(2)} €`"></span>
+                        </div>
+                    </div>
+                    <button 
+                        @click="openProductModal(item); searchOpen = false;" 
+                        class="bg-zinc-900 text-gcYellow hover:bg-gcYellow hover:text-black font-display text-[10px] font-bold uppercase px-3 py-2 border border-gcYellow/30 transition-colors flex-shrink-0"
+                    >
+                        +INFO
+                    </button>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- ☰ MENÚ LATERAL D'INFORMACIÓ (Drawer Esquerre amb Logo Separat) -->
+    <div 
+        :class="menuOpen ? 'translate-x-0' : '-translate-x-full'" 
+        class="fixed inset-y-0 left-0 w-80 bg-gcDark border-r border-gcYellow/30 z-[100] transform transition-transform duration-300 flex flex-col p-6"
+    >
+        <div class="flex justify-between items-center pb-6 border-b border-gray-800">
+            <!-- LOGO EN DIRECTE AL MENÚ -->
+            <a href="/" class="flex items-center gap-2">
+                <img src="/logos/gymcream-logo.svg" alt="Gymcream Logo" class="h-8 w-auto" />
+            </a>
+            <button @click="menuOpen = false" class="text-white hover:text-gcYellow transition-colors">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <nav class="flex-1 mt-8 flex flex-col gap-6 font-display text-base uppercase tracking-widest">
+            <a href="/" class="hover:text-gcYellow transition-colors">Inici</a>
+            <a href="#catalog" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Catàleg / Drops</a>
+            <a href="#filosofia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">La Nostra Filosofia</a>
+            <a href="/admin/" class="text-xs text-gcYellow/80 hover:text-gcYellow transition-colors mt-4 pt-4 border-t border-gray-800 flex items-center gap-2">
+                <svg class="w-4 h-4 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                Gestor de Contingut (CMS)
+            </a>
+        </nav>
+    </div>
+
+    <!-- 🛒 PANEL LATERAL DE CARRET (Drawer Dret) -->
+    <div 
+        :class="cartOpen ? 'translate-x-0' : 'translate-x-full'" 
+        class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gcDark border-l border-gcYellow/30 z-[100] transform transition-transform duration-300 flex flex-col p-6 shadow-2xl"
+    >
+        <div class="flex justify-between items-center pb-6 border-b border-gray-800">
+            <div class="flex items-center gap-3">
+                <h3 class="font-display text-sm uppercase text-gcYellow tracking-widest font-black">El Teu Carret</h3>
+                <span class="bg-gcYellow text-black font-bold text-xs px-2.5 py-0.5 rounded-full" x-text="cartCount">0</span>
+            </div>
+            <button @click="cartOpen = false" class="text-white hover:text-gcYellow transition-colors p-1">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto my-6 space-y-4 pr-1">
+            <template x-if="cart.length === 0">
+                <div class="text-center py-16 text-gray-500 font-sans text-sm">
+                    El teu carret està buit actualment.
+                </div>
+            </template>
+            <template x-for="(item, index) in cart" :key="index">
+                <div class="flex gap-4 items-center bg-black p-3 border border-gray-900 relative">
+                    <img :src="item.image" :alt="item.name" class="w-16 h-20 object-cover bg-gray-900 flex-shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-display text-xs text-gray-200 truncate font-bold" x-text="item.name"></h4>
+                        <p class="text-xs text-gray-400 mt-1">Talla: <span class="text-gcYellow font-bold" x-text="item.size"></span></p>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <template x-if="item.oldPrice">
+                                <span class="text-xs text-gray-500 line-through font-sans" x-text="`${item.oldPrice.toFixed(2)} €`"></span>
+                            </template>
+                            <span class="text-sm font-bold text-gcYellow font-sans" x-text="`${item.price.toFixed(2)} €`"></span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400 font-bold" x-text="`x${item.qty}`"></span>
+                        <button @click="removeFromCart(index)" class="text-gray-600 hover:text-red-500 transition-colors p-1.5" title="Eliminar del carret">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div class="border-t border-gray-800 pt-4 space-y-4">
+            <div class="flex justify-between items-center font-display text-sm">
+                <span class="uppercase tracking-widest text-gray-400">Total</span>
+                <span class="text-gcYellow font-black text-xl" x-text="`${cartTotal} €`"></span>
+            </div>
+            
+            <div class="space-y-2">
+                <button @click="showToast('Redirigint a la passarel·la de pagament PayPal / Stripe...')" class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-4 hover:bg-white transition-colors tracking-widest flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    PAGAR ARA (PayPal / Stripe)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🪟 FINESTRA FLOATANT / MODAL "+INFO" DE DETALL DEL PRODUCTE -->
+    <template x-if="productModalOpen && modalProduct">
+        <div 
+            class="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+        >
+            <div class="bg-gcDark border-2 border-gcYellow/80 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col md:flex-row my-auto">
+                
+                <!-- Tancar Modal Button -->
+                <button 
+                    @click="productModalOpen = false" 
+                    class="absolute top-4 right-4 z-30 bg-black/80 text-white hover:text-gcYellow border border-gray-700 p-2 transition-colors cursor-pointer"
+                    title="Tancar finestra"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <!-- Columna Esquerra: GALERIA DE FOTOS (Amb Zoom/Ampliar Fotos) -->
+                <div class="w-full md:w-1/2 p-6 bg-black flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-900">
+                    <div>
+                        <div class="relative aspect-[3/4] bg-gray-950 overflow-hidden border border-gray-900 mb-4 group/zoom">
+                            <img 
+                                :src="modalActiveImage" 
+                                :alt="modalProduct.name" 
+                                class="w-full h-full object-cover"
+                            />
+                            
+                            <!-- Botó Ampliar Fotos (Zoom) -->
+                            <button 
+                                @click="modalZoomOpen = true"
+                                class="absolute bottom-3 right-3 bg-black/80 hover:bg-gcYellow hover:text-black text-white font-display text-xs font-bold px-3 py-1.5 border border-gray-700 transition-colors flex items-center gap-1.5"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path></svg>
+                                Ampliar foto
+                            </button>
+
+                            <!-- Badge sobre imatge -->
+                            <div class="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                                <template x-if="modalProduct.isSoldOut">
+                                    <span class="bg-red-600 text-white font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider">ESGOTAT</span>
+                                </template>
+                                <template x-if="!modalProduct.isSoldOut && modalProduct.isSale">
+                                    <span class="bg-red-500 text-white font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider">🔥 REBAIXAT</span>
+                                </template>
+                                <template x-if="!modalProduct.isSoldOut && !modalProduct.isSale && modalProduct.badge">
+                                    <span class="bg-gcYellow text-black font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider" x-text="modalProduct.badge"></span>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Miniatures de la galeria de fotos -->
+                        <div class="flex gap-2 overflow-x-auto pb-2">
+                            <template x-for="(img, idx) in modalProduct.images" :key="idx">
+                                <button 
+                                    @click="modalActiveImage = img"
+                                    :class="modalActiveImage === img ? 'border-gcYellow ring-2 ring-gcYellow/50' : 'border-gray-800 opacity-60 hover:opacity-100'"
+                                    class="w-16 h-20 border bg-gray-900 flex-shrink-0 transition-all overflow-hidden"
+                                >
+                                    <img :src="img" class="w-full h-full object-cover" />
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-gray-500 mt-4 text-center font-sans">Feu clic a qualsevol miniatura per veure més fotos del producte.</p>
+                </div>
+
+                <!-- Columna Dreta: DESCRIPCIÓ, TALLES I BOTÓ AFEGIR AL CARRET / ESGOTAT -->
+                <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-gray-400 font-display uppercase tracking-widest mb-2">
+                            <span x-text="modalProduct.category"></span>
+                            <span x-text="`SKU: ${modalProduct.sku}`"></span>
+                        </div>
+
+                        <h2 class="font-display text-2xl font-black uppercase tracking-wide text-white mb-3" x-text="modalProduct.name"></h2>
+
+                        <!-- PREU VELL I PREU REBAIXAT -->
+                        <div class="flex items-baseline gap-3 mb-6 p-3 bg-black border border-gray-900">
+                            <template x-if="modalProduct.oldPrice || modalProduct.isSale">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-sans text-sm text-gray-500 line-through" x-text="`${modalProduct.oldPrice ? modalProduct.oldPrice.toFixed(2) : (modalProduct.price * 1.25).toFixed(2)} €`"></span>
+                                    <span class="bg-red-600 text-white font-display text-[10px] font-black px-2 py-0.5 uppercase">OFERTA</span>
+                                </div>
+                            </template>
+                            <span 
+                                :class="modalProduct.isSale ? 'text-red-400' : 'text-gcYellow'"
+                                class="font-sans text-3xl font-black" 
+                                x-text="`${modalProduct.price.toFixed(2)} €`"
+                            ></span>
+                        </div>
+
+                        <!-- DESCRIPCIÓ DEL PRODUCTE -->
+                        <div class="mb-6 space-y-3">
+                            <h4 class="font-display text-xs uppercase text-gcYellow tracking-widest font-bold">Descripció del Producte</h4>
+                            <p class="text-gray-300 font-sans text-sm leading-relaxed" x-text="modalProduct.description"></p>
+                            
+                            <template x-if="modalProduct.details && modalProduct.details.length">
+                                <ul class="list-disc list-inside text-xs text-gray-400 space-y-1 font-sans pt-2">
+                                    <template x-for="detail in modalProduct.details" :key="detail">
+                                        <li x-text="detail"></li>
+                                    </template>
+                                </ul>
+                            </template>
+                        </div>
+
+                        <!-- SELECCIÓ DE TALLES -->
+                        <div class="mb-6">
+                            <label class="block font-display text-xs uppercase text-gcYellow tracking-widest font-bold mb-3">
+                                Selecciona la Talla: <span class="text-white font-bold ml-2" x-text="modalSelectedSize"></span>
+                            </label>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="sz in modalProduct.sizes" :key="sz">
+                                    <button 
+                                        :disabled="modalProduct.isSoldOut"
+                                        @click="modalSelectedSize = sz"
+                                        :class="modalSelectedSize === sz ? 'bg-gcYellow text-black font-extrabold border-gcYellow' : 'bg-black text-white border-gray-800 hover:border-gcYellow'"
+                                        class="px-4 py-2.5 border text-xs font-display font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                        x-text="sz"
+                                    ></button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTÓ D'AFEGIR AL CARRET / BOTÓ FOSC SI ESTÀ ESGOTAT -->
+                    <div class="pt-4 border-t border-gray-900 space-y-3">
+                        <template x-if="!modalProduct.isSoldOut">
+                            <button 
+                                @click="addToCart({ id: modalProduct.id, name: modalProduct.name, price: modalProduct.price, oldPrice: modalProduct.oldPrice, size: modalSelectedSize, image: modalActiveImage }); productModalOpen = false;"
+                                class="w-full bg-gcYellow text-black font-display font-black text-sm uppercase py-4 hover:bg-white transition-all cursor-pointer shadow-lg tracking-wider flex items-center justify-center gap-2"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                                AFEGIR AL CARRET
+                            </button>
+                        </template>
+
+                        <!-- SI EL PRODUCTE ESTÀ ESGOTAT: Botó fosc sense poder seleccionar + Formulari de subscripció -->
+                        <template x-if="modalProduct.isSoldOut">
+                            <div class="space-y-4">
+                                <button 
+                                    disabled 
+                                    class="w-full bg-zinc-900/90 text-gray-500 border border-gray-800 font-display text-xs font-black uppercase py-4 cursor-not-allowed opacity-80"
+                                >
+                                    🔒 ESGOTAT - SENSE ESTOC (SENSE PODER SELECCIONAR)
+                                </button>
+
+                                <div class="bg-red-950/40 border border-red-900/80 p-4 rounded-none">
+                                    <h5 class="font-display text-xs text-red-300 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v2.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                        Avisa'm quan torni a haver-hi estoc:
+                                    </h5>
+                                    <div class="flex gap-2">
+                                        <input 
+                                            type="email" 
+                                            x-model="restockEmail" 
+                                            placeholder="El teu email..." 
+                                            class="bg-black border border-gray-800 text-white p-2.5 text-xs font-sans flex-1 focus:border-red-500 focus:outline-none"
+                                        />
+                                        <button 
+                                            @click="submitRestock()"
+                                            class="bg-red-600 hover:bg-red-500 text-white font-display text-xs font-bold uppercase px-4 py-2.5 transition-colors cursor-pointer"
+                                        >
+                                            Avisa'm
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- 🔍 FULLSCREEN PHOTO LIGHTBOX / ZOOM -->
+    <template x-if="modalZoomOpen && modalActiveImage">
+        <div class="fixed inset-0 z-[160] bg-black/95 flex flex-col items-center justify-center p-4">
+            <button 
+                @click="modalZoomOpen = false" 
+                class="absolute top-6 right-6 text-white hover:text-gcYellow border border-gray-700 bg-black p-3 transition-colors cursor-pointer"
+            >
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div class="max-w-4xl max-h-[85vh] p-2">
+                <img :src="modalActiveImage" class="max-w-full max-h-[80vh] object-contain mx-auto border-2 border-gcYellow" />
+            </div>
+            <p class="text-xs font-display text-gcYellow tracking-widest mt-4 uppercase">Mode Foto Gran / Zoom Actiu</p>
+        </div>
+    </template>
+
+    <!-- 🔔 MODAL DE SUBSCROPCIÓ PER FALTES D'ESTOC (Restock Alert Drawer/Modal) -->
+    <template x-if="restockModalOpen && restockProduct">
+        <div 
+            class="fixed inset-0 z-[120] flex items-center justify-center p-4"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+        >
+            <div class="bg-gcDark border-2 border-red-500 max-w-md w-full p-6 shadow-2xl relative">
+                <button 
+                    @click="restockModalOpen = false" 
+                    class="absolute top-4 right-4 text-gray-400 hover:text-white"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="bg-red-900/60 p-3 border border-red-700 text-red-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v2.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-display uppercase tracking-widest text-red-400 font-bold">Avís de reposició</span>
+                        <h3 class="font-display text-lg font-black text-white uppercase" x-text="restockProduct.name"></h3>
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-300 font-sans mb-4 leading-relaxed">
+                    Aquest producte es troba actualment esgotat. Deixa el teu correu electrònic i seràs el primer a rebre un avís quan rebi estoc de nou.
+                </p>
+
+                <div class="space-y-3">
+                    <input 
+                        type="email" 
+                        x-model="restockEmail" 
+                        placeholder="Exemple: elteuemail@gmail.com" 
+                        class="w-full bg-black border border-gray-800 text-white p-3 font-sans text-sm focus:border-red-500 focus:outline-none"
+                    />
+                    <button 
+                        @click="submitRestock()"
+                        class="w-full bg-red-600 hover:bg-red-500 text-white font-display font-black text-xs uppercase py-3.5 transition-colors cursor-pointer tracking-wider"
+                    >
+                        Subscriure'm ara
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- 🏷️ HEADER / NAVBAR PRINCIPAL AMB LOGO -->
+    <header id="mainHeader" class="fixed w-full top-0 z-40 flex flex-col transition-transform duration-300">
+        
+        <!-- BARRA DE FRASES IRÒNIQUES (Ticker) -->
+        <div id="ironicBar" class="bg-gcYellow text-black py-2 px-4 text-center overflow-hidden transition-all duration-300">
+            <p id="ironicText" class="font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.15em] transition-opacity duration-500 opacity-100">
+                "NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."
+            </p>
+        </div>
+
+        <!-- NAVBAR -->
+        <div id="navContainer" class="bg-transparent border-b border-transparent transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
+                <div class="flex items-center gap-6">
+                    <button @click="menuOpen = true" class="text-white hover:text-gcYellow transition-colors p-1" aria-label="Obrir menú">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+
+                    <!-- LOGO INTEGRAT DES DE /public/logos/ -->
+                    <a href="/" class="flex items-center gap-3 group">
+                        <img src="/logos/gymcream-logo.svg" alt="Gym Cream Logo" class="h-9 sm:h-12 w-auto transition-transform group-hover:scale-105" />
+                    </a>
+                </div>
+
+                <nav class="hidden lg:flex gap-8 font-display text-sm tracking-widest uppercase font-bold">
+                    <a href="#catalog" @click="$dispatch('filter-category', 'Tots')" class="text-gcYellow border-b-2 border-gcYellow pb-1">Tot</a>
+                    <a href="#catalog" @click="$dispatch('filter-category', 'Dona')" class="hover:text-gcYellow transition-colors pb-1">Dona</a>
+                    <a href="#catalog" @click="$dispatch('filter-category', 'Home')" class="hover:text-gcYellow transition-colors pb-1">Home</a>
+                    <a href="#catalog" @click="$dispatch('filter-category', 'Accessoris')" class="hover:text-gcYellow transition-colors pb-1">Accessoris</a>
+                    <a href="#catalog" @click="$dispatch('filter-category', 'Rebaixats')" class="text-red-400 hover:text-red-300 transition-colors pb-1 flex items-center gap-1">
+                        🔥 Rebaixats
+                    </a>
+                </nav>
+
+                <div class="flex items-center gap-4 sm:gap-6">
+                    <!-- BOTÓ DE CERCA / LUPA EN DIRECTE -->
+                    <button @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())" class="text-white hover:text-gcYellow transition-colors p-1" aria-label="Cercar a la lupa">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                    <!-- BOTÓ DE CARRET -->
+                    <button @click="cartOpen = true" class="text-white hover:text-gcYellow transition-colors relative p-1" aria-label="Carret de la compra">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <span class="absolute -top-2 -right-2 bg-gcYellow text-black text-xs font-black rounded-full h-5 w-5 flex items-center justify-center shadow" x-text="cartCount">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+</div>
+
+<script is:inline define:vars={{ productsData: PRODUCTS }}>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('appState', () => ({
+            searchOpen: false,
+            menuOpen: false,
+            cartOpen: false,
+            searchQuery: '',
+            
+            // Modal Product Detail (+info)
+            productModalOpen: false,
+            modalProduct: null,
+            modalSelectedSize: '',
+            modalActiveImage: '',
+            modalZoomOpen: false,
+            
+            // Restock Subscription Modal
+            restockModalOpen: false,
+            restockProduct: null,
+            restockEmail: '',
+            restockSuccess: false,
+            
+            // Toast Notification
+            toast: { show: false, message: '', type: 'success' },
+            
+            // Cart
+            cart: [
+                { id: '1', name: "Samarreta 'Carbs' Oversize", size: 'M', price: 35.00, oldPrice: 45.00, qty: 1, image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop' }
+            ],
+            
+            // Products list
+            products: productsData,
+            
+            init() {
+                window.addEventListener('add-to-cart', (e) => {
+                    this.addToCart(e.detail);
+                });
+                window.addEventListener('open-product-modal', (e) => {
+                    this.openProductModal(e.detail);
+                });
+                window.addEventListener('open-restock-modal', (e) => {
+                    this.openRestockModal(e.detail);
+                });
+            },
+            
+            openProductModal(product) {
+                this.modalProduct = product;
+                this.modalSelectedSize = product.sizes && product.sizes.length ? product.sizes[0] : '';
+                this.modalActiveImage = product.images && product.images.length ? product.images[0] : product.imageFront;
+                this.productModalOpen = true;
+                this.modalZoomOpen = false;
+            },
+            
+            openRestockModal(product) {
+                this.restockProduct = product;
+                this.restockEmail = '';
+                this.restockSuccess = false;
+                this.restockModalOpen = true;
+            },
+            
+            submitRestock() {
+                if (!this.restockEmail || !this.restockEmail.includes('@')) {
+                    this.showToast('S\'il us plau, introdueix un correu electrònic vàlid.', 'error');
+                    return;
+                }
+                this.restockSuccess = true;
+                this.showToast(`¡Gràcies! T'avisarem a ${this.restockEmail} quan hi hagi stock.`, 'success');
+                setTimeout(() => {
+                    this.restockModalOpen = false;
+                }, 2000);
+            },
+            
+            get filteredProducts() {
+                if (!this.searchQuery || this.searchQuery.trim() === '') {
+                    return this.products;
+                }
+                const q = this.searchQuery.toLowerCase().trim();
+                return this.products.filter(p => 
+                    p.name.toLowerCase().includes(q) ||
+                    p.category.toLowerCase().includes(q) ||
+                    p.description.toLowerCase().includes(q) ||
+                    (p.badge && p.badge.toLowerCase().includes(q)) ||
+                    (p.sku && p.sku.toLowerCase().includes(q)) ||
+                    (p.details && p.details.some(d => d.toLowerCase().includes(q)))
+                );
+            },
+            
+            showToast(msg, type = 'success') {
+                this.toast = { show: true, message: msg, type: type };
+                setTimeout(() => { this.toast.show = false; }, 3500);
+            },
+            
+            addToCart(item) {
+                let found = this.cart.find(c => c.id === item.id && c.size === item.size);
+                if (found) {
+                    found.qty++;
+                } else {
+                    this.cart.push({ ...item, qty: 1 });
+                }
+                this.showToast(`S'ha afegit "${item.name}" (Talla: ${item.size}) al carret!`);
+                this.cartOpen = true;
+            },
+            
+            removeFromCart(index) {
+                this.cart.splice(index, 1);
+            },
+            
+            get cartCount() {
+                return this.cart.reduce((sum, item) => sum + item.qty, 0);
+            },
+            
+            get cartTotal() {
+                return this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0).toFixed(2);
+            }
+        }));
+    });
+
+    // FRASES IRÒNIQUES (Ticker)
+    const phrases = [
+        '"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."',
+        '"EL TEU COS ÉS UN TEMPLE. I ELS TEMPLES TAMBÉ FAN FESTES."',
+        '"ROME WASN\'T BUILT IN A DAY, PERÒ ELLS NO TENIEN CREATINA."'
+    ];
+    let currentPhrase = 0;
+    const ironicTextElement = document.getElementById('ironicText');
+
+    if (ironicTextElement) {
+        setInterval(() => {
+            ironicTextElement.classList.remove('opacity-100');
+            ironicTextElement.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                currentPhrase = (currentPhrase + 1) % phrases.length;
+                ironicTextElement.innerText = phrases[currentPhrase];
+                ironicTextElement.classList.remove('opacity-0');
+                ironicTextElement.classList.add('opacity-100');
+            }, 500); 
+        }, 5000);
+    }
+
+    // Header scroll behavior
+    window.addEventListener('scroll', function() {
+        const header = document.getElementById('mainHeader');
+        const navContainer = document.getElementById('navContainer');
+        const ironicBar = document.getElementById('ironicBar');
+        
+        if (header && navContainer && ironicBar) {
+            if (window.scrollY > 50) {
+                header.style.transform = `translateY(-${ironicBar.offsetHeight}px)`;
+                navContainer.classList.add('bg-gcDark/95', 'backdrop-blur-md', 'border-gray-800');
+                navContainer.classList.remove('bg-transparent', 'border-transparent');
+            } else {
+                header.style.transform = 'translateY(0)';
+                navContainer.classList.remove('bg-gcDark/95', 'backdrop-blur-md', 'border-gray-800');
+                navContainer.classList.add('bg-transparent', 'border-transparent');
+            }
+        }
+    });
+</script>

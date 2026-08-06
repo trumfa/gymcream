@@ -1,0 +1,35 @@
+---
+import { getLocale } from "astro-i18n-aut";
+import { ViewTransitions } from "astro:transitions";
+import BaseHead from "@components/BaseHead.astro";
+import Header from "@components/Header.astro";
+import Footer from "@components/Footer.astro";
+import WhatsAppButton from "@components/WhatsAppButton.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "@src/consts";
+
+const locale = getLocale(Astro.url);
+
+type Props = {
+	title?: string;
+	description?: string;
+	image?: string;
+};
+
+const { image, title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props as Props;
+---
+
+<html lang={locale || "ca"}>
+	<head>
+		<BaseHead title={title} description={description} image={image} />
+		<ViewTransitions />
+	</head>
+
+	<body class="bg-gcDark text-white font-sans antialiased overflow-x-hidden selection:bg-gcYellow selection:text-black">
+		<Header />
+		<main class="pt-0">
+			<slot />
+		</main>
+		<Footer />
+		<WhatsAppButton />
+	</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Gymcream",
+  "description": "Astro starter blog with Tailwind CSS, Alpine.js, localization, and CMS support",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
