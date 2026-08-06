@@ -1,15 +1,11 @@
 local_backend: true
 
-logo_url: /logo.svg
+logo_url: /logos/gymcream-logo.svg
 
 backend:
     name: github
+    repo: trumfa/gymcream
     branch: main
-    repo: zankhq/astro-starter
-    site_domain: astrostarter.majestico.it
-    base_url: https://astrostarter.majestico.it
-    auth_endpoint: oauth
-    automatic_deployments: true
 
 media_folder: "src/assets/images"
 public_folder: "@assets/images"
