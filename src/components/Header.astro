@@ -41,8 +41,14 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
 
     <!-- 🔍 PANEL DE CERCA EN DIRECTE (A LA LUPA - Real-Time Search Drawer) -->
     <div 
-        :class="searchOpen ? 'translate-x-0' : 'translate-x-full'" 
-        class="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-gcDark border-l border-gcYellow/30 z-[100] transform translate-x-full transition-transform duration-300 flex flex-col p-6 shadow-2xl"
+        x-show="searchOpen"
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="translate-x-full"
+        class="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-gcDark border-l border-gcYellow/30 z-[100] flex flex-col p-6 shadow-2xl"
         x-cloak
     >
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
@@ -129,8 +135,14 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
 
     <!-- ☰ MENÚ LATERAL D'INFORMACIÓ (Drawer Esquerre amb Logo Separat) -->
     <div 
-        :class="menuOpen ? 'translate-x-0' : '-translate-x-full'" 
-        class="fixed inset-y-0 left-0 w-80 bg-gcDark border-r border-gcYellow/30 z-[100] transform -translate-x-full transition-transform duration-300 flex flex-col p-6"
+        x-show="menuOpen"
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="-translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="-translate-x-full"
+        class="fixed inset-y-0 left-0 w-80 bg-gcDark border-r border-gcYellow/30 z-[100] flex flex-col p-6 shadow-2xl"
         x-cloak
     >
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
@@ -166,8 +178,14 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
 
     <!-- 🛒 PANEL LATERAL DE CARRET (Drawer Dret) -->
     <div 
-        :class="cartOpen ? 'translate-x-0' : 'translate-x-full'" 
-        class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gcDark border-l border-gcYellow/30 z-[100] transform translate-x-full transition-transform duration-300 flex flex-col p-6 shadow-2xl"
+        x-show="cartOpen"
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="translate-x-full"
+        class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gcDark border-l border-gcYellow/30 z-[100] flex flex-col p-6 shadow-2xl"
         x-cloak
     >
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
