@@ -630,7 +630,8 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
 </div>
 
 <script is:inline define:vars={{ defaultPhrases: DEFAULT_PHRASES, defaultCategories: DEFAULT_CATEGORIES, defaultProducts: DEFAULT_PRODUCTS }}>
-    document.addEventListener('alpine:init', () => {
+    const registerAppState = () => {
+        if (!window.Alpine) return;
         Alpine.data('appState', () => ({
             searchOpen: false,
             menuOpen: false,
@@ -806,7 +807,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                 }
                 this.saveCart();
                 this.productModalOpen = false;
-                this.cartOpen = false;
+                this.cartOpen = true;
                 this.showToast(`S'ha afegit "${item.name}" (Talla: ${item.size}) al carret!`);
             },
             
@@ -833,7 +834,13 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                 return this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0).toFixed(2);
             }
         }));
-    });
+    };
+
+    if (window.Alpine) {
+        registerAppState();
+    } else {
+        document.addEventListener('alpine:init', registerAppState);
+    }
 
     // Header scroll behavior
     function handleHeaderScroll() {

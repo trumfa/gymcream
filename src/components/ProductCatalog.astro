@@ -150,7 +150,8 @@ import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
 </section>
 
 <script is:inline define:vars={{ defaultCategories: DEFAULT_CATEGORIES, defaultProducts: DEFAULT_PRODUCTS }}>
-    document.addEventListener('alpine:init', () => {
+    const registerCatalogState = () => {
+        if (!window.Alpine) return;
         Alpine.data('catalogState', () => ({
             activeCategory: 'TOT',
             allProducts: [],
@@ -191,5 +192,11 @@ import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
                 return this.allProducts.filter(p => p.category && p.category.toUpperCase() === cat);
             }
         }));
-    });
+    };
+
+    if (window.Alpine) {
+        registerCatalogState();
+    } else {
+        document.addEventListener('alpine:init', registerCatalogState);
+    }
 </script>

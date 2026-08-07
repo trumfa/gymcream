@@ -58,7 +58,8 @@ import { DEFAULT_SLIDES } from "@src/data/cmsDefaults";
 </section>
 
 <script is:inline define:vars={{ defaultSlides: DEFAULT_SLIDES }}>
-    document.addEventListener('alpine:init', () => {
+    const registerHeroState = () => {
+        if (!window.Alpine) return;
         Alpine.data('heroState', () => ({
             slides: [],
             activeSlide: 0,
@@ -95,5 +96,11 @@ import { DEFAULT_SLIDES } from "@src/data/cmsDefaults";
                 }
             }
         }));
-    });
+    };
+
+    if (window.Alpine) {
+        registerHeroState();
+    } else {
+        document.addEventListener('alpine:init', registerHeroState);
+    }
 </script>

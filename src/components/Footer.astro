@@ -176,7 +176,8 @@ import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
 </footer>
 
 <script is:inline define:vars={{ defaultInfoPages: DEFAULT_INFO_PAGES }}>
-    document.addEventListener('alpine:init', () => {
+    const registerFooterState = () => {
+        if (!window.Alpine) return;
         Alpine.data('footerState', () => ({
             infoModalOpen: false,
             activeInfoKey: 'enviaments',
@@ -211,5 +212,11 @@ import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
                 return defaultInfoPages[this.activeInfoKey] || defaultInfoPages['enviaments'];
             }
         }));
-    });
+    };
+
+    if (window.Alpine) {
+        registerFooterState();
+    } else {
+        document.addEventListener('alpine:init', registerFooterState);
+    }
 </script>

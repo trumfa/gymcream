@@ -12,15 +12,23 @@ const urlWithoutLocalePrefix = getUrlWithoutLocale(Astro.url);
 	import { navigate } from "astro:transitions/client";
 	import Alpine from "alpinejs";
 
-	document.addEventListener("alpine:init", () => {
-		Alpine.data("dropdownData", () => ({
+	const registerDropdownData = () => {
+		if (!(window as any).Alpine && !Alpine) return;
+		const alpineInst = (window as any).Alpine || Alpine;
+		alpineInst.data("dropdownData", () => ({
 			currentLocale: "${currentLocale}",
 			changePage(event: any) {
 				const newLocaleUrl = event.target.value;
 				navigate(newLocaleUrl);
 			},
 		}));
-	});
+	};
+
+	if ((window as any).Alpine) {
+		registerDropdownData();
+	} else {
+		document.addEventListener("alpine:init", registerDropdownData);
+	}
 </script>
 
 <select
