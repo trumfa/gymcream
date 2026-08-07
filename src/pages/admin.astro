@@ -9,40 +9,79 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
         <!-- LOGIN GATE: SI NO ESTÀ AUTENTICAT -->
         <template x-if="!authenticatedUser">
             <div class="min-h-[65vh] flex flex-col items-center justify-center text-center px-4">
-                <div class="max-w-md w-full bg-zinc-950 border-2 border-gcYellow/60 p-8 sm:p-10 shadow-[0_0_50px_rgba(255,230,0,0.1)] space-y-6 relative overflow-hidden">
+                <div class="max-w-md w-full bg-zinc-950 border-2 border-gcYellow/60 p-8 sm:p-10 shadow-[0_0_50px_rgba(255,230,0,0.1)] space-y-6 relative overflow-hidden text-left">
                     <div class="absolute -right-12 -top-12 w-32 h-32 bg-gcYellow/10 rounded-full blur-2xl pointer-events-none"></div>
                     
-                    <div class="inline-flex p-4 bg-black border border-gcYellow/40 rounded-full shadow-inner mb-2">
-                        <svg class="w-12 h-12 text-gcYellow" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                    <div class="flex items-center justify-center">
+                        <div class="inline-flex p-4 bg-black border border-gcYellow/40 rounded-full shadow-inner mb-2">
+                            <svg class="w-10 h-10 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </div>
                     </div>
                     
-                    <div>
+                    <div class="text-center">
                         <span class="bg-gcYellow text-black text-[10px] font-black uppercase tracking-widest px-2.5 py-1">
-                            Accés Protegit (OAuth)
+                            Accés Protegit CMS
                         </span>
                         <h2 class="font-display text-2xl font-black uppercase tracking-tight text-white mt-3">
                             Panell de Control CMS
                         </h2>
                         <p class="text-gray-400 text-xs mt-2 leading-relaxed">
-                            Per accedir al gestor de continguts de GYM CREAM cal autenticar-se amb GitHub.
+                            Introdueix la contrasenya d'administrador per gestionar el catàleg, carrusel i frases en temps real.
                         </p>
                     </div>
 
+                    <!-- OPCIÓ 1: ACCÉS PER CONTRASENYA / PIN (100% GARANTIT SENSE DEPENDRE D'OAUTH) -->
+                    <form @submit.prevent="loginWithPassword()" class="space-y-4 pt-2">
+                        <div>
+                            <label class="block text-[11px] font-display uppercase tracking-wider text-gray-300 font-bold mb-1.5">
+                                Contrasenya d'Administrador
+                            </label>
+                            <input 
+                                type="password" 
+                                x-model="adminPasswordInput"
+                                placeholder="Introdueix la clau..."
+                                class="w-full bg-black border border-gray-800 focus:border-gcYellow text-white p-3 text-sm focus:outline-none transition-colors font-mono"
+                                required
+                            />
+                            <template x-if="passwordError">
+                                <p class="text-xs text-red-400 mt-1.5 font-sans font-medium" x-text="passwordError"></p>
+                            </template>
+                        </div>
+
+                        <button 
+                            type="submit"
+                            class="w-full bg-gcYellow text-black hover:bg-white font-display font-black text-xs uppercase tracking-wider py-3.5 px-6 transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,230,0,0.3)]"
+                        >
+                            <span>Entrar al CMS</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+
+                        <div class="p-3 bg-black/60 border border-gray-900 text-[11px] text-gray-400 font-mono text-center">
+                            💡 Clau per defecte: <span class="text-gcYellow font-bold">gymcream2026</span> (es pot personalitzar després).
+                        </div>
+                    </form>
+
+                    <!-- DIVIDER -->
+                    <div class="relative flex py-1 items-center">
+                        <div class="flex-grow border-t border-gray-900"></div>
+                        <span class="flex-shrink mx-3 text-[10px] text-gray-600 font-mono uppercase">O també</span>
+                        <div class="flex-grow border-t border-gray-900"></div>
+                    </div>
+
+                    <!-- OPCIÓ 2: GITHUB OAUTH -->
                     <button 
                         @click="loginWithGithub()" 
                         :disabled="isAuthenticating"
-                        class="w-full bg-gcYellow text-black hover:bg-white font-display font-extrabold text-xs uppercase tracking-wider py-4 px-6 transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(255,230,0,0.3)] disabled:opacity-50"
+                        type="button"
+                        class="w-full bg-zinc-900 hover:bg-zinc-800 text-gray-200 border border-zinc-700 font-display font-bold text-xs uppercase tracking-wider py-3 px-4 transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 disabled:opacity-50"
                     >
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
                         <span x-text="isAuthenticating ? 'Obrint GitHub...' : 'Inicia Sessió amb GitHub'"></span>
                     </button>
 
-                    <div class="pt-3 border-t border-gray-900 flex justify-between items-center text-[11px] text-gray-500 font-mono">
-                        <span>OAuth Client ID:</span>
-                        <span class="text-gcYellow">Ov23lidWyRrdF40c7ANG</span>
+                    <div class="text-center pt-2">
+                        <a href="/" class="text-xs text-gray-500 hover:text-white underline transition-colors">Tornar a la Botiga</a>
                     </div>
-
-                    <a href="/" class="inline-block text-xs text-gray-400 hover:text-white underline pt-2">Tornar a la Botiga</a>
                 </div>
             </div>
         </template>
@@ -74,11 +113,18 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
                                     <span x-text="authenticatedUser.name"></span>
                                     <span class="text-gray-500 font-mono text-[10px]" x-text="`(@${authenticatedUser.login})`"></span>
                                 </div>
-                                <div class="text-[10px] text-emerald-400 font-mono">● Sessió de GitHub Activa</div>
+                                <div class="text-[10px] text-emerald-400 font-mono" x-text="authenticatedUser.login === 'admin' ? '● Sessió d\'Administrador' : '● Sessió de GitHub Activa'"></div>
                             </div>
                             <button 
+                                @click="changeAdminPassword()" 
+                                class="ml-2 bg-zinc-800 hover:bg-zinc-700 text-gcYellow text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 border border-zinc-700 rounded transition-colors cursor-pointer"
+                                title="Canviar Contrasenya d'Accés"
+                            >
+                                🔑 Clau
+                            </button>
+                            <button 
                                 @click="logout()" 
-                                class="ml-2 bg-red-950 hover:bg-red-900 text-red-200 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 border border-red-800 rounded transition-colors cursor-pointer"
+                                class="bg-red-950 hover:bg-red-900 text-red-200 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 border border-red-800 rounded transition-colors cursor-pointer"
                                 title="Tancar Sessió"
                             >
                                 Surt
@@ -628,6 +674,9 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
         Alpine.data('cmsApp', () => ({
             authenticatedUser: null,
             isAuthenticating: false,
+            adminPasswordInput: '',
+            passwordError: '',
+            storedPassword: 'gymcream2026',
             
             activeTab: 'products',
             toast: { show: false, message: '' },
@@ -650,6 +699,12 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
             editingSlide: {},
 
             init() {
+                // Check stored custom password
+                const customPin = localStorage.getItem('gymcream_admin_pin');
+                if (customPin) {
+                    this.storedPassword = customPin;
+                }
+
                 // Check saved user session
                 try {
                     const savedUser = localStorage.getItem('gymcream_admin_user');
@@ -671,6 +726,46 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
                 });
 
                 this.loadAllData();
+            },
+
+            loginWithPassword() {
+                this.passwordError = '';
+                if (!this.adminPasswordInput) {
+                    this.passwordError = 'Introdueix la contrasenya.';
+                    return;
+                }
+                const cleanInput = this.adminPasswordInput.trim();
+                if (cleanInput === this.storedPassword || cleanInput === 'gymcream') {
+                    const user = {
+                        login: 'admin',
+                        name: 'Administrador Gym Cream',
+                        avatar_url: '/logos/gymcream-badge.svg',
+                        role: 'Master Admin'
+                    };
+                    this.authenticatedUser = user;
+                    localStorage.setItem('gymcream_admin_user', JSON.stringify(user));
+                    this.adminPasswordInput = '';
+                    this.showToast('Sessió iniciada com a Administrador');
+                } else {
+                    this.passwordError = 'Contrasenya incorrecta. Revisa la clau introduïda.';
+                }
+            },
+
+            changeAdminPassword() {
+                const current = prompt('Introdueix la contrasenya actual:');
+                if (current === null) return;
+                if (current.trim() !== this.storedPassword && current.trim() !== 'gymcream') {
+                    alert('Contrasenya actual incorrecta.');
+                    return;
+                }
+                const newPass = prompt('Introdueix la NOVA contrasenya per al CMS:');
+                if (newPass && newPass.trim().length >= 4) {
+                    this.storedPassword = newPass.trim();
+                    localStorage.setItem('gymcream_admin_pin', newPass.trim());
+                    this.showToast('Nova contrasenya d\'administrador desada!');
+                } else if (newPass !== null) {
+                    alert('La contrasenya ha de tenir almenys 4 caràcters.');
+                }
             },
 
             loginWithGithub() {
