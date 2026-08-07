@@ -17,10 +17,10 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
             <div class="max-w-7xl mx-auto">
                 <!-- Fila Superior -->
                 <div class="flex items-center justify-between gap-4 pb-4 border-b border-gray-800">
-                    <!-- Esquerra: Botó + Gran en Blanc (Sense Cercle Groc) -->
+                    <!-- Esquerra: Botó + Prim en Blanc (Sense Cercle Groc) -->
                     <button 
                         @click="quoteModalOpen = true" 
-                        class="text-white hover:text-gcYellow font-black text-4xl sm:text-5xl transition-transform hover:scale-110 p-1 cursor-pointer flex-shrink-0 leading-none select-none"
+                        class="text-white hover:text-gcYellow font-extralight text-5xl sm:text-6xl transition-transform hover:scale-110 p-1 cursor-pointer flex-shrink-0 leading-none select-none font-sans"
                         title="Afegir la teva frase i pseudònim"
                     >
                         +
@@ -56,16 +56,26 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                         </button>
 
-                        <!-- Contenidor d'Hexàgons transparents amb perimetre groc -->
+                        <!-- Contenidor d'Hexàgons transparents amb perímetre groc -->
                         <div x-ref="hexContainer" class="flex gap-6 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start flex-1">
                             <template x-for="item in instagramQuotes" :key="item.id">
-                                <div class="flex flex-col items-center flex-shrink-0 w-40 sm:w-48 text-center group cursor-pointer" @click="quoteModalOpen = true">
-                                    <!-- Hexàgon: Únicament perimetre groc i fons transparent -->
-                                    <div class="w-32 h-32 sm:w-36 sm:h-36 border-2 border-gcYellow bg-transparent text-white p-4 flex items-center justify-center shadow-lg transform transition-all group-hover:scale-105 group-hover:bg-gcYellow group-hover:text-black hexagon-shape font-display font-black text-[10px] sm:text-xs leading-tight uppercase tracking-tight text-center">
-                                        <span x-text="item.quote"></span>
+                                <div class="flex flex-col items-center flex-shrink-0 w-36 sm:w-44 text-center group cursor-pointer" @click="quoteModalOpen = true">
+                                    <!-- Hexàgon SVG: Perímetre groc i fons transparent -->
+                                    <div class="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center p-4">
+                                        <svg class="absolute inset-0 w-full h-full text-gcYellow transition-all duration-300 group-hover:scale-105 drop-shadow-md" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                            <polygon 
+                                                points="50,3 95,26 95,74 50,97 5,74 5,26" 
+                                                fill="transparent" 
+                                                stroke="currentColor" 
+                                                stroke-width="3" 
+                                                class="transition-colors duration-300 group-hover:fill-[#ffe600] group-hover:stroke-[#ffe600]"
+                                            />
+                                        </svg>
+                                        <!-- Frase a dins de l'hexàgon -->
+                                        <span class="relative z-10 font-display font-black text-[10px] sm:text-xs leading-tight uppercase tracking-tight text-white group-hover:text-black transition-colors duration-300 px-2 select-none" x-text="item.quote"></span>
                                     </div>
                                     <!-- Pseudònim a sota l'hexàgon -->
-                                    <span class="mt-3 font-display font-extrabold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="`@${item.author}`"></span>
+                                    <span class="mt-2 font-display font-bold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="`@${item.author}`"></span>
                                 </div>
                             </template>
                         </div>
@@ -464,7 +474,8 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
 </Layout>
 
 <script is:inline define:vars={{ defaultAssets: DEFAULT_BRAND_ASSETS, defaultQuotes: DEFAULT_COMMUNITY_QUOTES, defaultPhotos: DEFAULT_COMMUNITY_PHOTOS }}>
-    document.addEventListener('alpine:init', () => {
+    const registerOpenBrandState = () => {
+        if (!window.Alpine) return;
         Alpine.data('openBrandState', () => ({
             assets: [],
             quotes: [],
@@ -586,5 +597,11 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 alert('Iniciant la descàrrega del Pack Complet de la Marca GYM CREAM (.ZIP)...');
             }
         }));
-    });
+    };
+
+    if (window.Alpine) {
+        registerOpenBrandState();
+    } else {
+        document.addEventListener('alpine:init', registerOpenBrandState);
+    }
 </script>
