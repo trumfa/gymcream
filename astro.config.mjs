@@ -3,7 +3,7 @@ import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 import alpinejs from "@astrojs/alpinejs";
-import vercel from "@astrojs/vercel";
+import vercel from "@astrojs/vercel/serverless";
 import { i18n, filterSitemapByDefaultLocale } from "astro-i18n-aut/integration";
 import { DEFAULT_LOCALE, LOCALES, SITE_URL } from "./src/consts";
 
