@@ -411,7 +411,7 @@ export const DEFAULT_INFO_PAGES: Record<string, InfoPage> = {
       <h4 class="font-bold text-gcYellow text-lg mb-2">Com podem ajudar-te?</h4>
       <p class="mb-4">El nostre equip d'atenció al client respon a totes les consultes en menys de 24 hores de dilluns a divendres.</p>
       <div class="space-y-3 text-sm">
-        <p>📧 <strong>Email:</strong> <a href="mailto:suport@gymcream.com" class="text-gcYellow underline">suport@gymcream.com</a></p>
+        <p>📧 <strong>Email Directe:</strong> <a href="mailto:bro@gymcream.me" class="text-gcYellow underline font-bold">bro@gymcream.me</a></p>
         <p>💬 <strong>WhatsApp Directe:</strong> +34 600 000 000 (Dilluns a Divendres 9:00h - 19:00h)</p>
         <p>📍 <strong>Oficines Central:</strong> Carrer del Fitness 42, Barcelona</p>
       </div>

@@ -1,6 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Container from "@src/components/Container.astro";
+import Philosophy from "@src/components/Philosophy.astro";
 import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
 ---
 
@@ -16,45 +17,67 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
             <div class="max-w-7xl mx-auto">
                 <!-- Fila Superior -->
                 <div class="flex items-center justify-between gap-4 pb-4 border-b border-gray-800">
-                    <!-- Esquerra: Botó + -->
+                    <!-- Esquerra: Botó + Gran en Blanc (Sense Cercle Groc) -->
                     <button 
                         @click="quoteModalOpen = true" 
-                        class="w-10 h-10 bg-gcYellow hover:bg-white text-black font-black text-2xl rounded-full flex items-center justify-center transition-colors shadow-md cursor-pointer flex-shrink-0"
+                        class="text-white hover:text-gcYellow font-black text-4xl sm:text-5xl transition-transform hover:scale-110 p-1 cursor-pointer flex-shrink-0 leading-none select-none"
                         title="Afegir la teva frase i pseudònim"
                     >
                         +
                     </button>
 
-                    <!-- Mig: Text d'etiqueta -->
+                    <!-- Mig: Text d'etiqueta exactament segons indicació -->
                     <div class="text-center px-2">
                         <span class="font-display text-xs sm:text-sm font-extrabold uppercase tracking-wider text-gray-200">
-                            Etiqueta amb <span class="text-gcYellow">#gymcream</span> al teu insta les teves creacions
+                            Etiqueta les teves creacions al teu insta amb <span class="text-gcYellow">#gymcream</span>
                         </span>
                     </div>
 
-                    <!-- Dreta: Cor vermell -->
+                    <!-- Dreta: Cor vermell MÉS GRAN -->
                     <button 
                         @click="likesCount++;" 
-                        class="flex items-center gap-1.5 bg-zinc-900 border border-gray-800 hover:border-red-500 text-red-500 font-display font-extrabold text-xs px-3 py-2 rounded-full transition-colors cursor-pointer flex-shrink-0"
+                        class="flex items-center gap-2 bg-zinc-900 border border-gray-700 hover:border-red-500 text-red-500 font-display font-extrabold text-sm sm:text-base px-4 py-2.5 rounded-full transition-all cursor-pointer flex-shrink-0 shadow-md"
+                        title="Donar Like a la comunitat"
                     >
-                        <svg class="w-4 h-4 fill-current text-red-500" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        <span x-text="likesCount">1,840</span>
+                        <svg class="w-6 h-6 fill-current text-red-500 transition-transform active:scale-125" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <span x-text="likesCount" class="font-sans font-bold text-white">1,840</span>
                     </button>
                 </div>
 
-                <!-- Fila Inferior: Hexàgons Grocs amb les Frases i el Pseudònim a sota -->
-                <div class="pt-6">
-                    <div class="flex gap-8 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start">
-                        <template x-for="item in instagramQuotes" :key="item.id">
-                            <div class="flex flex-col items-center flex-shrink-0 w-40 sm:w-48 text-center group cursor-pointer" @click="quoteModalOpen = true">
-                                <!-- Hexàgon Groc amb la frase a dins -->
-                                <div class="w-32 h-32 sm:w-36 sm:h-36 bg-gcYellow text-black p-4 flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-105 hexagon-shape font-display font-black text-[10px] sm:text-xs leading-tight uppercase tracking-tight text-center">
-                                    <span x-text="item.quote"></span>
+                <!-- Fila Inferior: Hexàgons amb perimetre groc i transparents + fletxes laterals -->
+                <div class="pt-6 relative">
+                    <div class="flex items-center gap-3">
+                        <!-- Fletxa Esquerra per desplaçar hexàgons -->
+                        <button 
+                            @click="$refs.hexContainer.scrollBy({ left: -260, behavior: 'smooth' })"
+                            class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
+                            title="Anar cap a l'esquerra"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+
+                        <!-- Contenidor d'Hexàgons transparents amb perimetre groc -->
+                        <div x-ref="hexContainer" class="flex gap-6 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start flex-1">
+                            <template x-for="item in instagramQuotes" :key="item.id">
+                                <div class="flex flex-col items-center flex-shrink-0 w-40 sm:w-48 text-center group cursor-pointer" @click="quoteModalOpen = true">
+                                    <!-- Hexàgon: Únicament perimetre groc i fons transparent -->
+                                    <div class="w-32 h-32 sm:w-36 sm:h-36 border-2 border-gcYellow bg-transparent text-white p-4 flex items-center justify-center shadow-lg transform transition-all group-hover:scale-105 group-hover:bg-gcYellow group-hover:text-black hexagon-shape font-display font-black text-[10px] sm:text-xs leading-tight uppercase tracking-tight text-center">
+                                        <span x-text="item.quote"></span>
+                                    </div>
+                                    <!-- Pseudònim a sota l'hexàgon -->
+                                    <span class="mt-3 font-display font-extrabold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="`@${item.author}`"></span>
                                 </div>
-                                <!-- Pseudònim a sota l'hexàgon -->
-                                <span class="mt-3 font-display font-extrabold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="`@${item.author}`"></span>
-                            </div>
-                        </template>
+                            </template>
+                        </div>
+
+                        <!-- Fletxa Dreta per desplaçar hexàgons -->
+                        <button 
+                            @click="$refs.hexContainer.scrollBy({ left: 260, behavior: 'smooth' })"
+                            class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
+                            title="Anar cap a la dreta"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -160,6 +183,9 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 </div>
             </Container>
         </section>
+
+        <!-- MANIFEST GYM CREAM (LA NOSTRA FILOSOFIA) -->
+        <Philosophy />
 
 
         <!-- 2. CENTRE DE DESCÀRREGA D'ACTIUS GRÀFICS (LOGOTIPS I RECURSOS) -->

@@ -228,7 +228,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
         </div>
     </div>
 
-    <!-- 🪟 FINESTRA FLOATANT / MODAL "+INFO" DE DETALL DEL PRODUCTE -->
+    <!-- 🪟 FINESTRA FLOTANT / MODAL "+INFO" DE DETALL DEL PRODUCTE (FONS BLANC) -->
     <template x-if="productModalOpen && modalProduct">
         <div 
             class="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
@@ -239,21 +239,21 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
         >
-            <div class="bg-gcDark border-2 border-gcYellow/80 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col md:flex-row my-auto">
+            <div class="bg-white border-2 border-black w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl relative flex flex-col md:flex-row my-auto text-black">
                 
                 <!-- Tancar Modal Button -->
                 <button 
                     @click="productModalOpen = false" 
-                    class="absolute top-4 right-4 z-30 bg-black/80 text-white hover:text-gcYellow border border-gray-700 p-2 transition-colors cursor-pointer"
+                    class="absolute top-4 right-4 z-30 bg-white/90 hover:bg-black text-black hover:text-white border border-gray-300 p-2 transition-colors cursor-pointer rounded-sm shadow"
                     title="Tancar finestra"
                 >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
 
                 <!-- Columna Esquerra: GALERIA DE FOTOS (Amb Zoom/Ampliar Fotos) -->
-                <div class="w-full md:w-1/2 p-6 bg-black flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-900">
+                <div class="w-full md:w-1/2 p-6 bg-gray-50 flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-200">
                     <div>
-                        <div class="relative aspect-[3/4] bg-gray-950 overflow-hidden border border-gray-900 mb-4 group/zoom">
+                        <div class="relative aspect-[3/4] bg-white overflow-hidden border border-gray-200 mb-4 group/zoom">
                             <img 
                                 :src="modalActiveImage" 
                                 :alt="modalProduct.name" 
@@ -263,7 +263,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                             <!-- Botó Ampliar Fotos (Zoom) -->
                             <button 
                                 @click="modalZoomOpen = true"
-                                class="absolute bottom-3 right-3 bg-black/80 hover:bg-gcYellow hover:text-black text-white font-display text-xs font-bold px-3 py-1.5 border border-gray-700 transition-colors flex items-center gap-1.5"
+                                class="absolute bottom-3 right-3 bg-black/80 hover:bg-gcYellow hover:text-black text-white font-display text-xs font-bold px-3 py-1.5 border border-gray-700 transition-colors flex items-center gap-1.5 cursor-pointer"
                             >
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"></path></svg>
                                 Ampliar foto
@@ -288,8 +288,8 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                             <template x-for="(img, idx) in modalProduct.images" :key="idx">
                                 <button 
                                     @click="modalActiveImage = img"
-                                    :class="modalActiveImage === img ? 'border-gcYellow ring-2 ring-gcYellow/50' : 'border-gray-800 opacity-60 hover:opacity-100'"
-                                    class="w-16 h-20 border bg-gray-900 flex-shrink-0 transition-all overflow-hidden"
+                                    :class="modalActiveImage === img ? 'border-black ring-2 ring-gcYellow' : 'border-gray-300 opacity-70 hover:opacity-100'"
+                                    class="w-16 h-20 border bg-white flex-shrink-0 transition-all overflow-hidden cursor-pointer"
                                 >
                                     <img :src="img" class="w-full h-full object-cover" />
                                 </button>
@@ -301,38 +301,38 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                 </div>
 
                 <!-- Columna Dreta: DESCRIPCIÓ, TALLES I BOTÓ AFEGIR AL CARRET / ESGOTAT -->
-                <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-between">
+                <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-between bg-white">
                     <div>
-                        <div class="flex items-center justify-between text-xs text-gray-400 font-display uppercase tracking-widest mb-2">
+                        <div class="flex items-center justify-between text-xs text-gray-500 font-display uppercase tracking-widest mb-2 font-bold">
                             <span x-text="modalProduct.category"></span>
                             <span x-text="`SKU: ${modalProduct.sku}`"></span>
                         </div>
 
-                        <h2 class="font-display text-2xl font-black uppercase tracking-wide text-white mb-3" x-text="modalProduct.name"></h2>
+                        <h2 class="font-display text-2xl font-black uppercase tracking-wide text-black mb-3" x-text="modalProduct.name"></h2>
 
                         <!-- PREU VELL I PREU REBAIXAT -->
-                        <div class="flex items-baseline gap-3 mb-6 p-3 bg-black border border-gray-900">
+                        <div class="flex items-baseline gap-3 mb-6 p-3 bg-gray-50 border border-gray-200 rounded-sm">
                             <template x-if="modalProduct.oldPrice || modalProduct.isSale">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-sans text-sm text-gray-500 line-through" x-text="`${modalProduct.oldPrice ? modalProduct.oldPrice.toFixed(2) : (modalProduct.price * 1.25).toFixed(2)} €`"></span>
+                                    <span class="font-sans text-sm text-gray-400 line-through" x-text="`${modalProduct.oldPrice ? modalProduct.oldPrice.toFixed(2) : (modalProduct.price * 1.25).toFixed(2)} €`"></span>
                                     <span class="bg-red-600 text-white font-display text-[10px] font-black px-2 py-0.5 uppercase">OFERTA</span>
                                 </div>
                             </template>
                             <span 
-                                :class="modalProduct.isSale ? 'text-red-400' : 'text-gcYellow'"
+                                :class="modalProduct.isSale ? 'text-red-600' : 'text-black'"
                                 class="font-sans text-3xl font-black" 
                                 x-text="`${modalProduct.price.toFixed(2)} €`"
                             ></span>
                         </div>
 
                         <!-- DESTACAT DISTINTIU OFICIAL GYM CREAM -->
-                        <div class="mb-6 p-3.5 bg-black border border-gcYellow/40 rounded flex items-start gap-3">
-                            <div class="p-2 bg-gcYellow/10 text-gcYellow rounded-full border border-gcYellow/30 shrink-0">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <div class="mb-6 p-3.5 bg-amber-50 border border-amber-200 rounded flex items-start gap-3">
+                            <div class="p-2 bg-gcYellow/30 text-black rounded-full shrink-0">
+                                <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                             </div>
                             <div class="text-xs">
-                                <h5 class="font-display font-black text-gcYellow uppercase tracking-wider">Inclou Distintiu Físic Oficial</h5>
-                                <p class="text-[11px] text-gray-300 mt-0.5 leading-snug">
+                                <h5 class="font-display font-black text-black uppercase tracking-wider">Inclou Distintiu Físic Oficial</h5>
+                                <p class="text-[11px] text-gray-700 mt-0.5 leading-snug">
                                     Articles de la Línia Oficial inclouen el <strong>Distintiu Físic Gym Cream</strong> brodat/físic que en certifica l'autenticitat i l'experiència prèmium.
                                 </p>
                             </div>
@@ -340,11 +340,11 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
 
                         <!-- DESCRIPCIÓ DEL PRODUCTE -->
                         <div class="mb-6 space-y-3">
-                            <h4 class="font-display text-xs uppercase text-gcYellow tracking-widest font-bold">Descripció del Producte</h4>
-                            <p class="text-gray-300 font-sans text-sm leading-relaxed" x-text="modalProduct.description"></p>
+                            <h4 class="font-display text-xs uppercase text-black tracking-widest font-black">Descripció del Producte</h4>
+                            <p class="text-gray-800 font-sans text-sm leading-relaxed" x-text="modalProduct.description"></p>
                             
                             <template x-if="modalProduct.details && modalProduct.details.length">
-                                <ul class="list-disc list-inside text-xs text-gray-400 space-y-1 font-sans pt-2">
+                                <ul class="list-disc list-inside text-xs text-gray-600 space-y-1 font-sans pt-2">
                                     <template x-for="detail in modalProduct.details" :key="detail">
                                         <li x-text="detail"></li>
                                     </template>
@@ -354,16 +354,16 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
 
                         <!-- SELECCIÓ DE TALLES -->
                         <div class="mb-6">
-                            <label class="block font-display text-xs uppercase text-gcYellow tracking-widest font-bold mb-3">
-                                Selecciona la Talla: <span class="text-white font-bold ml-2" x-text="modalSelectedSize"></span>
+                            <label class="block font-display text-xs uppercase text-black tracking-widest font-extrabold mb-3">
+                                Selecciona la Talla: <span class="text-black font-black ml-2 underline" x-text="modalSelectedSize"></span>
                             </label>
                             <div class="flex flex-wrap gap-2">
                                 <template x-for="sz in modalProduct.sizes" :key="sz">
                                     <button 
                                         :disabled="modalProduct.isSoldOut"
                                         @click="modalSelectedSize = sz"
-                                        :class="modalSelectedSize === sz ? 'bg-gcYellow text-black font-extrabold border-gcYellow' : 'bg-black text-white border-gray-800 hover:border-gcYellow'"
-                                        class="px-4 py-2.5 border text-xs font-display font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                        :class="modalSelectedSize === sz ? 'bg-black text-white font-extrabold border-black ring-2 ring-gcYellow' : 'bg-white text-black border-gray-300 hover:border-black'"
+                                        class="px-4 py-2.5 border text-xs font-display font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer rounded-sm"
                                         x-text="sz"
                                     ></button>
                                 </template>
@@ -372,11 +372,11 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                     </div>
 
                     <!-- BOTÓ D'AFEGIR AL CARRET / BOTÓ FOSC SI ESTÀ ESGOTAT -->
-                    <div class="pt-4 border-t border-gray-900 space-y-3">
+                    <div class="pt-4 border-t border-gray-200 space-y-3">
                         <template x-if="!modalProduct.isSoldOut">
                             <button 
                                 @click="addToCart({ id: modalProduct.id, name: modalProduct.name, price: modalProduct.price, oldPrice: modalProduct.oldPrice, size: modalSelectedSize, image: modalActiveImage }); productModalOpen = false;"
-                                class="w-full bg-gcYellow text-black font-display font-black text-sm uppercase py-4 hover:bg-white transition-all cursor-pointer shadow-lg tracking-wider flex items-center justify-center gap-2"
+                                class="w-full bg-black text-white font-display font-black text-sm uppercase py-4 hover:bg-gcYellow hover:text-black transition-all cursor-pointer shadow-lg tracking-wider flex items-center justify-center gap-2 rounded-sm"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                                 AFEGIR AL CARRET
@@ -388,14 +388,14 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                             <div class="space-y-4">
                                 <button 
                                     disabled 
-                                    class="w-full bg-zinc-900/90 text-gray-500 border border-gray-800 font-display text-xs font-black uppercase py-4 cursor-not-allowed opacity-80"
+                                    class="w-full bg-gray-200 text-gray-500 border border-gray-300 font-display text-xs font-black uppercase py-4 cursor-not-allowed opacity-80"
                                 >
-                                    🔒 ESGOTAT - SENSE ESTOC (SENSE PODER SELECCIONAR)
+                                    🔒 ESGOTAT - SENSE ESTOC
                                 </button>
 
-                                <div class="bg-red-950/40 border border-red-900/80 p-4 rounded-none">
-                                    <h5 class="font-display text-xs text-red-300 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v2.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                <div class="bg-red-50 border border-red-200 p-4 rounded-none">
+                                    <h5 class="font-display text-xs text-red-700 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v2.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                                         Avisa'm quan torni a haver-hi estoc:
                                     </h5>
                                     <div class="flex gap-2">
@@ -403,11 +403,11 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                                             type="email" 
                                             x-model="restockEmail" 
                                             placeholder="El teu email..." 
-                                            class="bg-black border border-gray-800 text-white p-2.5 text-xs font-sans flex-1 focus:border-red-500 focus:outline-none"
+                                            class="bg-white border border-gray-300 text-black p-2.5 text-xs font-sans flex-1 focus:border-red-500 focus:outline-none"
                                         />
                                         <button 
                                             @click="submitRestock()"
-                                            class="bg-red-600 hover:bg-red-500 text-white font-display text-xs font-bold uppercase px-4 py-2.5 transition-colors cursor-pointer"
+                                            class="bg-red-600 hover:bg-red-700 text-white font-display text-xs font-bold uppercase px-4 py-2.5 transition-colors cursor-pointer"
                                         >
                                             Avisa'm
                                         </button>
@@ -497,24 +497,24 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
             <div class="animate-marquee whitespace-nowrap flex items-center gap-8">
                 <span class="flex items-center gap-6">
                     <span>"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."</span>
-                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
                     <span>"FES EL QUE VULGUIS, QUE NO T'IMPORTI QUE ET JUTGIN."</span>
-                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
                     <span>"L'ÚNIC RECORD QUE VAL LA PENA ÉS EL TEU MULTIORGASME DE CARBS."</span>
-                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
                     <span>"100% REAL FITNESS - 0% POSTUREIG"</span>
-                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
                 </span>
                 <!-- Repetició per a bucle infinit continu -->
                 <span class="flex items-center gap-6">
                     <span>"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."</span>
-                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
                     <span>"FES EL QUE VULGUIS, QUE NO T'IMPORTI QUE ET JUTGIN."</span>
-                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
                     <span>"L'ÚNIC RECORD QUE VAL LA PENA ÉS EL TEU MULTIORGASME DE CARBS."</span>
-                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
                     <span>"100% REAL FITNESS - 0% POSTUREIG"</span>
-                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
                 </span>
             </div>
         </div>
@@ -539,9 +539,9 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                     </a>
                 </div>
 
-                <!-- NAVEGACIÓ CENTRAL -->
-                <nav class="hidden lg:flex gap-6 font-display text-xs tracking-widest uppercase font-bold items-center">
-                    {!isOpenBrand ? (
+                <!-- NAVEGACIÓ CENTRAL (NOMÉS A LA BOTIGA; A GYMCREAMER N'HI HA MENU HAMBURGUESA) -->
+                {!isOpenBrand ? (
+                    <nav class="hidden lg:flex gap-6 font-display text-xs tracking-widest uppercase font-bold items-center">
                         <template x-for="cat in categories" :key="cat.id">
                             <a 
                                 href="#catalog" 
@@ -556,14 +556,8 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                                 <span x-text="cat.name"></span>
                             </a>
                         </template>
-                    ) : (
-                        <div class="flex items-center gap-6 text-gray-300">
-                            <a href="/open-brand#descarges" class="hover:text-gcYellow transition-colors">Centre de Descàrregues</a>
-                            <a href="/open-brand#mur-frases" class="hover:text-gcYellow transition-colors">Mur de Frases</a>
-                            <a href="/open-brand#aparador-social" class="hover:text-gcYellow transition-colors">Aparador Social</a>
-                        </div>
-                    )}
-                </nav>
+                    </nav>
+                ) : null}
 
                 <div class="flex items-center gap-3 sm:gap-4">
                     <!-- CANVIADORS D'IDIOMA (CA / ES / EN) -->
@@ -606,9 +600,9 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                     </button>
 
                     <!-- BOTÓ DE CARRET BÉ VISIBLE -->
-                    <button @click="cartOpen = true" class="text-white hover:text-gcYellow transition-colors relative p-1 flex items-center justify-center cursor-pointer" aria-label="Carret de la compra">
-                        <svg class="w-6 h-6 stroke-white hover:stroke-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        <span class="absolute -top-1.5 -right-2 bg-gcYellow text-black text-[10px] font-extrabold rounded-full h-5 w-5 flex items-center justify-center shadow font-sans border border-black" x-text="cartCount">0</span>
+                    <button @click="cartOpen = true" class="bg-gray-900 border border-gcYellow/80 hover:border-gcYellow text-gcYellow hover:text-white p-2 rounded relative flex items-center justify-center cursor-pointer shadow-lg transition-transform hover:scale-105" aria-label="Carret de la compra">
+                        <svg class="w-6 h-6 stroke-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <span class="absolute -top-2 -right-2 bg-gcYellow text-black text-[11px] font-black rounded-full h-5 w-5 flex items-center justify-center shadow font-sans border-2 border-black" x-text="cartCount">0</span>
                     </button>
                 </div>
             </div>
@@ -793,8 +787,9 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                     this.cart.push({ ...item, qty: 1 });
                 }
                 this.saveCart();
+                this.productModalOpen = false;
+                this.cartOpen = false;
                 this.showToast(`S'ha afegit "${item.name}" (Talla: ${item.size}) al carret!`);
-                this.cartOpen = true;
             },
             
             updateQty(index, delta) {

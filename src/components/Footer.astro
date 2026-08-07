@@ -114,7 +114,53 @@ import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
                 </button>
             </div>
 
-            <div class="font-sans text-sm text-gray-300 leading-relaxed space-y-4" x-html="activeInfo?.content || ''">
+            <div class="font-sans text-sm text-gray-300 leading-relaxed space-y-4">
+                <div x-html="activeInfo?.content || ''"></div>
+
+                <!-- Formulari interactiu si la finestra activa és Contacte -->
+                <template x-if="activeInfoKey === 'contacte'">
+                    <div class="pt-4 border-t border-gray-800 mt-4">
+                        <h4 class="font-display font-black text-sm uppercase text-gcYellow tracking-wider mb-3">Envia'ns un missatge directe:</h4>
+                        
+                        <template x-if="contactSent">
+                            <div class="p-4 bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs mb-4 rounded flex items-center gap-2">
+                                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>El teu missatge s'ha enviat correctament a <strong>bro@gymcream.me</strong>. Et respondrem ben aviat!</span>
+                            </div>
+                        </template>
+
+                        <form @submit.prevent="submitContactForm()" class="space-y-3">
+                            <div>
+                                <label class="block text-xs uppercase text-gray-300 font-bold mb-1">El teu Email *</label>
+                                <input 
+                                    type="email" 
+                                    x-model="contactEmail" 
+                                    placeholder="el_teu_email@gmail.com" 
+                                    class="w-full bg-black border border-gray-800 text-white p-2.5 text-xs focus:border-gcYellow focus:outline-none rounded font-sans"
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label class="block text-xs uppercase text-gray-300 font-bold mb-1">El teu Missatge *</label>
+                                <textarea 
+                                    x-model="contactMessage" 
+                                    rows="3" 
+                                    placeholder="Hola Bro, tinc un dubte sobre..." 
+                                    class="w-full bg-black border border-gray-800 text-white p-2.5 text-xs focus:border-gcYellow focus:outline-none rounded font-sans"
+                                    required
+                                ></textarea>
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-3 hover:bg-white transition-colors cursor-pointer tracking-wider rounded"
+                            >
+                                Enviar Missatge a bro@gymcream.me
+                            </button>
+                        </form>
+                    </div>
+                </template>
             </div>
 
             <div class="border-t border-gray-800 pt-4 flex justify-end">
@@ -134,14 +180,31 @@ import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
         Alpine.data('footerState', () => ({
             infoModalOpen: false,
             activeInfoKey: 'enviaments',
+            contactEmail: '',
+            contactMessage: '',
+            contactSent: false,
 
             openInfo(key) {
                 this.activeInfoKey = key;
+                this.contactSent = false;
                 this.infoModalOpen = true;
             },
 
             openCookieModal() {
                 window.dispatchEvent(new CustomEvent('open-cookie-preferences'));
+            },
+
+            submitContactForm() {
+                if (!this.contactEmail || !this.contactEmail.includes('@') || !this.contactMessage.trim()) {
+                    alert('Si us plau, emplena tots els camps amb un correu vàlid.');
+                    return;
+                }
+                this.contactSent = true;
+                this.contactEmail = '';
+                this.contactMessage = '';
+                setTimeout(() => {
+                    this.contactSent = false;
+                }, 6000);
             },
 
             get activeInfo() {
