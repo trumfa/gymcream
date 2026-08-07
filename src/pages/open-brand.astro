@@ -33,14 +33,19 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                         </span>
                     </div>
 
-                    <!-- Dreta: Cor vermell MÉS GRAN -->
+                    <!-- Dreta: Cor vermell batega al fer clic (Sense comptador) -->
                     <button 
-                        @click="likesCount++;" 
-                        class="flex items-center gap-2 bg-zinc-900 border border-gray-700 hover:border-red-500 text-red-500 font-display font-extrabold text-sm sm:text-base px-4 py-2.5 rounded-full transition-all cursor-pointer flex-shrink-0 shadow-md"
+                        @click="triggerHeartbeat()" 
+                        class="flex items-center justify-center bg-zinc-900 border border-gray-700 hover:border-red-500 text-red-500 p-2.5 rounded-full transition-all cursor-pointer flex-shrink-0 shadow-md group"
                         title="Donar Like a la comunitat"
                     >
-                        <svg class="w-6 h-6 fill-current text-red-500 transition-transform active:scale-125" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        <span x-text="likesCount" class="font-sans font-bold text-white">1,840</span>
+                        <svg 
+                            :class="heartBeating ? 'animate-heartbeat text-red-500 scale-125' : 'text-red-500 group-hover:scale-110'"
+                            class="w-6 h-6 fill-current transition-transform duration-300" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
                     </button>
                 </div>
 
@@ -59,7 +64,7 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                         <!-- Contenidor d'Hexàgons transparents amb perímetre groc -->
                         <div x-ref="hexContainer" class="flex gap-6 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start flex-1">
                             <template x-for="item in instagramQuotes" :key="item.id">
-                                <div class="flex flex-col items-center flex-shrink-0 w-36 sm:w-44 text-center group cursor-pointer" @click="quoteModalOpen = true">
+                                <div class="flex flex-col items-center flex-shrink-0 w-36 sm:w-44 text-center group cursor-default">
                                     <!-- Hexàgon SVG: Perímetre groc i fons transparent -->
                                     <div class="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center p-4">
                                         <svg class="absolute inset-0 w-full h-full text-gcYellow transition-all duration-300 group-hover:scale-105 drop-shadow-md" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -113,10 +118,17 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 <div class="flex items-center gap-3 pb-4 border-b border-gray-800 mb-6">
                     <div class="w-10 h-10 bg-gcYellow text-black font-black text-xl rounded-full flex items-center justify-center">+</div>
                     <div>
-                        <h3 class="font-display font-black text-lg uppercase text-gcYellow tracking-wider">Afegir La Teva Frase Gymcreamer</h3>
-                        <p class="text-xs text-gray-400">Apareixerà als hexàgons grocs del mur de la comunitat.</p>
+                        <h3 class="font-display font-black text-lg uppercase text-gcYellow tracking-wider">Proposar La Teva Frase Gymcreamer</h3>
+                        <p class="text-xs text-gray-400">Pendent de validació al CMS abans de publicar-se als hexàgons del mur.</p>
                     </div>
                 </div>
+
+                <template x-if="submissionSuccess">
+                    <div class="p-4 bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-xs mb-4 rounded flex items-center gap-2">
+                        <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span><strong>Frase enviada amb èxit!</strong> Està registrada i <strong>pendent de validació al CMS</strong>. Un cop l'equip l'aprovi des de l'administració, apareixerà al mur!</span>
+                    </div>
+                </template>
 
                 <form @submit.prevent="submitInstagramQuote()" class="space-y-4">
                     <div>
@@ -145,11 +157,15 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                         ></textarea>
                     </div>
 
+                    <p class="text-[10px] text-gray-400 italic">
+                        ℹ️ Totes les frases són revisades per l'administrador al CMS per mantenir el respecte i la qualitat a la comunitat.
+                    </p>
+
                     <button 
                         type="submit" 
                         class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-3.5 hover:bg-white transition-colors cursor-pointer tracking-wider rounded-sm mt-4"
                     >
-                        Publicar als Hexàgons
+                        Enviar Frase a Validació (CMS)
                     </button>
                 </form>
             </div>
@@ -488,7 +504,7 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
             ],
             photos: [],
             activeCategory: 'all',
-            likesCount: 1840,
+            heartBeating: false,
             quoteModalOpen: false,
             
             // Formulari de proposta de frase
@@ -496,6 +512,13 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
             newQuote: '',
             submissionSuccess: false,
             submissionError: '',
+
+            triggerHeartbeat() {
+                this.heartBeating = true;
+                setTimeout(() => {
+                    this.heartBeating = false;
+                }, 600);
+            },
 
             init() {
                 // Carregar actius del CMS
@@ -525,8 +548,27 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                     try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = defaultQuotes; }
                 } else {
                     allQuotes = defaultQuotes;
+                    try { localStorage.setItem('gymcream_community_quotes', JSON.stringify(defaultQuotes)); } catch(e) {}
                 }
-                this.quotes = allQuotes.filter(q => q.status === 'approved');
+                
+                const approved = allQuotes.filter(q => q.status === 'approved');
+                this.quotes = approved;
+
+                if (approved.length > 0) {
+                    this.instagramQuotes = approved.map((q, idx) => ({
+                        id: q.id || idx,
+                        author: (q.author || 'Gymcreamer').replace('@', ''),
+                        quote: (q.quote || '').replace(/^"|"$/g, '').toUpperCase()
+                    }));
+                } else {
+                    this.instagramQuotes = [
+                        { id: 1, author: 'Marc_GC', quote: 'NO PIZZA, NO PARTY' },
+                        { id: 2, author: 'CarbLover', quote: '100% REAL FITNESS' },
+                        { id: 3, author: 'Laura_Beast', quote: 'ZERO POSTUREIG' },
+                        { id: 4, author: 'Alex_Heavy', quote: 'SENSE ETIQUETES' },
+                        { id: 5, author: 'Sonia_Lift', quote: 'AMOR PELS HIDRATS' }
+                    ];
+                }
             },
 
             get filteredAssets() {
@@ -537,60 +579,46 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
             submitInstagramQuote() {
                 if (!this.newQuote.trim() || !this.newAuthor.trim()) return;
                 
-                const newHex = {
-                    id: Date.now(),
-                    author: this.newAuthor.replace('@', ''),
-                    quote: this.newQuote.trim().toUpperCase()
-                };
-                this.instagramQuotes.unshift(newHex);
-                
-                this.newAuthor = '';
-                this.newQuote = '';
-                this.quoteModalOpen = false;
-                
-                if (window.Alpine) {
-                    const app = document.querySelector('[x-data]');
-                    if (app && app._x_dataStack && app._x_dataStack[0].showToast) {
-                        app._x_dataStack[0].showToast('Afegit el teu hexàgon al mur Gymcreamer!');
-                    }
-                }
-            },
+                const author = this.newAuthor.replace('@', '').trim();
+                const rawQuote = this.newQuote.trim().toUpperCase();
 
-            submitQuote() {
-                this.submissionError = '';
-                if (!this.newQuote.trim()) {
-                    this.submissionError = 'Si us plau, escriu una frase motivadora o irònica.';
-                    return;
-                }
-                const author = this.newAuthor.trim() || 'Usuari Anònim';
-                
                 const savedQuotes = localStorage.getItem('gymcream_community_quotes');
                 let allQuotes = [];
                 if (savedQuotes) {
-                    try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = defaultQuotes; }
+                    try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = [...defaultQuotes]; }
                 } else {
-                    allQuotes = defaultQuotes;
+                    allQuotes = [...defaultQuotes];
                 }
 
+                // Nova proposta amb estat 'pending' per a la validació al CMS
                 const newEntry = {
                     id: 'quote-' + Date.now(),
                     author: author,
-                    quote: '"' + this.newQuote.trim().toUpperCase() + '"',
-                    status: 'approved',
+                    quote: '"' + rawQuote + '"',
+                    status: 'pending',
                     createdAt: new Date().toISOString().split('T')[0]
                 };
 
                 allQuotes.unshift(newEntry);
-                localStorage.setItem('gymcream_community_quotes', JSON.stringify(allQuotes));
-                this.quotes.unshift(newEntry);
-
+                try {
+                    localStorage.setItem('gymcream_community_quotes', JSON.stringify(allQuotes));
+                } catch(e) {}
+                
                 this.newAuthor = '';
                 this.newQuote = '';
                 this.submissionSuccess = true;
                 
+                if (window.Alpine) {
+                    const app = document.querySelector('[x-data]');
+                    if (app && app._x_dataStack && app._x_dataStack[0].showToast) {
+                        app._x_dataStack[0].showToast('Frase enviada! Està pendent de validació al CMS.');
+                    }
+                }
+
                 setTimeout(() => {
                     this.submissionSuccess = false;
-                }, 8000);
+                    this.quoteModalOpen = false;
+                }, 3000);
             },
 
             downloadPack() {
