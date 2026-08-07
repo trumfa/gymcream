@@ -680,13 +680,13 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS }
                 const top = (window.screen.height - height) / 2;
                 
                 const popup = window.open(
-                    '/api/auth/github/',
+                    '/api/auth/github',
                     'github_oauth',
                     `width=${width},height=${height},left=${left},top=${top}`
                 );
 
                 if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-                    window.location.href = '/api/auth/github/';
+                    window.location.href = '/api/auth/github';
                 }
             },
 

@@ -6,7 +6,7 @@ const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || 'Ov23lidWyRrdF40c7ANG';
 
 export const GET: APIRoute = async ({ request, redirect }) => {
     const url = new URL(request.url);
-    const redirectUri = `${url.origin}/api/auth/github/callback/`;
+    const redirectUri = `${url.origin}/api/auth/github/callback`;
     
     const githubAuthUrl = new URL('https://github.com/login/oauth/authorize');
     githubAuthUrl.searchParams.set('client_id', GITHUB_CLIENT_ID);

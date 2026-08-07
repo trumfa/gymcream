@@ -15,7 +15,7 @@ export default defineConfig({
 	site: SITE_URL,
 	output: "hybrid",
 	adapter: vercel(),
-	trailingSlash: "always",
+	trailingSlash: "ignore",
 	build: {
 		format: "directory",
 	},
