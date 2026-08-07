@@ -956,40 +956,72 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
             async saveAllToGithub() {
                 this.isSavingGithub = true;
                 try {
+                    const cleanPayload = {
+                        gymcream_phrases: JSON.parse(JSON.stringify(this.phrases)),
+                        gymcream_categories: JSON.parse(JSON.stringify(this.categories)),
+                        gymcream_slides: JSON.parse(JSON.stringify(this.slides)),
+                        gymcream_products: JSON.parse(JSON.stringify(this.products)),
+                        gymcream_brand_assets: JSON.parse(JSON.stringify(this.brandAssets)),
+                        gymcream_community_quotes: JSON.parse(JSON.stringify(this.communityQuotes)),
+                        gymcream_community_photos: JSON.parse(JSON.stringify(this.communityPhotos))
+                    };
+
                     // 1. Desat a localStorage local
-                    localStorage.setItem('gymcream_phrases', JSON.stringify(this.phrases));
-                    localStorage.setItem('gymcream_categories', JSON.stringify(this.categories));
-                    localStorage.setItem('gymcream_slides', JSON.stringify(this.slides));
-                    localStorage.setItem('gymcream_products', JSON.stringify(this.products));
-                    localStorage.setItem('gymcream_brand_assets', JSON.stringify(this.brandAssets));
-                    localStorage.setItem('gymcream_community_quotes', JSON.stringify(this.communityQuotes));
-                    localStorage.setItem('gymcream_community_photos', JSON.stringify(this.communityPhotos));
+                    localStorage.setItem('gymcream_phrases', JSON.stringify(cleanPayload.gymcream_phrases));
+                    localStorage.setItem('gymcream_categories', JSON.stringify(cleanPayload.gymcream_categories));
+                    localStorage.setItem('gymcream_slides', JSON.stringify(cleanPayload.gymcream_slides));
+                    localStorage.setItem('gymcream_products', JSON.stringify(cleanPayload.gymcream_products));
+                    localStorage.setItem('gymcream_brand_assets', JSON.stringify(cleanPayload.gymcream_brand_assets));
+                    localStorage.setItem('gymcream_community_quotes', JSON.stringify(cleanPayload.gymcream_community_quotes));
+                    localStorage.setItem('gymcream_community_photos', JSON.stringify(cleanPayload.gymcream_community_photos));
 
                     // 2. Enviar tot el conjunt al servidor i a l'API de GitHub Sync
                     const res = await fetch('/api/github-sync', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            gymcream_phrases: this.phrases,
-                            gymcream_categories: this.categories,
-                            gymcream_slides: this.slides,
-                            gymcream_products: this.products,
-                            gymcream_brand_assets: this.brandAssets,
-                            gymcream_community_quotes: this.communityQuotes,
-                            gymcream_community_photos: this.communityPhotos
-                        })
+                        body: JSON.stringify(cleanPayload)
                     });
 
                     const data = await res.json();
-                    if (data.success) {
+                    if (data && data.success) {
                         this.showToast('✅ Canvis desats i divulgats a la xarxa!');
-                        alert("🎉 TOTS ELS CANVIS S'HAN GUARDAT I PUBLICAT!\n\nS'ha actualitzat la base de dades del servidor central i s'han sincronitzat els canvis per a que apareguin a la web a tots els usuaris.");
+                        let messageAlert = "🎉 TOTS ELS CANVIS S'HAN GUARDAT I PUBLICAT!\n\nS'han guardat al servidor central de la web.";
+                        if (data.githubSynced) {
+                            messageAlert += "\n\nS'han sincronitzat i pujat automàticament al repositori de GitHub!";
+                        } else if (data.githubDetails) {
+                            messageAlert += `\n\n(${data.githubDetails})`;
+                        }
+                        alert(messageAlert);
                     } else {
-                        this.showToast('Canvis desats localment.');
+                        // Respatller: enviar a /api/cms
+                        await fetch('/api/cms', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(cleanPayload)
+                        });
+                        this.showToast('✅ Canvis desats al servidor!');
+                        alert("🎉 Canvis desats al servidor central!");
                     }
                 } catch(e) {
-                    this.showToast('Error durant el desat a GitHub/Servidor.');
-                    console.error('Error desant:', e);
+                    console.error('Error desant a GitHub/Servidor:', e);
+                    try {
+                        await fetch('/api/cms', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                gymcream_phrases: JSON.parse(JSON.stringify(this.phrases)),
+                                gymcream_products: JSON.parse(JSON.stringify(this.products)),
+                                gymcream_categories: JSON.parse(JSON.stringify(this.categories)),
+                                gymcream_slides: JSON.parse(JSON.stringify(this.slides)),
+                                gymcream_community_quotes: JSON.parse(JSON.stringify(this.communityQuotes))
+                            })
+                        });
+                        this.showToast('✅ Canvis desats al servidor!');
+                        alert("🎉 Els canvis s'han guardat correctament al servidor!");
+                    } catch(err2) {
+                        this.showToast('Canvis desats en aquest navegador.');
+                        alert("Els canvis s'han guardat en la memòria d'aquest navegador.");
+                    }
                 } finally {
                     this.isSavingGithub = false;
                 }

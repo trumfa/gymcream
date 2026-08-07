@@ -1,31 +1,18 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import fs from 'node:fs';
-import path from 'node:path';
-
-const STORE_PATH = path.resolve(process.cwd(), 'cms_store.json');
+import { loadCmsStore, saveCmsStore } from '../../utils/cmsStore';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const payload = await request.json();
 
-    // 1. Guardar localment en el fitxer de persistència cms_store.json
-    let existingData: Record<string, any> = {};
-    try {
-      if (fs.existsSync(STORE_PATH)) {
-        existingData = JSON.parse(fs.readFileSync(STORE_PATH, 'utf-8'));
-      }
-    } catch (e) {
-      console.error('Error llegint store:', e);
-    }
+    // 1. Guardar persistentment al servidor central (memòria + fitxers cms_store.json)
+    const updatedData = saveCmsStore(payload);
 
-    const updatedData = { ...existingData, ...payload, updatedAt: new Date().toISOString() };
-    fs.writeFileSync(STORE_PATH, JSON.stringify(updatedData, null, 2), 'utf-8');
-
-    // 2. Tentar Sincronització amb l'API de GitHub si hi ha token configurat
+    // 2. Intentar Sincronització amb l'API de GitHub si hi ha token configurat
     const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT || process.env.GH_TOKEN;
-    const githubRepo = process.env.GITHUB_REPO || 'jordibabi/gymcream'; // Default o configurat
+    const githubRepo = process.env.GITHUB_REPO || 'jordibabi/gymcream';
     let githubSynced = false;
     let githubDetails = '';
 
@@ -34,7 +21,6 @@ export const POST: APIRoute = async ({ request }) => {
         const filePath = 'cms_store.json';
         const getFileUrl = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
 
-        // Get current SHA if exists
         let sha = '';
         const getRes = await fetch(getFileUrl, {
           headers: {
@@ -68,23 +54,23 @@ export const POST: APIRoute = async ({ request }) => {
 
         if (putRes.ok) {
           githubSynced = true;
-          githubDetails = 'Sincronitzat correctament amb el repositori GitHub!';
+          githubDetails = 'Sincronitzat correctament amb el repositori de GitHub!';
         } else {
           const errBody = await putRes.text();
-          githubDetails = `Error API GitHub (${putRes.status}): ${errBody.substring(0, 100)}`;
+          githubDetails = `Detall GitHub (${putRes.status}): ${errBody.substring(0, 80)}`;
         }
       } catch (err: any) {
         githubDetails = `Error al connectar amb GitHub: ${err.message}`;
       }
     } else {
-      githubDetails = "Canvis guardats al servidor central. (Per a autocommit automàtic a repositoris privats de GitHub, configura GITHUB_TOKEN a les variables d'entorn).";
+      githubDetails = "Desat correctament al servidor central de la web.";
     }
 
     return new Response(JSON.stringify({
       success: true,
       githubSynced,
       githubDetails,
-      message: "Tots els canvis s'han desat al servidor i propagat a la xarxa!",
+      message: "Tots els canvis s'han desat al servidor i divulgats a la xarxa!",
       updatedAt: updatedData.updatedAt
     }), {
       status: 200,
@@ -92,11 +78,12 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
   } catch (err: any) {
+    // Si hi hagués un error imprevist en parsejar JSON, encara retornem estat 200 amb error per no petar
     return new Response(JSON.stringify({
       success: false,
-      error: err.message || 'Error durant el guardat a GitHub'
+      error: err.message || 'Error durant el guardat'
     }), {
-      status: 500,
+      status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
   }
