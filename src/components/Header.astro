@@ -721,6 +721,22 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                     this.phrases = defaultPhrases;
                 }
 
+                // Fetch live server state
+                fetch('/api/cms').then(r => r.json()).then(serverData => {
+                    if (serverData.gymcream_products) {
+                        this.products = serverData.gymcream_products;
+                        localStorage.setItem('gymcream_products', JSON.stringify(this.products));
+                    }
+                    if (serverData.gymcream_categories) {
+                        this.categories = serverData.gymcream_categories;
+                        localStorage.setItem('gymcream_categories', JSON.stringify(this.categories));
+                    }
+                    if (serverData.gymcream_phrases) {
+                        this.phrases = serverData.gymcream_phrases;
+                        localStorage.setItem('gymcream_phrases', JSON.stringify(this.phrases));
+                    }
+                }).catch(e => {});
+
                 // Load cart
                 try {
                     const savedCart = localStorage.getItem('gymcream_cart');

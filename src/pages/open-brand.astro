@@ -518,7 +518,7 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 }, 600);
             },
 
-            init() {
+            async init() {
                 // Carregar actius del CMS
                 const savedAssets = localStorage.getItem('gymcream_brand_assets');
                 if (savedAssets) {
@@ -537,6 +537,26 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 } else {
                     this.photos = defaultPhotos;
                 }
+
+                // Fetch dades del servidor CMS
+                try {
+                    const res = await fetch('/api/cms');
+                    if (res.ok) {
+                        const serverData = await res.json();
+                        if (serverData.gymcream_brand_assets) {
+                            this.assets = serverData.gymcream_brand_assets;
+                            localStorage.setItem('gymcream_brand_assets', JSON.stringify(this.assets));
+                        }
+                        if (serverData.gymcream_community_quotes) {
+                            localStorage.setItem('gymcream_community_quotes', JSON.stringify(serverData.gymcream_community_quotes));
+                            this.loadQuotes();
+                        }
+                        if (serverData.gymcream_community_photos) {
+                            this.photos = serverData.gymcream_community_photos;
+                            localStorage.setItem('gymcream_community_photos', JSON.stringify(this.photos));
+                        }
+                    }
+                } catch(e) {}
             },
 
             loadQuotes() {
@@ -600,6 +620,11 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 allQuotes.unshift(newEntry);
                 try {
                     localStorage.setItem('gymcream_community_quotes', JSON.stringify(allQuotes));
+                    fetch('/api/cms', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key: 'gymcream_community_quotes', value: allQuotes })
+                    }).catch(e => {});
                 } catch(e) {}
 
                 // Enviar notificació per email al servidor (jordibabi@gmail.com)

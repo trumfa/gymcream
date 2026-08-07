@@ -165,7 +165,7 @@ import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
                 });
             },
 
-            loadData() {
+            async loadData() {
                 try {
                     const prod = localStorage.getItem('gymcream_products');
                     this.allProducts = prod ? JSON.parse(prod) : defaultProducts;
@@ -179,6 +179,21 @@ import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
                 } catch(e) {
                     this.categories = defaultCategories;
                 }
+
+                try {
+                    const res = await fetch('/api/cms');
+                    if (res.ok) {
+                        const serverData = await res.json();
+                        if (serverData.gymcream_products) {
+                            this.allProducts = serverData.gymcream_products;
+                            localStorage.setItem('gymcream_products', JSON.stringify(this.allProducts));
+                        }
+                        if (serverData.gymcream_categories) {
+                            this.categories = serverData.gymcream_categories;
+                            localStorage.setItem('gymcream_categories', JSON.stringify(this.categories));
+                        }
+                    }
+                } catch(e) {}
             },
 
             get visibleProducts() {

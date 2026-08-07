@@ -941,37 +941,79 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
                 this.showToast('Sessió tancada correctament.');
             },
 
-            loadAllData() {
+            syncApi(key, data) {
                 try {
-                    // 1. Phrases
+                    fetch('/api/cms', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key, value: data })
+                    }).catch(e => console.log('API sync error:', e));
+                } catch(e) {}
+            },
+
+            async loadAllData() {
+                try {
+                    // 1. Local fallback
                     const p = localStorage.getItem('gymcream_phrases');
                     this.phrases = p ? JSON.parse(p) : [...defaultPhrases];
 
-                    // 2. Categories
                     const c = localStorage.getItem('gymcream_categories');
                     this.categories = c ? JSON.parse(c) : [...defaultCategories];
 
-                    // 3. Slides
                     const s = localStorage.getItem('gymcream_slides');
                     this.slides = s ? JSON.parse(s) : [...defaultSlides];
 
-                    // 4. Products
                     const prod = localStorage.getItem('gymcream_products');
                     this.products = prod ? JSON.parse(prod) : [...defaultProducts];
 
-                    // 5. Brand Assets
                     const assets = localStorage.getItem('gymcream_brand_assets');
                     this.brandAssets = assets ? JSON.parse(assets) : [...defaultBrandAssets];
 
-                    // 6. Community Quotes
                     const quotes = localStorage.getItem('gymcream_community_quotes');
                     this.communityQuotes = quotes ? JSON.parse(quotes) : [...defaultCommunityQuotes];
 
-                    // 7. Community Photos
                     const photos = localStorage.getItem('gymcream_community_photos');
                     this.communityPhotos = photos ? JSON.parse(photos) : [...defaultCommunityPhotos];
                 } catch (e) {
                     console.error('Error carregant dades CMS de localStorage', e);
+                }
+
+                // 2. Fetch remote server state
+                try {
+                    const res = await fetch('/api/cms');
+                    if (res.ok) {
+                        const serverData = await res.json();
+                        if (serverData.gymcream_phrases) {
+                            this.phrases = serverData.gymcream_phrases;
+                            localStorage.setItem('gymcream_phrases', JSON.stringify(this.phrases));
+                        }
+                        if (serverData.gymcream_categories) {
+                            this.categories = serverData.gymcream_categories;
+                            localStorage.setItem('gymcream_categories', JSON.stringify(this.categories));
+                        }
+                        if (serverData.gymcream_slides) {
+                            this.slides = serverData.gymcream_slides;
+                            localStorage.setItem('gymcream_slides', JSON.stringify(this.slides));
+                        }
+                        if (serverData.gymcream_products) {
+                            this.products = serverData.gymcream_products;
+                            localStorage.setItem('gymcream_products', JSON.stringify(this.products));
+                        }
+                        if (serverData.gymcream_brand_assets) {
+                            this.brandAssets = serverData.gymcream_brand_assets;
+                            localStorage.setItem('gymcream_brand_assets', JSON.stringify(this.brandAssets));
+                        }
+                        if (serverData.gymcream_community_quotes) {
+                            this.communityQuotes = serverData.gymcream_community_quotes;
+                            localStorage.setItem('gymcream_community_quotes', JSON.stringify(this.communityQuotes));
+                        }
+                        if (serverData.gymcream_community_photos) {
+                            this.communityPhotos = serverData.gymcream_community_photos;
+                            localStorage.setItem('gymcream_community_photos', JSON.stringify(this.communityPhotos));
+                        }
+                    }
+                } catch(e) {
+                    console.log('Servidor CMS no disponible o error de xarxa:', e);
                 }
             },
 
@@ -980,6 +1022,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
                 if (idx !== -1) {
                     this.communityQuotes[idx].status = 'approved';
                     localStorage.setItem('gymcream_community_quotes', JSON.stringify(this.communityQuotes));
+                    this.syncApi('gymcream_community_quotes', this.communityQuotes);
                     this.showToast('Frase aprovada i publicada al Mur!');
                 }
             },
@@ -988,6 +1031,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
                 if (confirm('Segur que vols eliminar aquesta frase?')) {
                     this.communityQuotes = this.communityQuotes.filter(q => q.id !== id);
                     localStorage.setItem('gymcream_community_quotes', JSON.stringify(this.communityQuotes));
+                    this.syncApi('gymcream_community_quotes', this.communityQuotes);
                     this.showToast('Frase eliminada correctament.');
                 }
             },
@@ -1012,6 +1056,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
 
                 this.brandAssets.push(newAsset);
                 localStorage.setItem('gymcream_brand_assets', JSON.stringify(this.brandAssets));
+                this.syncApi('gymcream_brand_assets', this.brandAssets);
                 this.showToast('Nou actiu gràfic afegit!');
             },
 
@@ -1019,6 +1064,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
                 if (confirm('Segur que vols eliminar aquest actiu gràfic?')) {
                     this.brandAssets = this.brandAssets.filter(a => a.id !== id);
                     localStorage.setItem('gymcream_brand_assets', JSON.stringify(this.brandAssets));
+                    this.syncApi('gymcream_brand_assets', this.brandAssets);
                     this.showToast('Actiu gràfic eliminat.');
                 }
             },
@@ -1101,6 +1147,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
             // --- PHRASES MANAGEMENT ---
             savePhrases() {
                 localStorage.setItem('gymcream_phrases', JSON.stringify(this.phrases));
+                this.syncApi('gymcream_phrases', this.phrases);
                 this.showToast('Frases de la barra superior desades!');
             },
             addPhrase() {
@@ -1126,6 +1173,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
             // --- CATEGORIES MANAGEMENT ---
             saveCategories() {
                 localStorage.setItem('gymcream_categories', JSON.stringify(this.categories));
+                this.syncApi('gymcream_categories', this.categories);
                 this.showToast('Categories i filtres desats!');
             },
             addCategory() {
@@ -1156,6 +1204,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
             // --- SLIDES MANAGEMENT ---
             saveSlides() {
                 localStorage.setItem('gymcream_slides', JSON.stringify(this.slides));
+                this.syncApi('gymcream_slides', this.slides);
                 this.showToast('Carrusel d\'inici desat!');
             },
             openSlideModal(slide = null) {
@@ -1215,6 +1264,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_SLIDES, DEFAULT_PRODUCTS, 
             },
             saveProducts() {
                 localStorage.setItem('gymcream_products', JSON.stringify(this.products));
+                this.syncApi('gymcream_products', this.products);
                 this.showToast('Articles del catàleg desats!');
             },
             openProductModal(prod = null) {
