@@ -1,5 +1,7 @@
 ---
 import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
+
+const isOpenBrand = Astro.url.pathname.includes('open-brand');
 ---
 
 <!-- Header Component with Logos, Live Search, Cart Drawer, +INFO Detail Modal, & Restock Alert Modal -->
@@ -40,7 +42,8 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data
     <!-- 🔍 PANEL DE CERCA EN DIRECTE (A LA LUPA - Real-Time Search Drawer) -->
     <div 
         :class="searchOpen ? 'translate-x-0' : 'translate-x-full'" 
-        class="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-gcDark border-l border-gcYellow/30 z-[100] transform transition-transform duration-300 flex flex-col p-6 shadow-2xl"
+        class="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-gcDark border-l border-gcYellow/30 z-[100] transform translate-x-full transition-transform duration-300 flex flex-col p-6 shadow-2xl"
+        x-cloak
     >
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
             <div class="flex items-center gap-2">
@@ -127,7 +130,8 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data
     <!-- ☰ MENÚ LATERAL D'INFORMACIÓ (Drawer Esquerre amb Logo Separat) -->
     <div 
         :class="menuOpen ? 'translate-x-0' : '-translate-x-full'" 
-        class="fixed inset-y-0 left-0 w-80 bg-gcDark border-r border-gcYellow/30 z-[100] transform transition-transform duration-300 flex flex-col p-6"
+        class="fixed inset-y-0 left-0 w-80 bg-gcDark border-r border-gcYellow/30 z-[100] transform -translate-x-full transition-transform duration-300 flex flex-col p-6"
+        x-cloak
     >
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
             <!-- LOGO EN DIRECTE AL MENÚ -->
@@ -143,15 +147,16 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data
         </div>
         <nav class="flex-1 mt-8 flex flex-col gap-6 font-display text-base uppercase tracking-widest">
             <a href="/" class="hover:text-gcYellow transition-colors">Inici</a>
-            <a href="#catalog" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Catàleg / Drops</a>
-            <a href="#filosofia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">La Nostra Filosofia</a>
+            <a href="/#catalog" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Catàleg / Drops</a>
+            <a href="/#filosofia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">La Nostra Filosofia</a>
         </nav>
     </div>
 
     <!-- 🛒 PANEL LATERAL DE CARRET (Drawer Dret) -->
     <div 
         :class="cartOpen ? 'translate-x-0' : 'translate-x-full'" 
-        class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gcDark border-l border-gcYellow/30 z-[100] transform transition-transform duration-300 flex flex-col p-6 shadow-2xl"
+        class="fixed inset-y-0 right-0 w-full sm:w-96 bg-gcDark border-l border-gcYellow/30 z-[100] transform translate-x-full transition-transform duration-300 flex flex-col p-6 shadow-2xl"
+        x-cloak
     >
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
             <div class="flex items-center gap-3">
@@ -306,6 +311,19 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data
                                 class="font-sans text-3xl font-black" 
                                 x-text="`${modalProduct.price.toFixed(2)} €`"
                             ></span>
+                        </div>
+
+                        <!-- DESTACAT DISTINTIU OFICIAL GYM CREAM -->
+                        <div class="mb-6 p-3.5 bg-black border border-gcYellow/40 rounded flex items-start gap-3">
+                            <div class="p-2 bg-gcYellow/10 text-gcYellow rounded-full border border-gcYellow/30 shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            </div>
+                            <div class="text-xs">
+                                <h5 class="font-display font-black text-gcYellow uppercase tracking-wider">Inclou Distintiu Físic Oficial</h5>
+                                <p class="text-[11px] text-gray-300 mt-0.5 leading-snug">
+                                    Articles de la Línia Oficial inclouen el <strong>Distintiu Físic Gym Cream</strong> brodat/físic que en certifica l'autenticitat i l'experiència prèmium.
+                                </p>
+                            </div>
                         </div>
 
                         <!-- DESCRIPCIÓ DEL PRODUCTE -->
@@ -470,7 +488,7 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data
         </div>
 
         <!-- NAVBAR -->
-        <div id="navContainer" class="bg-transparent border-b border-transparent transition-colors duration-300">
+        <div id="navContainer" class={isOpenBrand ? "bg-black border-b border-gray-800 transition-colors duration-300" : "bg-transparent border-b border-transparent transition-colors duration-300"}>
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
                 <div class="flex items-center gap-6">
                     <button @click="menuOpen = true" class="text-white hover:text-gcYellow transition-colors p-1" aria-label="Obrir menú">
@@ -503,7 +521,30 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data
                     </template>
                 </nav>
 
-                <div class="flex items-center gap-4 sm:gap-6">
+                <div class="flex items-center gap-3 sm:gap-5">
+                    <!-- BOTÓ MARCA OBERTA / BOTÓ TORNAR A BOTIGA -->
+                    {isOpenBrand ? (
+                        <a 
+                            href="/" 
+                            class="bg-white hover:bg-gcYellow text-black font-display font-black text-[11px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm flex items-center gap-1.5 rounded-sm"
+                            title="Tornar a la botiga principal"
+                        >
+                            <span>←</span>
+                            <span class="hidden sm:inline">TORNAR A LA BOTIGA</span>
+                            <span class="sm:hidden">BOTIGA</span>
+                        </a>
+                    ) : (
+                        <a 
+                            href="/open-brand" 
+                            class="bg-gcYellow hover:bg-white text-black font-display font-black text-[11px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm flex items-center gap-1.5 rounded-sm"
+                            title="Accés al centre de descàrregues i filosofia Marca Oberta"
+                        >
+                            <span>🎨</span>
+                            <span class="hidden sm:inline">MARCA OBERTA</span>
+                            <span class="sm:hidden">OPEN BRAND</span>
+                        </a>
+                    )}
+
                     <!-- BOTÓ DE CERCA / LUPA EN DIRECTE -->
                     <button @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())" class="text-white hover:text-gcYellow transition-colors p-1" aria-label="Cercar a la lupa">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -725,21 +766,37 @@ import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data
     });
 
     // Header scroll behavior
-    window.addEventListener('scroll', function() {
+    function handleHeaderScroll() {
         const header = document.getElementById('mainHeader');
         const navContainer = document.getElementById('navContainer');
         const ironicBar = document.getElementById('ironicBar');
         
         if (header && navContainer && ironicBar) {
-            if (window.scrollY > 50) {
-                header.style.transform = `translateY(-${ironicBar.offsetHeight}px)`;
-                navContainer.classList.add('bg-gcDark/95', 'backdrop-blur-md', 'border-gray-800');
+            const isOpenBrand = window.location.pathname.includes('open-brand');
+            if (isOpenBrand) {
+                navContainer.classList.add('bg-black', 'border-gray-800');
                 navContainer.classList.remove('bg-transparent', 'border-transparent');
+                
+                if (window.scrollY > 50) {
+                    header.style.transform = `translateY(-${ironicBar.offsetHeight}px)`;
+                } else {
+                    header.style.transform = 'translateY(0)';
+                }
             } else {
-                header.style.transform = 'translateY(0)';
-                navContainer.classList.remove('bg-gcDark/95', 'backdrop-blur-md', 'border-gray-800');
-                navContainer.classList.add('bg-transparent', 'border-transparent');
+                if (window.scrollY > 50) {
+                    header.style.transform = `translateY(-${ironicBar.offsetHeight}px)`;
+                    navContainer.classList.add('bg-gcDark/95', 'backdrop-blur-md', 'border-gray-800');
+                    navContainer.classList.remove('bg-transparent', 'border-transparent');
+                } else {
+                    header.style.transform = 'translateY(0)';
+                    navContainer.classList.remove('bg-gcDark/95', 'backdrop-blur-md', 'border-gray-800');
+                    navContainer.classList.add('bg-transparent', 'border-transparent');
+                }
             }
         }
-    });
+    }
+
+    window.addEventListener('scroll', handleHeaderScroll);
+    document.addEventListener('astro:page-load', handleHeaderScroll);
+    document.addEventListener('DOMContentLoaded', handleHeaderScroll);
 </script>

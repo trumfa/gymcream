@@ -97,7 +97,7 @@ import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
                         ></h3>
 
                         <!-- Display de Preu vell ratllat + preu nou -->
-                        <div class="mt-2 mb-4 flex items-baseline gap-2">
+                        <div class="mt-2 mb-2 flex items-baseline gap-2">
                             <template x-if="product.oldPrice || product.isSale">
                                 <span class="font-sans text-xs text-gray-500 line-through" x-text="`${product.oldPrice ? product.oldPrice.toFixed(2) : (product.price * 1.25).toFixed(2)} €`"></span>
                             </template>
@@ -106,6 +106,12 @@ import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
                                 class="font-sans text-xl" 
                                 x-text="`${product.price.toFixed(2)} €`"
                             ></span>
+                        </div>
+
+                        <!-- Badge Distintiu Oficial Gym Cream -->
+                        <div class="mb-3 flex items-center gap-1 text-[10px] text-gray-400 font-mono">
+                            <span class="text-gcYellow">🛡️</span>
+                            <span>Inclou Distintiu Físic Oficial</span>
                         </div>
                     </div>
                     

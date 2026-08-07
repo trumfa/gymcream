@@ -19,16 +19,16 @@ import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
             <div>
                 <h5 class="font-display text-gcYellow uppercase text-xs tracking-widest mb-4">Informació</h5>
                 <ul class="space-y-3 text-sm text-gray-400 font-sans">
+                    <li>
+                        <a href="/open-brand" class="hover:text-gcYellow font-bold transition-colors text-left flex items-center gap-1.5 text-gcYellow">
+                            <span>🎨</span> Marca Oberta (Open Brand / DIY)
+                        </a>
+                    </li>
                     <li><button @click="openInfo('enviaments')" class="hover:text-white transition-colors text-left cursor-pointer">🚚 Enviaments i Devolucions</button></li>
                     <li><button @click="openInfo('termes')" class="hover:text-white transition-colors text-left cursor-pointer">📜 Termes i Condicions</button></li>
                     <li><button @click="openInfo('privacitat')" class="hover:text-white transition-colors text-left cursor-pointer">🔒 Política de Privacitat</button></li>
                     <li><button @click="openInfo('talles')" class="hover:text-white transition-colors text-left cursor-pointer">📏 Guia de Talles</button></li>
                     <li><button @click="openInfo('contacte')" class="hover:text-white transition-colors text-left cursor-pointer">💬 Contacte i Atenció</button></li>
-                    <li class="pt-2 border-t border-gray-900">
-                        <a href="/admin" class="hover:text-gcYellow text-xs transition-colors flex items-center gap-1.5 text-gray-500">
-                            <span>⚙️</span> Panell de Control (CMS)
-                        </a>
-                    </li>
                 </ul>
             </div>
 

@@ -42,6 +42,33 @@ export interface InfoPage {
   content: string;
 }
 
+export interface BrandAsset {
+  id: string;
+  title: string;
+  category: 'logo' | 'badge' | 'typography' | 'full_pack';
+  description: string;
+  fileUrl: string;
+  formats: string[];
+  previewImage: string;
+  colorVariant: string;
+}
+
+export interface CommunityQuote {
+  id: string;
+  author: string;
+  quote: string;
+  status: 'approved' | 'pending';
+  createdAt: string;
+}
+
+export interface CommunityPhoto {
+  id: string;
+  username: string;
+  imageUrl: string;
+  caption: string;
+  type: 'DIY' | 'Oficial';
+}
+
 export const DEFAULT_PHRASES: string[] = [
   '"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."',
   '"EL TEU COS ÉS UN TEMPLE. I ELS TEMPLES TAMBÉ FAN FESTES."',
@@ -391,3 +418,109 @@ export const DEFAULT_INFO_PAGES: Record<string, InfoPage> = {
     `
   }
 };
+
+export const DEFAULT_BRAND_ASSETS: BrandAsset[] = [
+  {
+    id: 'asset-1',
+    title: 'Logo Principal Gym Cream (Format Gran)',
+    category: 'logo',
+    description: 'Logo oficial a tot color preparat per a serigrafia, DTF o impressió digital en samarretes fosques.',
+    fileUrl: '/logos/logo primary GC no GC.png',
+    formats: ['PNG', 'SVG', 'AI', 'JPG'],
+    previewImage: '/logos/logo primary GC no GC.png',
+    colorVariant: 'Groc / Blanc (Oficial)'
+  },
+  {
+    id: 'asset-2',
+    title: 'Logo Blanc / Monocromàtic',
+    category: 'logo',
+    description: 'Versió en blanc pur de màxima resolució per a estampació en fons negres, xandalls o dessuadores.',
+    fileUrl: '/logos/logo white GC no GC.png',
+    formats: ['PNG', 'SVG', 'AI', 'JPG'],
+    previewImage: '/logos/logo white GC no GC.png',
+    colorVariant: 'Blanc Fons Transparent'
+  },
+  {
+    id: 'asset-3',
+    title: 'Logo Negre / Stealth Vector',
+    category: 'logo',
+    description: 'Versió en negre intens ideal per a fons clars, roba de color gris o impressió en bosses de tela.',
+    fileUrl: '/logos/logo GC Black.png',
+    formats: ['PNG', 'SVG', 'AI', 'JPG'],
+    previewImage: '/logos/logo GC Black.png',
+    colorVariant: 'Negre Stealth'
+  },
+  {
+    id: 'asset-4',
+    title: 'Insignia / Badge Oficial Gym Cream',
+    category: 'badge',
+    description: 'Escut circular emblemàtic amb el Cream Cone i la data de fundació 2026. Perfecte per a pit, dessuadores o tovalloles.',
+    fileUrl: '/logos/gymcream-badge.svg',
+    formats: ['SVG', 'PNG', 'AI'],
+    previewImage: '/logos/gymcream-badge.svg',
+    colorVariant: 'Insignia Daurada / Groga'
+  }
+];
+
+export const DEFAULT_COMMUNITY_QUOTES: CommunityQuote[] = [
+  {
+    id: 'quote-1',
+    author: 'Marc V.',
+    quote: 'El meu escalfament és buscar les claus del cotxe durant 20 minuts.',
+    status: 'approved',
+    createdAt: '2026-08-01'
+  },
+  {
+    id: 'quote-2',
+    author: 'Sònia G.',
+    quote: 'Si el gimnàs fos fàcil, es diria anar al bar. Però aquí estem.',
+    status: 'approved',
+    createdAt: '2026-08-03'
+  },
+  {
+    id: 'quote-3',
+    author: 'Pol & Alex',
+    quote: 'Aixeco pes per poder demanar postres dobles sense cap mena de remordiment.',
+    status: 'approved',
+    createdAt: '2026-08-04'
+  },
+  {
+    id: 'quote-4',
+    author: 'Laia T.',
+    quote: 'Avui he fet hip thrust amb la samarreta estampada a la meva copisteria de barri. M\'encanta aquesta marca!',
+    status: 'approved',
+    createdAt: '2026-08-05'
+  }
+];
+
+export const DEFAULT_COMMUNITY_PHOTOS: CommunityPhoto[] = [
+  {
+    id: 'photo-1',
+    username: '@pau_fit_barcelona',
+    imageUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=800&auto=format&fit=crop',
+    caption: 'Samarreta casolana feta amb el logo descarregat de la web! #GymCreamDIY',
+    type: 'DIY'
+  },
+  {
+    id: 'photo-2',
+    username: '@clara_heavycarbs',
+    imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop',
+    caption: 'Amb la Línia Oficial i el Distintiu Físic Gym Cream. Qualitat brutal!',
+    type: 'Oficial'
+  },
+  {
+    id: 'photo-3',
+    username: '@sergi_lift',
+    imageUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=800&auto=format&fit=crop',
+    caption: 'Estampat DIY a la tovallola del gimnàs. Sense regles ni judicis.',
+    type: 'DIY'
+  },
+  {
+    id: 'photo-4',
+    username: '@marta_power',
+    imageUrl: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=800&auto=format&fit=crop',
+    caption: 'Línia Oficial Drop 2026. L\'insignia brodada és 10/10.',
+    type: 'Oficial'
+  }
+];
+
