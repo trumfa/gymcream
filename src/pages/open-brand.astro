@@ -4,123 +4,143 @@ import Container from "@src/components/Container.astro";
 import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
 ---
 
-<Layout title="Gym Cream — Open Brand & Moviment DIY" description="Som una marca oberta (Open Brand). Descarrega els nostres logos de franc per fer-te la teva roba o aconsegueix la Línia Oficial.">
+<Layout title="Gym Cream — Sóc Gymcreamer & Moviment DIY" description="Som una marca oberta (Open Brand). Descarrega els nostres logos de franc per fer-te la teva roba o aconsegueix la Línia Oficial.">
     <!-- CONTINGUT PRINCIPAL OPEN BRAND — ESTÈTICA 'L'ART DE L'ANTÍTESI' -->
     <main 
-        x-data={`{
-            assets: [],
-            quotes: [],
-            photos: [],
-            activeCategory: 'all',
-            
-            // Formulari de proposta de frase
-            newAuthor: '',
-            newQuote: '',
-            submissionSuccess: false,
-            submissionError: '',
-
-            init() {
-                // Carregar actius del CMS
-                const savedAssets = localStorage.getItem('gymcream_brand_assets');
-                if (savedAssets) {
-                    try { this.assets = JSON.parse(savedAssets); } catch(e) { this.assets = ${JSON.stringify(DEFAULT_BRAND_ASSETS)}; }
-                } else {
-                    this.assets = ${JSON.stringify(DEFAULT_BRAND_ASSETS)};
-                }
-
-                // Carregar frases de la comunitat (filtre de només aprovades)
-                this.loadQuotes();
-
-                // Carregar fotos socials
-                const savedPhotos = localStorage.getItem('gymcream_community_photos');
-                if (savedPhotos) {
-                    try { this.photos = JSON.parse(savedPhotos); } catch(e) { this.photos = ${JSON.stringify(DEFAULT_COMMUNITY_PHOTOS)}; }
-                } else {
-                    this.photos = ${JSON.stringify(DEFAULT_COMMUNITY_PHOTOS)};
-                }
-            },
-
-            loadQuotes() {
-                const savedQuotes = localStorage.getItem('gymcream_community_quotes');
-                let allQuotes = [];
-                if (savedQuotes) {
-                    try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = ${JSON.stringify(DEFAULT_COMMUNITY_QUOTES)}; }
-                } else {
-                    allQuotes = ${JSON.stringify(DEFAULT_COMMUNITY_QUOTES)};
-                }
-                // Filtrar només frases aprovades per al mur públic
-                this.quotes = allQuotes.filter(q => q.status === 'approved');
-            },
-
-            get filteredAssets() {
-                if (this.activeCategory === 'all') return this.assets;
-                return this.assets.filter(a => a.category === this.activeCategory);
-            },
-
-            submitQuote() {
-                this.submissionError = '';
-                if (!this.newQuote.trim()) {
-                    this.submissionError = 'Si us plau, escriu una frase motivadora o irònica.';
-                    return;
-                }
-                const author = this.newAuthor.trim() || 'Usuari Anònim';
-                
-                // Llegir totes les frases actuals
-                const savedQuotes = localStorage.getItem('gymcream_community_quotes');
-                let allQuotes = [];
-                if (savedQuotes) {
-                    try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = ${JSON.stringify(DEFAULT_COMMUNITY_QUOTES)}; }
-                } else {
-                    allQuotes = ${JSON.stringify(DEFAULT_COMMUNITY_QUOTES)};
-                }
-
-                // Crear la nova frase amb estat 'pending'
-                const newEntry = {
-                    id: 'quote-' + Date.now(),
-                    author: author,
-                    quote: '"' + this.newQuote.trim().toUpperCase() + '"',
-                    status: 'pending',
-                    createdAt: new Date().toISOString().split('T')[0]
-                };
-
-                allQuotes.unshift(newEntry);
-                localStorage.setItem('gymcream_community_quotes', JSON.stringify(allQuotes));
-
-                this.newAuthor = '';
-                this.newQuote = '';
-                this.submissionSuccess = true;
-                
-                setTimeout(() => {
-                    this.submissionSuccess = false;
-                }, 8000);
-            },
-
-            downloadPack() {
-                alert('Iniciant la descàrrega del Pack Complet de la Marca GYM CREAM (.ZIP)...');
-            }
-        }`}
-        class="pt-28 sm:pt-36 bg-gcClassic text-black min-h-screen"
+        x-data="openBrandState"
+        class="pt-20 sm:pt-24 bg-gcClassic text-black min-h-screen"
     >
 
-        <!-- 1. HERO I FILOSOFIA UNIFICADA — ESTÈTICA 'L'ART DE L'ANTÍTESI' (SENSE BOTONS, SENSE CAIXES) -->
-        <section class="py-20 sm:py-28 border-b border-gray-300 relative bg-gcClassic">
+        <!-- FRANJA NEGRA INSTAGRAM GYMCREAMER (A sota del menú, desapareix al fer scroll) -->
+        <div class="bg-black text-white border-b-2 border-gcYellow py-6 px-4 sm:px-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Fila Superior -->
+                <div class="flex items-center justify-between gap-4 pb-4 border-b border-gray-800">
+                    <!-- Esquerra: Botó + -->
+                    <button 
+                        @click="quoteModalOpen = true" 
+                        class="w-10 h-10 bg-gcYellow hover:bg-white text-black font-black text-2xl rounded-full flex items-center justify-center transition-colors shadow-md cursor-pointer flex-shrink-0"
+                        title="Afegir la teva frase i pseudònim"
+                    >
+                        +
+                    </button>
+
+                    <!-- Mig: Text d'etiqueta -->
+                    <div class="text-center px-2">
+                        <span class="font-display text-xs sm:text-sm font-extrabold uppercase tracking-wider text-gray-200">
+                            Etiqueta amb <span class="text-gcYellow">#gymcream</span> al teu insta les teves creacions
+                        </span>
+                    </div>
+
+                    <!-- Dreta: Cor vermell -->
+                    <button 
+                        @click="likesCount++;" 
+                        class="flex items-center gap-1.5 bg-zinc-900 border border-gray-800 hover:border-red-500 text-red-500 font-display font-extrabold text-xs px-3 py-2 rounded-full transition-colors cursor-pointer flex-shrink-0"
+                    >
+                        <svg class="w-4 h-4 fill-current text-red-500" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <span x-text="likesCount">1,840</span>
+                    </button>
+                </div>
+
+                <!-- Fila Inferior: Hexàgons Grocs amb les Frases i el Pseudònim a sota -->
+                <div class="pt-6">
+                    <div class="flex gap-8 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start">
+                        <template x-for="item in instagramQuotes" :key="item.id">
+                            <div class="flex flex-col items-center flex-shrink-0 w-40 sm:w-48 text-center group cursor-pointer" @click="quoteModalOpen = true">
+                                <!-- Hexàgon Groc amb la frase a dins -->
+                                <div class="w-32 h-32 sm:w-36 sm:h-36 bg-gcYellow text-black p-4 flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-105 hexagon-shape font-display font-black text-[10px] sm:text-xs leading-tight uppercase tracking-tight text-center">
+                                    <span x-text="item.quote"></span>
+                                </div>
+                                <!-- Pseudònim a sota l'hexàgon -->
+                                <span class="mt-3 font-display font-extrabold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="`@${item.author}`"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL PER INTRODUIR FRASE I PSEUDÒNIM -->
+        <div 
+            x-show="quoteModalOpen" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+            x-cloak
+        >
+            <div class="bg-gcDark border-2 border-gcYellow text-white w-full max-w-lg p-6 sm:p-8 relative shadow-2xl rounded-sm">
+                <button @click="quoteModalOpen = false" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <div class="flex items-center gap-3 pb-4 border-b border-gray-800 mb-6">
+                    <div class="w-10 h-10 bg-gcYellow text-black font-black text-xl rounded-full flex items-center justify-center">+</div>
+                    <div>
+                        <h3 class="font-display font-black text-lg uppercase text-gcYellow tracking-wider">Afegir La Teva Frase Gymcreamer</h3>
+                        <p class="text-xs text-gray-400">Apareixerà als hexàgons grocs del mur de la comunitat.</p>
+                    </div>
+                </div>
+
+                <form @submit.prevent="submitInstagramQuote()" class="space-y-4">
+                    <div>
+                        <label class="block font-display text-xs uppercase text-gray-300 font-bold mb-1">
+                            El teu Seudònim / Nom *
+                        </label>
+                        <input 
+                            type="text" 
+                            x-model="newAuthor" 
+                            placeholder="Exemple: Gymcreamer_33 o @fittoni" 
+                            class="w-full bg-black border border-gray-800 text-white p-3 text-sm focus:border-gcYellow focus:outline-none font-sans rounded-sm"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block font-display text-xs uppercase text-gray-300 font-bold mb-1">
+                            La teva Frase Irònica *
+                        </label>
+                        <textarea 
+                            x-model="newQuote" 
+                            rows="3" 
+                            placeholder="Exemple: MENYS POSTUREIG I MÉS HIDRATS DE CARBONI" 
+                            class="w-full bg-black border border-gray-800 text-white p-3 text-sm focus:border-gcYellow focus:outline-none font-display text-xs uppercase rounded-sm"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-3.5 hover:bg-white transition-colors cursor-pointer tracking-wider rounded-sm mt-4"
+                    >
+                        Publicar als Hexàgons
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 1. HERO I FILOSOFIA UNIFICADA — ESTÈTICA 'L'ART DE L'ANTÍTESI' -->
+        <section class="py-16 sm:py-24 border-b border-gray-300 relative bg-gcClassic">
             <Container>
                 <div class="max-w-3xl mx-auto text-center">
-                    <div class="h-28 sm:h-36 max-w-xs mx-auto mb-6 flex items-center justify-center">
+                    <div class="h-24 sm:h-32 max-w-xs mx-auto mb-6 flex items-center justify-center">
                         <img src="/logos/logo GC Black.png" alt="Gym Cream Logo Black" class="h-full w-auto object-contain" />
                     </div>
 
                     <span class="font-serif italic text-lg sm:text-xl text-gray-600 block mb-3">
-                        Moviment Marca Oberta (Open Brand)
+                        Comunitat Sóc Gymcreamer (Open Brand)
                     </span>
 
-                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl italic text-black leading-tight mb-10">
+                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl italic text-black leading-tight mb-8">
                         Fes el que vulguis. <br class="hidden sm:inline" />
                         <span>Que no t'importi que et jutgin.</span>
                     </h1>
 
-                    <!-- TEXT DESCRIPTIC CONTINU I RELAXAT (MATEIXA FILOSOFIA I DOS CAMINS INTEGRATS) -->
-                    <div class="font-serif text-lg sm:text-xl text-gray-800 leading-relaxed space-y-8 text-center max-w-2xl mx-auto">
+                    <!-- TEXT DESCRIPTIC CONTINU I RELAXAT -->
+                    <div class="font-serif text-lg sm:text-xl text-gray-800 leading-relaxed space-y-6 text-center max-w-2xl mx-auto">
                         <p>
                             Gym Cream trenca el proteccionisme clàssic de les marques esportives. Vam néixer amb una idea molt clara: compartir els nostres logotips i actius gràfics de franc perquè tothom pugui fer-se la seva pròpia roba a casa o a la copisteria del seu barri. No creiem en guardar logos com si fossin secrets d'Estat.
                         </p>
@@ -416,3 +436,129 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
 
     </main>
 </Layout>
+
+<script is:inline define:vars={{ defaultAssets: DEFAULT_BRAND_ASSETS, defaultQuotes: DEFAULT_COMMUNITY_QUOTES, defaultPhotos: DEFAULT_COMMUNITY_PHOTOS }}>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('openBrandState', () => ({
+            assets: [],
+            quotes: [],
+            instagramQuotes: [
+                { id: 1, author: 'Marc_GC', quote: 'NO PIZZA, NO PARTY' },
+                { id: 2, author: 'CarbLover', quote: '100% REAL FITNESS' },
+                { id: 3, author: 'Laura_Beast', quote: 'ZERO POSTUREIG' },
+                { id: 4, author: 'Alex_Heavy', quote: 'SENSE ETIQUETES' },
+                { id: 5, author: 'Sonia_Lift', quote: 'AMOR PELS HIDRATS' }
+            ],
+            photos: [],
+            activeCategory: 'all',
+            likesCount: 1840,
+            quoteModalOpen: false,
+            
+            // Formulari de proposta de frase
+            newAuthor: '',
+            newQuote: '',
+            submissionSuccess: false,
+            submissionError: '',
+
+            init() {
+                // Carregar actius del CMS
+                const savedAssets = localStorage.getItem('gymcream_brand_assets');
+                if (savedAssets) {
+                    try { this.assets = JSON.parse(savedAssets); } catch(e) { this.assets = defaultAssets; }
+                } else {
+                    this.assets = defaultAssets;
+                }
+
+                // Carregar frases de la comunitat
+                this.loadQuotes();
+
+                // Carregar fotos socials
+                const savedPhotos = localStorage.getItem('gymcream_community_photos');
+                if (savedPhotos) {
+                    try { this.photos = JSON.parse(savedPhotos); } catch(e) { this.photos = defaultPhotos; }
+                } else {
+                    this.photos = defaultPhotos;
+                }
+            },
+
+            loadQuotes() {
+                const savedQuotes = localStorage.getItem('gymcream_community_quotes');
+                let allQuotes = [];
+                if (savedQuotes) {
+                    try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = defaultQuotes; }
+                } else {
+                    allQuotes = defaultQuotes;
+                }
+                this.quotes = allQuotes.filter(q => q.status === 'approved');
+            },
+
+            get filteredAssets() {
+                if (this.activeCategory === 'all') return this.assets;
+                return this.assets.filter(a => a.category === this.activeCategory);
+            },
+
+            submitInstagramQuote() {
+                if (!this.newQuote.trim() || !this.newAuthor.trim()) return;
+                
+                const newHex = {
+                    id: Date.now(),
+                    author: this.newAuthor.replace('@', ''),
+                    quote: this.newQuote.trim().toUpperCase()
+                };
+                this.instagramQuotes.unshift(newHex);
+                
+                this.newAuthor = '';
+                this.newQuote = '';
+                this.quoteModalOpen = false;
+                
+                if (window.Alpine) {
+                    const app = document.querySelector('[x-data]');
+                    if (app && app._x_dataStack && app._x_dataStack[0].showToast) {
+                        app._x_dataStack[0].showToast('Afegit el teu hexàgon al mur Gymcreamer!');
+                    }
+                }
+            },
+
+            submitQuote() {
+                this.submissionError = '';
+                if (!this.newQuote.trim()) {
+                    this.submissionError = 'Si us plau, escriu una frase motivadora o irònica.';
+                    return;
+                }
+                const author = this.newAuthor.trim() || 'Usuari Anònim';
+                
+                const savedQuotes = localStorage.getItem('gymcream_community_quotes');
+                let allQuotes = [];
+                if (savedQuotes) {
+                    try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = defaultQuotes; }
+                } else {
+                    allQuotes = defaultQuotes;
+                }
+
+                const newEntry = {
+                    id: 'quote-' + Date.now(),
+                    author: author,
+                    quote: '"' + this.newQuote.trim().toUpperCase() + '"',
+                    status: 'approved',
+                    createdAt: new Date().toISOString().split('T')[0]
+                };
+
+                allQuotes.unshift(newEntry);
+                localStorage.setItem('gymcream_community_quotes', JSON.stringify(allQuotes));
+                this.quotes.unshift(newEntry);
+
+                this.newAuthor = '';
+                this.newQuote = '';
+                this.submissionSuccess = true;
+                
+                setTimeout(() => {
+                    this.submissionSuccess = false;
+                }, 8000);
+            },
+
+            downloadPack() {
+                alert('Iniciant la descàrrega del Pack Complet de la Marca GYM CREAM (.ZIP)...');
+            }
+        }));
+    });
+</script>

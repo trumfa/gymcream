@@ -145,10 +145,22 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <nav class="flex-1 mt-8 flex flex-col gap-6 font-display text-base uppercase tracking-widest">
-            <a href="/" class="hover:text-gcYellow transition-colors">Inici</a>
-            <a href="/#catalog" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Catàleg / Drops</a>
-            <a href="/#filosofia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors">La Nostra Filosofia</a>
+        <nav class="flex-1 mt-8 flex flex-col gap-5 font-display text-sm uppercase tracking-wider font-bold">
+            <a href="/" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+                <span class="text-gcYellow">🛒</span> Botiga Principal
+            </a>
+            <a href="/open-brand#descarges" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+                <span>📦</span> Centre de Descàrregues
+            </a>
+            <a href="/open-brand#mur-frases" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+                <span>💬</span> Mur de Frases Iròniques
+            </a>
+            <a href="/open-brand#aparador-social" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+                <span>📸</span> Aparador Social
+            </a>
+            <a href="/open-brand#llicencia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+                <span>⚖️</span> Llicència Marca Oberta
+            </a>
         </nav>
     </div>
 
@@ -478,81 +490,125 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
     </template>
 
     <!-- 🏷️ HEADER / NAVBAR PRINCIPAL AMB LOGO -->
-    <header id="mainHeader" class="fixed w-full top-0 z-40 flex flex-col transition-transform duration-300">
+    <header id="mainHeader" class="fixed w-full top-0 z-40 flex flex-col shadow-xl">
         
-        <!-- BARRA DE FRASES IRÒNIQUES (Ticker) -->
-        <div id="ironicBar" class="bg-gcYellow text-black py-2 px-4 text-center overflow-hidden transition-all duration-300">
-            <p id="ironicText" class="font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.15em] transition-opacity duration-500 opacity-100">
-                "NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."
-            </p>
+        <!-- BARRA DE FRASES IRÒNIQUES (Ticker marquee que no desapareix mai) -->
+        <div id="ironicBar" class="bg-gcYellow text-black py-1.5 px-2 text-center overflow-hidden border-b border-black font-display font-black text-[10px] sm:text-xs uppercase tracking-widest relative">
+            <div class="animate-marquee whitespace-nowrap flex items-center gap-8">
+                <span class="flex items-center gap-6">
+                    <span>"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."</span>
+                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <span>"FES EL QUE VULGUIS, QUE NO T'IMPORTI QUE ET JUTGIN."</span>
+                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <span>"L'ÚNIC RECORD QUE VAL LA PENA ÉS EL TEU MULTIORGASME DE CARBS."</span>
+                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <span>"100% REAL FITNESS - 0% POSTUREIG"</span>
+                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                </span>
+                <!-- Repetició per a bucle infinit continu -->
+                <span class="flex items-center gap-6">
+                    <span>"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."</span>
+                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <span>"FES EL QUE VULGUIS, QUE NO T'IMPORTI QUE ET JUTGIN."</span>
+                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <span>"L'ÚNIC RECORD QUE VAL LA PENA ÉS EL TEU MULTIORGASME DE CARBS."</span>
+                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                    <span>"100% REAL FITNESS - 0% POSTUREIG"</span>
+                    <img src="/logos/logo primary GC no GC.png" class="h-3.5 w-auto inline-block filter brightness-0" alt="GC" />
+                </span>
+            </div>
         </div>
 
-        <!-- NAVBAR -->
-        <div id="navContainer" class={isOpenBrand ? "bg-black border-b border-gray-800 transition-colors duration-300" : "bg-transparent border-b border-transparent transition-colors duration-300"}>
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
-                <div class="flex items-center gap-6">
-                    <button @click="menuOpen = true" class="text-white hover:text-gcYellow transition-colors p-1" aria-label="Obrir menú">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                    </button>
+        <!-- NAVBAR AMB LÍNIA GROGA PERSISTENT I MENÚ MÉS PRIM -->
+        <div id="navContainer" class="bg-black border-b-2 border-gcYellow transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+                <div class="flex items-center gap-4 sm:gap-6">
+                    <!-- MENÚ HAMBURGUESA: NOMS A L'APARTAT "SOC GYMCREAMER" (/open-brand) -->
+                    {isOpenBrand ? (
+                        <button @click="menuOpen = true" class="text-white hover:text-gcYellow transition-colors p-1 flex items-center gap-1 cursor-pointer" aria-label="Obrir menú Gymcreamer">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        </button>
+                    ) : null}
 
                     <!-- LOGO INTEGRAT DES DE /public/logos/ -->
-                    <a href="/" class="flex items-center gap-2 sm:gap-3 group">
-                        <img src="/logos/logo primary GC no GC.png" alt="Gym Cream Logo" class="h-9 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105" />
-                        <span class="font-display font-black text-xl sm:text-2xl tracking-tighter uppercase leading-none">
+                    <a href="/" class="flex items-center gap-2 group">
+                        <img src="/logos/logo primary GC no GC.png" alt="Gym Cream Logo" class="h-7 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+                        <span class="font-display font-black text-lg sm:text-xl tracking-tighter uppercase leading-none">
                             <span class="text-white">GYM</span> <span class="text-gcYellow">CREAM</span>
                         </span>
                     </a>
                 </div>
 
-                <nav class="hidden lg:flex gap-6 font-display text-sm tracking-widest uppercase font-bold items-center">
-                    <template x-for="cat in categories" :key="cat.id">
-                        <a 
-                            href="#catalog" 
-                            @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)" 
-                            :class="[
-                                cat.name === 'REBAIXATS' ? (activeCategory === cat.name ? 'text-red-500 border-b-2 border-red-500 pb-1' : 'text-red-400 hover:text-red-300 pb-1') :
-                                (activeCategory === cat.name ? 'text-gcYellow border-b-2 border-gcYellow pb-1' : 'hover:text-gcYellow text-gray-200 transition-colors pb-1')
-                            ]"
-                            class="transition-colors flex items-center gap-1 cursor-pointer"
-                        >
-                            <template x-if="cat.name === 'REBAIXATS'"><span>🔥</span></template>
-                            <span x-text="cat.name"></span>
-                        </a>
-                    </template>
+                <!-- NAVEGACIÓ CENTRAL -->
+                <nav class="hidden lg:flex gap-6 font-display text-xs tracking-widest uppercase font-bold items-center">
+                    {!isOpenBrand ? (
+                        <template x-for="cat in categories" :key="cat.id">
+                            <a 
+                                href="#catalog" 
+                                @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)" 
+                                :class="[
+                                    cat.name === 'REBAIXATS' ? (activeCategory === cat.name ? 'text-red-500 border-b-2 border-red-500 pb-1' : 'text-red-400 hover:text-red-300 pb-1') :
+                                    (activeCategory === cat.name ? 'text-gcYellow border-b-2 border-gcYellow pb-1' : 'hover:text-gcYellow text-gray-200 transition-colors pb-1')
+                                ]"
+                                class="transition-colors flex items-center gap-1 cursor-pointer"
+                            >
+                                <template x-if="cat.name === 'REBAIXATS'"><span>🔥</span></template>
+                                <span x-text="cat.name"></span>
+                            </a>
+                        </template>
+                    ) : (
+                        <div class="flex items-center gap-6 text-gray-300">
+                            <a href="/open-brand#descarges" class="hover:text-gcYellow transition-colors">Centre de Descàrregues</a>
+                            <a href="/open-brand#mur-frases" class="hover:text-gcYellow transition-colors">Mur de Frases</a>
+                            <a href="/open-brand#aparador-social" class="hover:text-gcYellow transition-colors">Aparador Social</a>
+                        </div>
+                    )}
                 </nav>
 
-                <div class="flex items-center gap-3 sm:gap-5">
-                    <!-- BOTÓ MARCA OBERTA / BOTÓ TORNAR A BOTIGA -->
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <!-- CANVIADORS D'IDIOMA (CA / ES / EN) -->
+                    <div class="relative" x-data="{ langOpen: false }">
+                        <button @click="langOpen = !langOpen" class="text-xs font-display font-extrabold text-gray-300 hover:text-gcYellow px-2 py-1 border border-gray-800 hover:border-gcYellow transition-colors flex items-center gap-1 rounded-sm">
+                            <span x-text="lang ? lang.toUpperCase() : 'CA'">CA</span>
+                            <svg class="w-3 h-3 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div x-show="langOpen" @click.away="langOpen = false" class="absolute right-0 mt-1 w-20 bg-black border border-gcYellow text-white font-display text-xs z-50 shadow-xl" x-cloak>
+                            <button @click="lang = 'ca'; localStorage.setItem('gymcream_lang', 'ca'); langOpen = false; showToast('Idioma canviat a Català')" class="w-full text-left px-3 py-1.5 hover:bg-gcYellow hover:text-black font-bold">CA</button>
+                            <button @click="lang = 'es'; localStorage.setItem('gymcream_lang', 'es'); langOpen = false; showToast('Idioma cambiado a Español')" class="w-full text-left px-3 py-1.5 hover:bg-gcYellow hover:text-black font-bold">ES</button>
+                            <button @click="lang = 'en'; localStorage.setItem('gymcream_lang', 'en'); langOpen = false; showToast('Language changed to English')" class="w-full text-left px-3 py-1.5 hover:bg-gcYellow hover:text-black font-bold">EN</button>
+                        </div>
+                    </div>
+
+                    <!-- BOTÓ SOC GYMCREAMER (SENSE ICONO COM HA DEMANAT L'USUARI) -->
                     {isOpenBrand ? (
                         <a 
                             href="/" 
-                            class="bg-white hover:bg-gcYellow text-black font-display font-black text-[11px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm flex items-center gap-1.5 rounded-sm"
+                            class="bg-white hover:bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm rounded-sm"
                             title="Tornar a la botiga principal"
                         >
-                            <span>←</span>
-                            <span class="hidden sm:inline">TORNAR A LA BOTIGA</span>
+                            <span class="hidden sm:inline" x-text="lang === 'ca' ? 'TORNAR A LA BOTIGA' : (lang === 'es' ? 'VOLVER A LA TIENDA' : 'BACK TO STORE')">TORNAR A LA BOTIGA</span>
                             <span class="sm:hidden">BOTIGA</span>
                         </a>
                     ) : (
                         <a 
                             href="/open-brand" 
-                            class="bg-gcYellow hover:bg-white text-black font-display font-black text-[11px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm flex items-center gap-1.5 rounded-sm"
-                            title="Accés al centre de descàrregues i filosofia Marca Oberta"
+                            class="bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm rounded-sm"
+                            title="Accés a Sóc Gymcreamer"
                         >
-                            <span>🎨</span>
-                            <span class="hidden sm:inline">MARCA OBERTA</span>
-                            <span class="sm:hidden">OPEN BRAND</span>
+                            <span class="hidden sm:inline" x-text="lang === 'ca' ? 'SÓC GYMCREAMER' : (lang === 'es' ? 'SOY GYMCREAMER' : 'I\'M A GYMCREAMER')">SÓC GYMCREAMER</span>
+                            <span class="sm:hidden">GYMCREAMER</span>
                         </a>
                     )}
 
                     <!-- BOTÓ DE CERCA / LUPA EN DIRECTE -->
                     <button @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())" class="text-white hover:text-gcYellow transition-colors p-1" aria-label="Cercar a la lupa">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
-                    <!-- BOTÓ DE CARRET -->
-                    <button @click="cartOpen = true" class="text-white hover:text-gcYellow transition-colors relative p-1" aria-label="Carret de la compra">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        <span class="absolute -top-2 -right-2 bg-gcYellow text-black text-xs font-black rounded-full h-5 w-5 flex items-center justify-center shadow" x-text="cartCount">0</span>
+
+                    <!-- BOTÓ DE CARRET BÉ VISIBLE -->
+                    <button @click="cartOpen = true" class="text-white hover:text-gcYellow transition-colors relative p-1 flex items-center justify-center cursor-pointer" aria-label="Carret de la compra">
+                        <svg class="w-6 h-6 stroke-white hover:stroke-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <span class="absolute -top-1.5 -right-2 bg-gcYellow text-black text-[10px] font-extrabold rounded-full h-5 w-5 flex items-center justify-center shadow font-sans border border-black" x-text="cartCount">0</span>
                     </button>
                 </div>
             </div>
@@ -569,6 +625,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
             cartOpen: false,
             searchQuery: '',
             activeCategory: 'TOT',
+            lang: localStorage.getItem('gymcream_lang') || 'ca',
             
             // Modal Product Detail (+info)
             productModalOpen: false,

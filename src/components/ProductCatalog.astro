@@ -2,149 +2,150 @@
 import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
 ---
 
-<!-- SECCIÓ DE PRODUCTES -->
-<section id="catalog" x-data="catalogState" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4 border-b border-gray-900 pb-8">
-        <div>
-            <span class="font-display text-xs text-gcYellow uppercase tracking-widest">Col·lecció Oficial 2026</span>
-            <h2 class="font-display text-3xl md:text-5xl font-black uppercase tracking-wider mt-1 text-white">
-                Últims Drops &amp; Productes
-            </h2>
+<!-- SECCIÓ DE PRODUCTES (FONS BLANC) -->
+<section id="catalog" x-data="catalogState" class="bg-white border-y border-gray-200 text-black py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4 border-b border-gray-200 pb-8">
+            <div>
+                <span class="font-display text-xs text-black font-extrabold uppercase tracking-widest bg-gcYellow px-2.5 py-1 inline-block">Col·lecció Oficial 2026</span>
+                <h2 class="font-serif italic text-3xl md:text-5xl text-black mt-3">
+                    Últims Drops &amp; Productes
+                </h2>
+            </div>
+            
+            <!-- Filtres ràpids per categoria carregats des de les categories del CMS -->
+            <div class="flex flex-wrap gap-2 text-xs font-sans font-bold uppercase tracking-wider">
+                <template x-for="cat in categories" :key="cat.id">
+                    <button 
+                        @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)"
+                        :class="[
+                            cat.name === 'REBAIXATS' ? 
+                            (activeCategory === cat.name ? 'bg-red-600 text-white font-bold border-red-600' : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100') :
+                            (activeCategory === cat.name ? 'bg-black text-white font-bold border-black' : 'bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300')
+                        ]"
+                        class="px-4 py-2 border transition-colors flex items-center gap-1 cursor-pointer rounded-sm"
+                    >
+                        <template x-if="cat.name === 'REBAIXATS'"><span>🔥</span></template>
+                        <span x-text="cat.name"></span>
+                    </button>
+                </template>
+            </div>
         </div>
-        
-        <!-- Filtres ràpids per categoria carregats des de les categories del CMS -->
-        <div class="flex flex-wrap gap-2 text-xs font-display uppercase tracking-wider">
-            <template x-for="cat in categories" :key="cat.id">
-                <button 
-                    @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)"
-                    :class="[
-                        cat.name === 'REBAIXATS' ? 
-                        (activeCategory === cat.name ? 'bg-red-600 text-white font-bold border-red-500' : 'bg-gray-900 text-red-400 border-red-900/50 hover:bg-gray-800') :
-                        (activeCategory === cat.name ? 'bg-gcYellow text-black font-bold border-gcYellow' : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border-gray-800')
-                    ]"
-                    class="px-4 py-2 border transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                    <template x-if="cat.name === 'REBAIXATS'"><span>🔥</span></template>
-                    <span x-text="cat.name"></span>
-                </button>
-            </template>
-        </div>
-    </div>
 
-    <!-- Graella de Productes -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <template x-for="product in visibleProducts" :key="product.id">
-            <div class="group relative bg-black border border-gray-900 hover:border-gcYellow/60 transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-lg hover:shadow-gcYellow/5">
-                
-                <!-- Badges (Rebaixat, Bestseller, Esgotat, Nou Drop) -->
-                <div class="absolute top-3 left-3 flex flex-col gap-1 z-20">
-                    <template x-if="product.isSoldOut || (product.stock !== undefined && product.stock <= 0)">
-                        <span class="bg-red-600 text-white font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider shadow">
-                            ESGOTAT
-                        </span>
-                    </template>
-                    <template x-if="!(product.isSoldOut || (product.stock !== undefined && product.stock <= 0)) && product.isSale">
-                        <span class="bg-red-500 text-white font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider shadow flex items-center gap-1">
-                            🔥 REBAIXAT <span x-text="product.discountPercent ? `-${product.discountPercent}%` : ''"></span>
-                        </span>
-                    </template>
-                    <template x-if="!(product.isSoldOut || (product.stock !== undefined && product.stock <= 0)) && !product.isSale && product.badge">
-                        <span 
-                            :class="product.badge === 'BESTSELLER' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
-                            class="font-display text-[10px] font-black px-2.5 py-1 uppercase tracking-wider shadow"
-                            x-text="product.badge"
-                        ></span>
-                    </template>
-                </div>
-
-                <!-- Imatges Front / Back Hover Preview -->
-                <div 
-                    @click="$dispatch('open-product-modal', product)"
-                    class="relative aspect-[3/4] bg-gray-950 overflow-hidden cursor-pointer group-hover:opacity-95 transition-opacity"
-                >
-                    <img 
-                        :src="product.imageFront" 
-                        :alt="product.name" 
-                        :class="product.isSoldOut || (product.stock !== undefined && product.stock <= 0) ? 'opacity-40 grayscale-[40%]' : ''"
-                        class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0 absolute inset-0"
-                    />
-                    <img 
-                        :src="product.imageBack || product.imageFront" 
-                        :alt="`${product.name} detall`" 
-                        :class="product.isSoldOut || (product.stock !== undefined && product.stock <= 0) ? 'opacity-30 grayscale-[40%]' : ''"
-                        class="w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 absolute inset-0"
-                    />
+        <!-- Graella de Productes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <template x-for="product in visibleProducts" :key="product.id">
+                <div class="group relative bg-white border border-gray-200 hover:border-black transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-md rounded-sm">
                     
-                    <!-- Overlay indicator per a Esgotat -->
-                    <template x-if="product.isSoldOut || (product.stock !== undefined && product.stock <= 0)">
-                        <div class="absolute inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center p-4">
-                            <span class="border-2 border-red-500 text-red-500 font-display font-black text-sm uppercase tracking-widest px-4 py-2 rotate-[-6deg] bg-black/80">
-                                SENSE ESTOC
-                            </span>
-                        </div>
-                    </template>
-                </div>
-
-                <!-- Informació del Producte -->
-                <div class="p-5 flex-1 flex flex-col justify-between bg-zinc-950/40">
-                    <div>
-                        <div class="text-[10px] font-display text-gray-500 uppercase tracking-widest mb-1" x-text="product.category"></div>
-                        <h3 
-                            @click="$dispatch('open-product-modal', product)"
-                            class="font-display text-sm font-bold uppercase tracking-wide cursor-pointer hover:text-gcYellow transition-colors line-clamp-2 min-h-[2.5rem] flex items-center"
-                            :class="product.isSoldOut || (product.stock !== undefined && product.stock <= 0) ? 'text-gray-400' : 'text-white'"
-                            x-text="product.name"
-                        ></h3>
-
-                        <!-- Display de Preu vell ratllat + preu nou -->
-                        <div class="mt-2 mb-2 flex items-baseline gap-2">
-                            <template x-if="product.oldPrice || product.isSale">
-                                <span class="font-sans text-xs text-gray-500 line-through" x-text="`${product.oldPrice ? product.oldPrice.toFixed(2) : (product.price * 1.25).toFixed(2)} €`"></span>
-                            </template>
-                            <span 
-                                :class="product.isSale ? 'text-red-400 font-black' : ((product.isSoldOut || (product.stock !== undefined && product.stock <= 0)) ? 'text-gcYellow/60 font-bold' : 'text-gcYellow font-extrabold')"
-                                class="font-sans text-xl" 
-                                x-text="`${product.price.toFixed(2)} €`"
-                            ></span>
-                        </div>
-
-                        <!-- Badge Distintiu Oficial Gym Cream -->
-                        <div class="mb-3 flex items-center gap-1 text-[10px] text-gray-400 font-mono">
-                            <span class="text-gcYellow">🛡️</span>
-                            <span>Inclou Distintiu Físic Oficial</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Botons Acció Fora: Botó "+INFO" i Botó "Subscriure" si està esgotat -->
-                    <div class="space-y-2 pt-2 border-t border-gray-900">
-                        <!-- Botó +INFO (Sempre visible) -->
-                        <button 
-                            @click="$dispatch('open-product-modal', product)"
-                            class="w-full bg-zinc-900 text-white font-display text-xs font-bold uppercase py-3 border border-gray-800 hover:border-gcYellow hover:bg-gcYellow hover:text-black transition-all cursor-pointer flex items-center justify-center gap-2 group/btn"
-                        >
-                            <svg class="w-4 h-4 text-gcYellow group-hover/btn:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            +INFO / VEURE DETALLS
-                        </button>
-
-                        <!-- Botó Subscriure't si el producte està ESGOTAT -->
+                    <!-- Badges (Rebaixat, Bestseller, Esgotat, Nou Drop) -->
+                    <div class="absolute top-3 left-3 flex flex-col gap-1 z-20">
                         <template x-if="product.isSoldOut || (product.stock !== undefined && product.stock <= 0)">
-                            <button 
-                                @click="$dispatch('open-restock-modal', product)"
-                                class="w-full bg-red-950/60 text-red-300 hover:bg-red-900 hover:text-white font-display text-[11px] font-bold uppercase py-2.5 border border-red-900/60 transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                            >
-                                <svg class="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v2.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-                                </svg>
-                                Avisa'm quan hi hagi estoc
-                            </button>
+                            <span class="bg-red-600 text-white font-sans text-[10px] font-bold px-2.5 py-1 uppercase tracking-wider shadow">
+                                ESGOTAT
+                            </span>
+                        </template>
+                        <template x-if="!(product.isSoldOut || (product.stock !== undefined && product.stock <= 0)) && product.isSale">
+                            <span class="bg-red-600 text-white font-sans text-[10px] font-bold px-2.5 py-1 uppercase tracking-wider shadow flex items-center gap-1">
+                                🔥 REBAIXAT <span x-text="product.discountPercent ? `-${product.discountPercent}%` : ''"></span>
+                            </span>
+                        </template>
+                        <template x-if="!(product.isSoldOut || (product.stock !== undefined && product.stock <= 0)) && !product.isSale && product.badge">
+                            <span 
+                                :class="product.badge === 'BESTSELLER' ? 'bg-gcYellow text-black font-bold' : 'bg-black text-white font-bold'"
+                                class="font-sans text-[10px] px-2.5 py-1 uppercase tracking-wider shadow"
+                                x-text="product.badge"
+                            ></span>
                         </template>
                     </div>
 
+                    <!-- Imatges Front / Back Hover Preview -->
+                    <div 
+                        @click="$dispatch('open-product-modal', product)"
+                        class="relative aspect-[3/4] bg-[#FAF9F5] overflow-hidden cursor-pointer group-hover:opacity-95 transition-opacity"
+                    >
+                        <img 
+                            :src="product.imageFront" 
+                            :alt="product.name" 
+                            :class="product.isSoldOut || (product.stock !== undefined && product.stock <= 0) ? 'opacity-40 grayscale-[40%]' : ''"
+                            class="w-full h-full object-cover transition-opacity duration-500 group-hover:opacity-0 absolute inset-0"
+                        />
+                        <img 
+                            :src="product.imageBack || product.imageFront" 
+                            :alt="`${product.name} detall`" 
+                            :class="product.isSoldOut || (product.stock !== undefined && product.stock <= 0) ? 'opacity-30 grayscale-[40%]' : ''"
+                            class="w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100 absolute inset-0"
+                        />
+                        
+                        <!-- Overlay indicator per a Esgotat -->
+                        <template x-if="product.isSoldOut || (product.stock !== undefined && product.stock <= 0)">
+                            <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px] flex items-center justify-center p-4">
+                                <span class="border-2 border-red-500 text-red-500 font-sans font-bold text-xs uppercase tracking-widest px-4 py-2 rotate-[-6deg] bg-white/90">
+                                    SENSE ESTOC
+                                </span>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Informació del Producte -->
+                    <div class="p-5 flex-1 flex flex-col justify-between bg-white border-t border-gray-100">
+                        <div>
+                            <div class="text-[10px] font-sans font-bold text-gray-500 uppercase tracking-widest mb-1" x-text="product.category"></div>
+                            <h3 
+                                @click="$dispatch('open-product-modal', product)"
+                                class="font-serif text-base font-bold tracking-wide cursor-pointer hover:text-gray-700 transition-colors line-clamp-2 min-h-[2.5rem] flex items-center text-black"
+                                x-text="product.name"
+                            ></h3>
+
+                            <!-- Display de Preu vell ratllat + preu nou -->
+                            <div class="mt-2 mb-2 flex items-baseline gap-2">
+                                <template x-if="product.oldPrice || product.isSale">
+                                    <span class="font-sans text-xs text-gray-400 line-through" x-text="`${product.oldPrice ? product.oldPrice.toFixed(2) : (product.price * 1.25).toFixed(2)} €`"></span>
+                                </template>
+                                <span 
+                                    :class="product.isSale ? 'text-red-600 font-extrabold' : 'text-black font-extrabold'"
+                                    class="font-sans text-xl" 
+                                    x-text="`${product.price.toFixed(2)} €`"
+                                ></span>
+                            </div>
+
+                            <!-- Badge Distintiu Oficial Gym Cream -->
+                            <div class="mb-3 flex items-center gap-1.5 text-[10px] text-gray-600 font-sans">
+                                <span class="text-black font-bold">🛡️</span>
+                                <span>Inclou Distintiu Físic Oficial</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Botons Acció Fora: Botó "+INFO" i Botó "Subscriure" si està esgotat -->
+                        <div class="space-y-2 pt-3 border-t border-gray-100">
+                            <!-- Botó +INFO (Sempre visible) -->
+                            <button 
+                                @click="$dispatch('open-product-modal', product)"
+                                class="w-full bg-black text-white font-sans text-xs font-bold uppercase py-3 hover:bg-gcYellow hover:text-black transition-all cursor-pointer flex items-center justify-center gap-2 rounded-sm"
+                            >
+                                <svg class="w-4 h-4 text-white hover:text-black transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>+INFO / VEURE DETALLS</span>
+                            </button>
+
+                            <!-- Botó Subscriure't si el producte està ESGOTAT -->
+                            <template x-if="product.isSoldOut || (product.stock !== undefined && product.stock <= 0)">
+                                <button 
+                                    @click="$dispatch('open-restock-modal', product)"
+                                    class="w-full bg-red-50 text-red-700 hover:bg-red-100 font-sans text-[11px] font-bold uppercase py-2.5 border border-red-200 transition-all cursor-pointer flex items-center justify-center gap-1.5 rounded-sm"
+                                >
+                                    <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v2.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                    </svg>
+                                    Avisa'm quan hi hagi estoc
+                                </button>
+                            </template>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
-        </template>
+            </template>
+        </div>
     </div>
 </section>
 

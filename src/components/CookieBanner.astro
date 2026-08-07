@@ -1,0 +1,225 @@
+---
+---
+
+<!-- COOKIE CONSENT BANNER & PREFERENCES MODAL -->
+<div 
+    x-data="{
+        cookieConsent: null,
+        showBanner: false,
+        showPreferencesModal: false,
+        preferences: {
+            essential: true,
+            analytics: true,
+            functional: true
+        },
+
+        init() {
+            const saved = localStorage.getItem('gymcream_cookie_consent');
+            if (saved) {
+                try {
+                    this.cookieConsent = JSON.parse(saved);
+                    this.preferences = { ...this.preferences, ...this.cookieConsent };
+                } catch(e) {
+                    this.showBanner = true;
+                }
+            } else {
+                this.showBanner = true;
+            }
+
+            // Escoltar esdeveniment personalitzat per obrir el modal de cookies des del footer
+            window.addEventListener('open-cookie-preferences', () => {
+                this.showPreferencesModal = true;
+            });
+        },
+
+        acceptAll() {
+            this.preferences = { essential: true, analytics: true, functional: true };
+            this.saveConsent('all');
+        },
+
+        rejectOptional() {
+            this.preferences = { essential: true, analytics: false, functional: false };
+            this.saveConsent('essential-only');
+        },
+
+        saveCustomPreferences() {
+            this.saveConsent('custom');
+            this.showPreferencesModal = false;
+        },
+
+        saveConsent(type) {
+            const consentData = {
+                type: type,
+                timestamp: new Date().toISOString(),
+                ...this.preferences
+            };
+            localStorage.setItem('gymcream_cookie_consent', JSON.stringify(consentData));
+            this.cookieConsent = consentData;
+            this.showBanner = false;
+            
+            if (window.Alpine) {
+                const app = document.querySelector('[x-data]');
+                if (app && app._x_dataStack && app._x_dataStack[0].showToast) {
+                    app._x_dataStack[0].showToast('Preferències de cookies desades correctament.');
+                }
+            }
+        }
+    }"
+>
+    <!-- OVERLAY PER AL MODAL DE PREFERÈNCIES -->
+    <div 
+        x-show="showPreferencesModal" 
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        @click="showPreferencesModal = false" 
+        class="fixed inset-0 bg-black/85 z-[210] backdrop-blur-md"
+        x-cloak
+    ></div>
+
+    <!-- BANNER DE COOKIES (FLOTANT A LA PART INFERIOR) -->
+    <div 
+        x-show="showBanner && !showPreferencesModal" 
+        x-transition:enter="transition ease-out duration-400 transform"
+        x-transition:enter-start="translate-y-full opacity-0"
+        x-transition:enter-end="translate-y-0 opacity-100"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="translate-y-0 opacity-100"
+        x-transition:leave-end="translate-y-full opacity-0"
+        class="fixed bottom-0 left-0 right-0 z-[200] bg-black/95 border-t-2 border-gcYellow text-white p-4 sm:p-6 shadow-2xl backdrop-blur-md"
+        x-cloak
+    >
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3 max-w-3xl">
+                <!-- Icona de Cookie nítida i neta en SVG -->
+                <div class="text-gcYellow pt-0.5 flex-shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM12 7a1 1 0 100-2 1 1 0 000 2zm-3 4a1 1 0 100-2 1 1 0 000 2zm6 1a1 1 0 100-2 1 1 0 000 2zm-4 4a1 1 0 100-2 1 1 0 000 2zm4-1a1 1 0 100-2 1 1 0 000 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-display text-xs sm:text-sm font-bold uppercase tracking-wider text-gcYellow mb-1">
+                        Política de Cookies i Privacitat
+                    </h4>
+                    <p class="font-sans text-xs text-gray-300 leading-relaxed">
+                        Utilitzem cookies pròpies i de tercers per garantir el funcionament bàsic de la botiga, analitzar la navegació i personalitzar la teva experiència. Pots acceptar totes les cookies, rebutjar les opcionals o configurar les teves preferències.
+                    </p>
+                </div>
+            </div>
+
+            <!-- BOTONS D'ACCIÓ -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto flex-shrink-0 pt-2 md:pt-0">
+                <button 
+                    @click="acceptAll()" 
+                    class="flex-1 md:flex-none bg-gcYellow hover:bg-white text-black font-display font-black text-xs uppercase px-4 py-2.5 transition-colors tracking-wider rounded-sm cursor-pointer"
+                >
+                    Acceptar tot
+                </button>
+                <button 
+                    @click="rejectOptional()" 
+                    class="flex-1 md:flex-none bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-200 font-display font-bold text-xs uppercase px-4 py-2.5 transition-colors tracking-wider rounded-sm cursor-pointer"
+                >
+                    Rebutjar opcionals
+                </button>
+                <button 
+                    @click="showPreferencesModal = true" 
+                    class="flex-1 md:flex-none text-gray-400 hover:text-gcYellow underline font-sans text-xs px-2 py-2.5 transition-colors cursor-pointer"
+                >
+                    Administrar preferències
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIGURACIÓ DE PREFERÈNCIES DE COOKIES -->
+    <div 
+        x-show="showPreferencesModal" 
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="fixed inset-0 z-[220] flex items-center justify-center p-4 overflow-y-auto"
+        x-cloak
+    >
+        <div class="bg-gcDark border border-gray-800 text-white w-full max-w-xl p-6 sm:p-8 shadow-2xl relative rounded-sm">
+            <!-- Botó tancar -->
+            <button @click="showPreferencesModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <div class="flex items-center gap-3 pb-4 border-b border-gray-800 mb-6">
+                <svg class="w-6 h-6 text-gcYellow" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <h3 class="font-display text-lg font-black uppercase text-white tracking-wider">
+                    Panell de Preferències de Cookies
+                </h3>
+            </div>
+
+            <div class="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+                <!-- 1. TIPO ESSENCIAL -->
+                <div class="p-4 bg-black border border-gray-800 rounded-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="font-display text-xs font-bold uppercase text-gcYellow">1. Cookies Tècniques Essencials</span>
+                            <span class="text-[9px] bg-gcYellow text-black font-extrabold px-2 py-0.5 uppercase tracking-wider">Sempre Actives</span>
+                        </div>
+                    </div>
+                    <p class="font-sans text-xs text-gray-400 leading-relaxed">
+                        Són absolutament necessàries per al funcionament del lloc web, guardar el carret de la compra, mantenir la sessió de navegació i garantir la seguretat. No es poden desactivar.
+                    </p>
+                </div>
+
+                <!-- 2. TIPO ANALÍTICA -->
+                <div class="p-4 bg-black border border-gray-800 rounded-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-display text-xs font-bold uppercase text-white">2. Cookies d'Anàlisi i Rendiment</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" x-model="preferences.analytics" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gcYellow"></div>
+                        </label>
+                    </div>
+                    <p class="font-sans text-xs text-gray-400 leading-relaxed">
+                        Ens permeten comptar les visites i les fonts de tràfic per mesurar i millorar el rendiment de la botiga Gym Cream. Tota la informació és anònima.
+                    </p>
+                </div>
+
+                <!-- 3. TIPO FUNCIONAL I MÀRKETING -->
+                <div class="p-4 bg-black border border-gray-800 rounded-sm">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-display text-xs font-bold uppercase text-white">3. Cookies Funcionals i Personalització</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" x-model="preferences.functional" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gcYellow"></div>
+                        </label>
+                    </div>
+                    <p class="font-sans text-xs text-gray-400 leading-relaxed">
+                        S'utilitzen per recordar les teves preferències d'idioma, recomanacions de producte personalitzades i integració amb xarxes socials com Instagram (#gymcream).
+                    </p>
+                </div>
+            </div>
+
+            <!-- BOTONS D'ACCIÓ DEL MODAL -->
+            <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-800 mt-6">
+                <button 
+                    @click="rejectOptional()" 
+                    class="bg-gray-900 hover:bg-gray-800 border border-gray-700 text-gray-300 font-display font-bold text-xs uppercase px-4 py-2.5 transition-colors tracking-wider rounded-sm cursor-pointer"
+                >
+                    Rebutjar opcions
+                </button>
+                <button 
+                    @click="saveCustomPreferences()" 
+                    class="bg-gcYellow hover:bg-white text-black font-display font-black text-xs uppercase px-6 py-2.5 transition-colors tracking-wider rounded-sm cursor-pointer"
+                >
+                    Guardar Preferències
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

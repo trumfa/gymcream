@@ -31,6 +31,31 @@ body {
 	background: #ffe600;
 }
 
+/* Marquee Animation for Ironic Quotes Bar */
+@keyframes marquee {
+	0% {
+		transform: translateX(0%);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
+}
+
+.animate-marquee {
+	display: flex;
+	width: max-content;
+	animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+	animation-play-state: paused;
+}
+
+/* Hexagon Clip Path for Gymcreamer Quotes */
+.hexagon-shape {
+	clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
 /* Neon Text Overlay */
 .neon-text-overlay {
 	color: transparent;
