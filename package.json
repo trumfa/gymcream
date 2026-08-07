@@ -11,6 +11,9 @@
 	},
 	"bugs": "https://github.com/zankhq/astro-starter/issues",
 	"homepage": "https://github.com/zankhq/astro-starter",
+	"engines": {
+		"node": "20.x"
+	},
 	"files": ["*"],
 	"scripts": {
 		"dev": "astro dev --host 0.0.0.0 --port 3000",
