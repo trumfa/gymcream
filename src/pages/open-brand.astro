@@ -61,26 +61,24 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                         </button>
 
-                        <!-- Contenidor d'Hexàgons transparents amb perímetre groc -->
+                        <!-- Contenidor de Rectangles amb perímetre blanc i llum groga recorrent -->
                         <div x-ref="hexContainer" class="flex gap-6 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start flex-1">
                             <template x-for="item in instagramQuotes" :key="item.id">
-                                <div class="flex flex-col items-center flex-shrink-0 w-36 sm:w-44 text-center group cursor-default">
-                                    <!-- Hexàgon SVG: Perímetre groc i fons transparent -->
-                                    <div class="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center p-4">
-                                        <svg class="absolute inset-0 w-full h-full text-gcYellow transition-all duration-300 group-hover:scale-105 drop-shadow-md" viewBox="0 0 100 100" preserveAspectRatio="none">
-                                            <polygon 
-                                                points="50,3 95,26 95,74 50,97 5,74 5,26" 
-                                                fill="transparent" 
-                                                stroke="currentColor" 
-                                                stroke-width="3" 
-                                                class="transition-colors duration-300 group-hover:fill-[#ffe600] group-hover:stroke-[#ffe600]"
-                                            />
+                                <div class="flex flex-col items-center flex-shrink-0 w-56 sm:w-64 text-center group cursor-default">
+                                    <!-- Rectangle: Perímetre blanc amb feix de llum groga animat -->
+                                    <div class="relative w-full h-32 sm:h-36 flex items-center justify-center p-4 bg-zinc-950/90 rounded-lg overflow-hidden shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+                                        <!-- SVG de fons amb perímetre blanc i llum groga recorrent -->
+                                        <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                                            <!-- Base perimètrica blanca -->
+                                            <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="7" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" />
+                                            <!-- Feix de llum groga recorrent el perímetre -->
+                                            <rect class="border-glow-beam" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="7" fill="none" stroke="#ffe600" stroke-width="3" stroke-dasharray="90 400" stroke-linecap="round" />
                                         </svg>
-                                        <!-- Frase a dins de l'hexàgon -->
-                                        <span class="relative z-10 font-display font-black text-[10px] sm:text-xs leading-tight uppercase tracking-tight text-white group-hover:text-black transition-colors duration-300 px-2 select-none" x-text="item.quote"></span>
+                                        <!-- Frase a dins del rectangle -->
+                                        <span class="relative z-10 font-display font-black text-xs sm:text-sm leading-snug uppercase tracking-tight text-white transition-colors duration-300 px-2 select-none text-center drop-shadow-md" x-text="item.quote"></span>
                                     </div>
-                                    <!-- Pseudònim a sota l'hexàgon -->
-                                    <span class="mt-2 font-display font-bold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="`@${item.author}`"></span>
+                                    <!-- Pseudònim a sota del rectangle -->
+                                    <span class="mt-2.5 font-display font-bold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="`@${item.author}`"></span>
                                 </div>
                             </template>
                         </div>
@@ -603,6 +601,15 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 try {
                     localStorage.setItem('gymcream_community_quotes', JSON.stringify(allQuotes));
                 } catch(e) {}
+
+                // Enviar notificació per email al servidor (jordibabi@gmail.com)
+                try {
+                    fetch('/api/notify-quote', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ author: author, quote: rawQuote })
+                    }).catch(err => console.log('Email notify request processed:', err));
+                } catch(e) {}
                 
                 this.newAuthor = '';
                 this.newQuote = '';
@@ -611,14 +618,14 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 if (window.Alpine) {
                     const app = document.querySelector('[x-data]');
                     if (app && app._x_dataStack && app._x_dataStack[0].showToast) {
-                        app._x_dataStack[0].showToast('Frase enviada! Està pendent de validació al CMS.');
+                        app._x_dataStack[0].showToast("Frase enviada! S'ha registrat i enviat avís per email a l'administrador.");
                     }
                 }
 
                 setTimeout(() => {
                     this.submissionSuccess = false;
                     this.quoteModalOpen = false;
-                }, 3000);
+                }, 3500);
             },
 
             downloadPack() {
@@ -632,4 +639,11 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
     } else {
         document.addEventListener('alpine:init', registerOpenBrandState);
     }
+
+    document.addEventListener('astro:page-load', () => {
+        registerOpenBrandState();
+        if (window.Alpine) {
+            window.Alpine.initTree(document.body);
+        }
+    });
 </script>

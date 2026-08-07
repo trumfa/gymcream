@@ -33,5 +33,13 @@ const { image, title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.prop
 		<Footer />
 		<WhatsAppButton />
 		<CookieBanner />
+
+		<script is:inline>
+			document.addEventListener('astro:page-load', () => {
+				if (window.Alpine) {
+					window.Alpine.initTree(document.body);
+				}
+			});
+		</script>
 	</body>
 </html>

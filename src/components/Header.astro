@@ -387,17 +387,48 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                                 </template>
                             </div>
                         </div>
+
+                        <!-- SELECCIÓ DE QUANTITAT -->
+                        <div class="mb-6" x-show="!modalProduct.isSoldOut">
+                            <label class="block font-display text-xs uppercase text-black tracking-widest font-extrabold mb-2.5">
+                                Quantitat:
+                            </label>
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center border-2 border-black rounded-sm overflow-hidden bg-gray-50 shadow-sm">
+                                    <button 
+                                        type="button"
+                                        @click="modalQuantity = Math.max(1, modalQuantity - 1)"
+                                        class="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-black hover:text-white transition-colors text-black font-black text-lg cursor-pointer select-none"
+                                        title="Reduir quantitat"
+                                    >
+                                        -
+                                    </button>
+                                    <span class="w-12 h-10 flex items-center justify-center font-sans font-black text-base text-black bg-white select-none border-x border-gray-200" x-text="modalQuantity"></span>
+                                    <button 
+                                        type="button"
+                                        @click="modalQuantity = modalQuantity + 1"
+                                        class="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-black hover:text-white transition-colors text-black font-black text-lg cursor-pointer select-none"
+                                        title="Augmentar quantitat"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                                <div class="text-xs text-gray-700 font-bold font-sans">
+                                    Preu total: <span class="text-black font-black text-sm" x-text="`${(modalProduct.price * modalQuantity).toFixed(2)} €`"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- BOTÓ D'AFEGIR AL CARRET / BOTÓ FOSC SI ESTÀ ESGOTAT -->
                     <div class="pt-4 border-t border-gray-200 space-y-3">
                         <template x-if="!modalProduct.isSoldOut">
                             <button 
-                                @click="addToCart({ id: modalProduct.id, name: modalProduct.name, price: modalProduct.price, oldPrice: modalProduct.oldPrice, size: modalSelectedSize, image: modalActiveImage }); productModalOpen = false;"
+                                @click="addToCart({ id: modalProduct.id, name: modalProduct.name, price: modalProduct.price, oldPrice: modalProduct.oldPrice, size: modalSelectedSize, image: modalActiveImage }, modalQuantity); productModalOpen = false;"
                                 class="w-full bg-black text-white font-display font-black text-sm uppercase py-4 hover:bg-gcYellow hover:text-black transition-all cursor-pointer shadow-lg tracking-wider flex items-center justify-center gap-2 rounded-sm"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                                AFEGIR AL CARRET
+                                AFEGIR AL CARRET (<span x-text="modalQuantity"></span>)
                             </button>
                         </template>
 
@@ -645,6 +676,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
             modalProduct: null,
             modalSelectedSize: '',
             modalActiveImage: '',
+            modalQuantity: 1,
             modalZoomOpen: false,
             
             // Restock Subscription Modal
@@ -755,6 +787,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                 this.modalProduct = product;
                 this.modalSelectedSize = product.sizes && product.sizes.length ? product.sizes[0] : '';
                 this.modalActiveImage = product.images && product.images.length ? product.images[0] : product.imageFront;
+                this.modalQuantity = 1;
                 this.productModalOpen = true;
                 this.modalZoomOpen = false;
             },
@@ -798,17 +831,18 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                 setTimeout(() => { this.toast.show = false; }, 3500);
             },
             
-            addToCart(item) {
+            addToCart(item, qty = 1) {
+                const addQty = Math.max(1, parseInt(qty) || 1);
                 let found = this.cart.find(c => c.id === item.id && c.size === item.size);
                 if (found) {
-                    found.qty++;
+                    found.qty += addQty;
                 } else {
-                    this.cart.push({ ...item, qty: 1 });
+                    this.cart.push({ ...item, qty: addQty });
                 }
                 this.saveCart();
                 this.productModalOpen = false;
                 this.cartOpen = true;
-                this.showToast(`S'ha afegit "${item.name}" (Talla: ${item.size}) al carret!`);
+                this.showToast(`S'ha afegit ${addQty > 1 ? addQty + 'x ' : ''}"${item.name}" (Talla: ${item.size}) al carret!`);
             },
             
             updateQty(index, delta) {
