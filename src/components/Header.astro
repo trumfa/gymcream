@@ -544,27 +544,17 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
         <!-- BARRA DE FRASES IRÒNIQUES (Ticker marquee que no desapareix mai) -->
         <div id="ironicBar" class="bg-gcYellow text-black py-1.5 px-2 text-center overflow-hidden border-b border-black font-display font-black text-[10px] sm:text-xs uppercase tracking-widest relative">
             <div class="animate-marquee whitespace-nowrap flex items-center gap-8">
-                <span class="flex items-center gap-6">
-                    <span>"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."</span>
-                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
-                    <span>"FES EL QUE VULGUIS, QUE NO T'IMPORTI QUE ET JUTGIN."</span>
-                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
-                    <span>"L'ÚNIC RECORD QUE VAL LA PENA ÉS EL TEU MULTIORGASME DE CARBS."</span>
-                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
-                    <span>"100% REAL FITNESS - 0% POSTUREIG"</span>
-                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
-                </span>
-                <!-- Repetició per a bucle infinit continu -->
-                <span class="flex items-center gap-6">
-                    <span>"NO PAIN, NO GAIN? NOSALTRES PREFERIM: NO PIZZA, NO PARTY."</span>
-                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
-                    <span>"FES EL QUE VULGUIS, QUE NO T'IMPORTI QUE ET JUTGIN."</span>
-                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
-                    <span>"L'ÚNIC RECORD QUE VAL LA PENA ÉS EL TEU MULTIORGASME DE CARBS."</span>
-                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
-                    <span>"100% REAL FITNESS - 0% POSTUREIG"</span>
-                    <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
-                </span>
+                <!-- Es repite el bucle x-for dos veces para que el marquee sea continuo sense salts -->
+                <template x-for="rep in 2" :key="rep">
+                    <span class="flex items-center gap-6">
+                        <template x-for="(phrase, idx) in phrases" :key="rep + '-' + idx">
+                            <span class="flex items-center gap-6">
+                                <span x-text="'&quot;' + phrase + '&quot;'"></span>
+                                <img src="/logos/logo GC Black.png" class="h-4 w-auto inline-block" alt="GC" />
+                            </span>
+                        </template>
+                    </span>
+                </template>
             </div>
         </div>
 
