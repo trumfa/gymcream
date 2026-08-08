@@ -1,0 +1,530 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Container from "@src/components/Container.astro";
+import Philosophy from "@src/components/Philosophy.astro";
+import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
+---
+
+<Layout title="Gym Cream — Sóc Gymcreamer & Moviment DIY" description="Som una marca oberta (Open Brand). Descarrega els nostres logos de franc per fer-te la teva roba o aconsegueix la Línia Oficial.">
+    <!-- CONTINGUT PRINCIPAL OPEN BRAND — ESTÈTICA 'L'ART DE L'ANTÍTESI' -->
+    <main 
+        x-data="openBrandState"
+        class="pt-20 sm:pt-24 bg-gcClassic text-black min-h-screen"
+    >
+
+        <!-- FRANJA NEGRA INSTAGRAM GYMCREAMER (A sota del menú, desapareix al fer scroll) -->
+        <div class="bg-black text-white border-b-2 border-gcYellow py-6 px-4 sm:px-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Fila Superior -->
+                <div class="flex items-center justify-between gap-4 pb-4 border-b border-gray-800">
+                    <!-- Esquerra: Botó + amb etiqueta cridanera "Digues la teva!" -->
+                    <button 
+                        @click="quoteModalOpen = true" 
+                        class="flex items-center gap-3 group cursor-pointer flex-shrink-0"
+                        title="Afegir la teva frase i pseudònim"
+                    >
+                        <span class="text-white group-hover:text-gcYellow font-extralight text-5xl sm:text-6xl transition-transform group-hover:scale-110 leading-none select-none font-sans">+</span>
+                        <span class="hidden sm:flex flex-col items-start leading-tight">
+                            <span class="bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-2 py-0.5 rounded-sm animate-pulse group-hover:animate-none">
+                                Digues la teva!
+                            </span>
+                            <span class="text-gray-400 text-[10px] uppercase tracking-wide mt-0.5">Proposa la teva frase</span>
+                        </span>
+                    </button>
+
+                    <!-- Mig: Text d'etiqueta exactament segons indicació -->
+                    <div class="text-center px-2">
+                        <span class="font-display text-xs sm:text-sm font-extrabold uppercase tracking-wider text-gray-200">
+                            Etiqueta les teves creacions al teu insta amb <span class="text-gcYellow">#gymcream</span>
+                        </span>
+                    </div>
+
+                    <!-- Dreta: Cor vermell batega al fer clic (Sense comptador) -->
+                    <button 
+                        @click="triggerHeartbeat()" 
+                        class="flex items-center justify-center bg-zinc-900 border border-gray-700 hover:border-red-500 text-red-500 p-2.5 rounded-full transition-all cursor-pointer flex-shrink-0 shadow-md group"
+                        title="Donar Like a la comunitat"
+                    >
+                        <svg 
+                            :class="heartBeating ? 'animate-heartbeat text-red-500 scale-125' : 'text-red-500 group-hover:scale-110'"
+                            class="w-6 h-6 fill-current transition-transform duration-300" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Fila Inferior: Hexàgons amb perimetre groc i transparents + fletxes laterals -->
+                <div class="pt-6 relative">
+                    <div class="flex items-center gap-3">
+                        <!-- Fletxa Esquerra per desplaçar hexàgons -->
+                        <button 
+                            @click="$refs.hexContainer.scrollBy({ left: -260, behavior: 'smooth' })"
+                            class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
+                            title="Anar cap a l'esquerra"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+
+                        <!-- Contenidor de Rectangles amb perímetre blanc i llum groga recorrent -->
+                        <div x-ref="hexContainer" class="flex gap-6 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start flex-1">
+                            <template x-for="item in instagramQuotes" :key="item.id">
+                                <div class="flex flex-col items-center flex-shrink-0 w-56 sm:w-64 text-center group cursor-default">
+                                    <!-- Rectangle: Perímetre blanc amb feix de llum groga animat -->
+                                    <div class="relative w-full h-32 sm:h-36 flex items-center justify-center p-4 bg-zinc-950/90 rounded-lg overflow-hidden shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+                                        <!-- SVG de fons amb perímetre blanc i llum groga recorrent -->
+                                        <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                                            <!-- Base perimètrica blanca -->
+                                            <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="7" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" />
+                                            <!-- Feix de llum groga recorrent el perímetre -->
+                                            <rect class="border-glow-beam" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="7" fill="none" stroke="#ffe600" stroke-width="3" stroke-dasharray="90 400" stroke-linecap="round" />
+                                        </svg>
+                                        <!-- Frase a dins del rectangle -->
+                                        <span class="relative z-10 font-display font-black text-xs sm:text-sm leading-snug uppercase tracking-tight text-white transition-colors duration-300 px-2 select-none text-center drop-shadow-md" x-text="item.quote"></span>
+                                    </div>
+                                    <!-- Pseudònim a sota del rectangle -->
+                                    <span class="mt-2.5 font-display font-bold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="`@${item.author}`"></span>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Fletxa Dreta per desplaçar hexàgons -->
+                        <button 
+                            @click="$refs.hexContainer.scrollBy({ left: 260, behavior: 'smooth' })"
+                            class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
+                            title="Anar cap a la dreta"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL PER INTRODUIR FRASE I PSEUDÒNIM -->
+        <div 
+            x-show="quoteModalOpen" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+            x-cloak
+        >
+            <div class="bg-gcDark border-2 border-gcYellow text-white w-full max-w-lg p-6 sm:p-8 relative shadow-2xl rounded-sm">
+                <button @click="quoteModalOpen = false" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <div class="flex items-center gap-3 pb-4 border-b border-gray-800 mb-6">
+                    <div class="w-10 h-10 bg-gcYellow text-black font-black text-xl rounded-full flex items-center justify-center">+</div>
+                    <div>
+                        <h3 class="font-display font-black text-lg uppercase text-gcYellow tracking-wider">Proposar La Teva Frase Gymcreamer</h3>
+                        <p class="text-xs text-gray-400">Pendent de validació al CMS abans de publicar-se a la franja de dalt.</p>
+                    </div>
+                </div>
+
+                <template x-if="submissionSuccess">
+                    <div class="p-4 bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-xs mb-4 rounded flex items-center gap-2">
+                        <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span><strong>Frase enviada amb èxit!</strong> Està registrada i <strong>pendent de validació al CMS</strong>. Un cop l'equip l'aprovi des de l'administració, apareixerà al mur!</span>
+                    </div>
+                </template>
+
+                <form @submit.prevent="submitInstagramQuote()" class="space-y-4">
+                    <div>
+                        <label class="block font-display text-xs uppercase text-gray-300 font-bold mb-1">
+                            El teu Seudònim / Nom *
+                        </label>
+                        <input 
+                            type="text" 
+                            x-model="newAuthor" 
+                            placeholder="Exemple: Gymcreamer_33 o @fittoni" 
+                            class="w-full bg-black border border-gray-800 text-white p-3 text-sm focus:border-gcYellow focus:outline-none font-sans rounded-sm"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block font-display text-xs uppercase text-gray-300 font-bold mb-1">
+                            La teva Frase Irònica *
+                        </label>
+                        <textarea 
+                            x-model="newQuote" 
+                            rows="3" 
+                            placeholder="Exemple: MENYS POSTUREIG I MÉS HIDRATS DE CARBONI" 
+                            class="w-full bg-black border border-gray-800 text-white p-3 text-sm focus:border-gcYellow focus:outline-none font-display text-xs uppercase rounded-sm"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <p class="text-[10px] text-gray-400 italic">
+                        ℹ️ Totes les frases són revisades per l'administrador al CMS per mantenir el respecte i la qualitat a la comunitat.
+                    </p>
+
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-3.5 hover:bg-white transition-colors cursor-pointer tracking-wider rounded-sm mt-4"
+                    >
+                        Enviar Frase a Validació (CMS)
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 1. HERO I FILOSOFIA UNIFICADA — ESTÈTICA 'L'ART DE L'ANTÍTESI' -->
+        <section class="py-16 sm:py-24 border-b border-gray-300 relative bg-gcClassic">
+            <Container>
+                <div class="max-w-3xl mx-auto text-center">
+                    <div class="h-24 sm:h-32 max-w-xs mx-auto mb-6 flex items-center justify-center">
+                        <img src="/logos/logo GC Black.png" alt="Gym Cream Logo Black" class="h-full w-auto object-contain" />
+                    </div>
+
+                    <span class="font-serif italic text-lg sm:text-xl text-gray-600 block mb-3">
+                        Comunitat Sóc Gymcreamer (Open Brand)
+                    </span>
+
+                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl italic text-black leading-tight mb-8">
+                        Fes el que vulguis. <br class="hidden sm:inline" />
+                        <span>Que no t'importi que et jutgin.</span>
+                    </h1>
+
+                    <!-- TEXT DESCRIPTIC CONTINU I RELAXAT -->
+                    <div class="font-serif text-lg sm:text-xl text-gray-800 leading-relaxed space-y-6 text-center max-w-2xl mx-auto">
+                        <p>
+                            Gym Cream trenca el proteccionisme clàssic de les marques esportives. Vam néixer amb una idea molt clara: compartir els nostres logotips i actius gràfics de franc perquè tothom pugui fer-se la seva pròpia roba a casa o a la copisteria del seu barri. No creiem en guardar logos com si fossin secrets d'Estat.
+                        </p>
+                        
+                        <p>
+                            D'això en diem <strong>Dos Camins, La Mateixa Filosofia</strong>. El primer camí és el <strong>DIY (Do It Yourself)</strong>: descarregues els vectors de franc, fas servir paper trÀnsfer o vas a la impremta, i t'estampes la samarreta tu mateix sense pagar cap intermediari. El segon camí és la <strong>Línia Oficial</strong>: per als qui prefereixen la comoditat de rebre les peces confeccionades amb patrons Heavy Oversize (240-400 GSM) i amb el <strong>Distintiu Físic Gym Cream</strong> brodat que n'acredita la fabricació original.
+                        </p>
+
+                        <p>
+                            Tria l'opció que millor s'adapti a tu. Ambdues formen part de la mateixa comunitat i del mateix esperit lliure.
+                        </p>
+
+                        <p class="font-bold text-2xl pt-4 font-serif italic text-black">
+                            "Llibertat de creació, zero etiquetes."
+                        </p>
+                    </div>
+                </div>
+            </Container>
+        </section>
+
+        <!-- MANIFEST GYM CREAM (LA NOSTRA FILOSOFIA) -->
+        <Philosophy />
+
+
+        <!-- 2. CENTRE DE DESCÀRREGA D'ACTIUS GRÀFICS (LOGOTIPS I RECURSOS) -->
+        <section id="descarges" class="py-20 border-b border-gray-300 bg-gcClassic">
+            <Container>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+                    <div>
+                        <span class="font-serif italic text-base text-gray-600 block">Recursos Gràfics de Lliure Ús</span>
+                        <h2 class="font-serif text-3xl sm:text-5xl italic text-black mt-1">
+                            Centre de Descàrrega
+                        </h2>
+                        <p class="font-serif text-gray-700 text-sm sm:text-base mt-2 max-w-xl italic">
+                            Trobaràs tots els logotips oficials en formats vectorials (.AI, .SVG) i d'alta definició (.PNG, .JPG).
+                        </p>
+                    </div>
+
+                    <!-- Botó de descarregar tot el pack -->
+                    <button 
+                        @click="downloadPack()"
+                        class="bg-black text-white hover:bg-gcYellow hover:text-black font-sans text-xs uppercase tracking-widest font-bold px-6 py-3.5 transition-colors flex items-center gap-2 shadow-sm rounded-sm cursor-pointer"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>Descarregar Pack Complet (.ZIP)</span>
+                    </button>
+                </div>
+
+                <!-- Filtres per categoria d'actiu -->
+                <div class="flex gap-2 mb-8 overflow-x-auto pb-2 text-xs font-sans uppercase tracking-wider">
+                    <button 
+                        @click="activeCategory = 'all'" 
+                        :class="activeCategory === 'all' ? 'bg-black text-white font-bold' : 'bg-white text-gray-700 border border-gray-300 hover:border-black'"
+                        class="px-4 py-2 transition-colors rounded-sm cursor-pointer"
+                    >
+                        Tots els Actius (<span x-text="assets.length"></span>)
+                    </button>
+                    <button 
+                        @click="activeCategory = 'logo'" 
+                        :class="activeCategory === 'logo' ? 'bg-black text-white font-bold' : 'bg-white text-gray-700 border border-gray-300 hover:border-black'"
+                        class="px-4 py-2 transition-colors rounded-sm cursor-pointer"
+                    >
+                        Logotips Principals
+                    </button>
+                    <button 
+                        @click="activeCategory = 'badge'" 
+                        :class="activeCategory === 'badge' ? 'bg-black text-white font-bold' : 'bg-white text-gray-700 border border-gray-300 hover:border-black'"
+                        class="px-4 py-2 transition-colors rounded-sm cursor-pointer"
+                    >
+                        Insignies & Escuts
+                    </button>
+                </div>
+
+                <!-- Graella d'Actius Gràfics -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <template x-for="asset in filteredAssets" :key="asset.id">
+                        <div class="bg-white border border-gray-200 p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow group">
+                            <div>
+                                <!-- Preview de la imatge -->
+                                <div class="aspect-square bg-[#FAF9F5] border border-gray-200 p-6 flex items-center justify-center mb-4 relative overflow-hidden">
+                                    <img :src="asset.previewImage" :alt="asset.title" class="max-h-full max-w-full object-contain filter drop-shadow-sm transition-transform group-hover:scale-105" />
+                                    
+                                    <span class="absolute top-2 right-2 bg-white text-gray-600 font-mono text-[9px] px-2 py-0.5 border border-gray-200" x-text="asset.colorVariant"></span>
+                                </div>
+
+                                <h3 class="font-serif font-bold text-base text-black mb-1.5" x-text="asset.title"></h3>
+                                <p class="font-serif text-gray-600 text-xs leading-relaxed mb-4" x-text="asset.description"></p>
+                            </div>
+
+                            <div class="pt-3 border-t border-gray-100 space-y-3">
+                                <!-- Formats disponibles -->
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-[10px] text-gray-500 font-mono">Formats:</span>
+                                    <template x-for="fmt in asset.formats" :key="fmt">
+                                        <span class="bg-gray-100 text-gray-800 text-[9px] font-mono font-bold px-1.5 py-0.5 border border-gray-200" x-text="fmt"></span>
+                                    </template>
+                                </div>
+
+                                <!-- Botó de descarregar -->
+                                <a 
+                                    :href="asset.fileUrl" 
+                                    :download="asset.title" 
+                                    class="w-full bg-black hover:bg-gcYellow hover:text-black text-white font-sans text-xs uppercase tracking-wider font-bold py-2.5 px-3 transition-colors flex items-center justify-center gap-2 rounded-sm cursor-pointer"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    <span>Descarregar Arxiu</span>
+                                </a>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </Container>
+        </section>
+
+        <!-- 3. APARADOR SOCIAL / INSTAGRAM DIY GALLERY -->
+        <section class="py-20 border-b border-gray-300 bg-gcClassic">
+            <Container>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+                    <div>
+                        <span class="font-serif italic text-base text-gray-600 block mb-1">#GymCreamDIY & #GymCreamOfficial</span>
+                        <h2 class="font-serif text-3xl sm:text-5xl italic text-black">
+                            Aparador Social
+                        </h2>
+                        <p class="font-serif text-gray-700 text-sm sm:text-base mt-2 max-w-xl italic">
+                            Com la comunitat porta la marca, ja sigui amb la Línia Oficial o amb les seves creacions DIY.
+                        </p>
+                    </div>
+
+                    <a 
+                        href="https://instagram.com" 
+                        target="_blank" 
+                        rel="noopener"
+                        class="bg-white text-black border border-gray-300 hover:border-black font-sans font-bold text-xs uppercase tracking-wider px-6 py-3.5 transition-colors flex items-center gap-2 rounded-sm"
+                    >
+                        <span>Etiqueta'ns a Instagram</span>
+                        <svg class="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                </div>
+
+                <!-- Graella de fotos -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <template x-for="photo in photos" :key="photo.id">
+                        <div class="bg-white border border-gray-200 group relative overflow-hidden shadow-sm">
+                            <div class="aspect-[4/5] bg-gray-100 overflow-hidden relative">
+                                <img :src="photo.imageUrl" :alt="photo.username" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                
+                                <span 
+                                    :class="photo.type === 'DIY' ? 'bg-gcYellow text-black font-bold' : 'bg-black text-white font-bold'"
+                                    class="absolute top-3 left-3 text-[10px] font-sans uppercase tracking-widest px-2.5 py-1 shadow-sm"
+                                    x-text="photo.type === 'DIY' ? '🎨 DIY Creation' : '🛡️ Línia Oficial'"
+                                ></span>
+                            </div>
+
+                            <div class="p-4 bg-white border-t border-gray-100">
+                                <div class="font-serif text-sm font-bold text-black mb-1" x-text="photo.username"></div>
+                                <p class="text-xs text-gray-600 font-serif leading-relaxed line-clamp-2" x-text="photo.caption"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </Container>
+        </section>
+
+
+        <!-- 4. AVÍS LEGAL I LLICÈNCIA DE MARCA OBERTA -->
+        <section class="py-16 bg-[#F4F3EF] text-gray-800 text-xs font-serif">
+            <Container>
+                <div class="max-w-4xl mx-auto border border-gray-300 bg-white p-6 sm:p-8 space-y-4 shadow-sm">
+                    <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
+                        <span class="text-2xl">⚖️</span>
+                        <div>
+                            <h3 class="font-serif font-bold text-base text-black uppercase tracking-wider">
+                                Llicència d'Ús de la Marca Gym Cream (Creative Commons BY-NC)
+                            </h3>
+                            <p class="text-[11px] text-gray-500 font-mono">Normes d'ús personal i prohibició comercial</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                        <div>
+                            <h4 class="font-serif font-bold text-emerald-800 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                                <span>✅ Ús Personal (Permès i Fomentat)</span>
+                            </h4>
+                            <p class="leading-relaxed text-gray-700">
+                                Tothom té permís per descarregar i utilitzar els arxius de la marca per fabricar-se les seves pròpies samarretes, tovalloles, gorres o accessoris exclusivament per a ús propi o per a regal no lucratiu.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h4 class="font-serif font-bold text-red-800 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                                <span>🚫 Ús Comercial (Prohibit sense autorització)</span>
+                            </h4>
+                            <p class="leading-relaxed text-gray-700">
+                                Queda totalment prohibida la comercialització, revenda, producció en massa o utilització de la marca Gym Cream per part de tercers (gimnasos, marques o particulars) amb finalitats lucratives directes o indirectes sense permís.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </Container>
+        </section>
+
+    </main>
+</Layout>
+
+<script is:inline define:vars={{ fallbackAssets: FALLBACK_BRAND_ASSETS, fallbackQuotes: FALLBACK_COMMUNITY_QUOTES, fallbackPhotos: FALLBACK_COMMUNITY_PHOTOS }}>
+    const registerOpenBrandState = () => {
+        if (!window.Alpine) return;
+        Alpine.data('openBrandState', () => ({
+            assets: fallbackAssets,
+            quotes: [],
+            allQuotes: fallbackQuotes,
+            instagramQuotes: [
+                { id: 'fallback-1', author: 'GymCream', quote: 'CARREGANT FRASES...' }
+            ],
+            photos: fallbackPhotos,
+            activeCategory: 'all',
+            heartBeating: false,
+            quoteModalOpen: false,
+            
+            // Formulari de proposta de frase
+            newAuthor: '',
+            newQuote: '',
+            submissionSuccess: false,
+            submissionError: '',
+
+            triggerHeartbeat() {
+                this.heartBeating = true;
+                setTimeout(() => {
+                    this.heartBeating = false;
+                }, 600);
+            },
+
+            async init() {
+                try {
+                    const [assetsRes, quotesRes, photosRes] = await Promise.all([
+                        fetch('/api/cms/BrandAssets'),
+                        fetch('/api/cms/CommunityQuotes'),
+                        fetch('/api/cms/CommunityPhotos'),
+                    ]);
+                    if (assetsRes.ok) {
+                        const assets = await assetsRes.json();
+                        if (Array.isArray(assets) && assets.length > 0) this.assets = assets;
+                    }
+                    if (quotesRes.ok) {
+                        const quotes = await quotesRes.json();
+                        if (Array.isArray(quotes) && quotes.length > 0) this.allQuotes = quotes;
+                    }
+                    if (photosRes.ok) {
+                        const photos = await photosRes.json();
+                        if (Array.isArray(photos) && photos.length > 0) this.photos = photos;
+                    }
+                } catch (e) {}
+
+                this.applyQuotes();
+            },
+
+            applyQuotes() {
+                const approved = this.allQuotes.filter(q => q.status === 'approved');
+                this.quotes = approved;
+
+                if (approved.length > 0) {
+                    this.instagramQuotes = approved.map((q, idx) => ({
+                        id: q.id || idx,
+                        author: (q.author || 'Gymcreamer').replace('@', ''),
+                        quote: (q.quote || '').replace(/^"|"$/g, '').toUpperCase()
+                    }));
+                }
+            },
+
+            get filteredAssets() {
+                if (this.activeCategory === 'all') return this.assets;
+                return this.assets.filter(a => a.category === this.activeCategory);
+            },
+
+            async submitInstagramQuote() {
+                if (!this.newQuote.trim() || !this.newAuthor.trim()) return;
+
+                const author = this.newAuthor.replace('@', '').trim();
+                const rawQuote = this.newQuote.trim().toUpperCase();
+
+                this.submissionError = '';
+
+                try {
+                    // Endpoint público: valida, guarda la propuesta como 'pending' en
+                    // Google Sheets, y avisa por email al administrador para que la
+                    // revise. No requiere sesión de admin (es un formulario público),
+                    // pero solo puede crear filas 'pending' — no puede escribir nada más.
+                    const res = await fetch('/api/notify-quote', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ author, quote: rawQuote })
+                    });
+                    if (!res.ok) throw new Error('No s\'ha pogut enviar la proposta.');
+                } catch (e) {
+                    this.submissionError = 'Hi ha hagut un error enviant la proposta. Torna-ho a provar.';
+                    return;
+                }
+
+                this.newAuthor = '';
+                this.newQuote = '';
+                this.submissionSuccess = true;
+
+                if (window.Alpine) {
+                    const app = document.querySelector('[x-data]');
+                    if (app && app._x_dataStack && app._x_dataStack[0].showToast) {
+                        app._x_dataStack[0].showToast("Frase enviada! S'ha registrat i enviat avís per email a l'administrador.");
+                    }
+                }
+
+                setTimeout(() => {
+                    this.submissionSuccess = false;
+                    this.quoteModalOpen = false;
+                }, 3500);
+            },
+
+            downloadPack() {
+                alert('Iniciant la descàrrega del Pack Complet de la Marca GYM CREAM (.ZIP)...');
+            }
+        }));
+    };
+
+    if (window.Alpine) {
+        registerOpenBrandState();
+    } else {
+        document.addEventListener('alpine:init', registerOpenBrandState);
+    }
+
+    document.addEventListener('astro:page-load', () => {
+        registerOpenBrandState();
+        if (window.Alpine) {
+            window.Alpine.initTree(document.body);
+        }
+    });
+</script>
