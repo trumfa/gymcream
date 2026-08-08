@@ -1,9 +1,5 @@
 ---
 import { FALLBACK_PHRASES, FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/data/cmsDefaults";
-
-const isOpenBrand = Astro.url.pathname.includes('gymcreamer');
-const isBotiga = Astro.url.pathname.includes('botiga');
-const isPrincipal = !isOpenBrand && !isBotiga;
 ---
 
 <!-- Header Component with Logos, Live Search, Cart Drawer, +INFO Detail Modal, & Restock Alert Modal -->
@@ -521,7 +517,12 @@ const isPrincipal = !isOpenBrand && !isBotiga;
         <!-- NAVBAR AMB LÍNIA GROGA PERSISTENT I MENÚ MÉS PRIM -->
         <div id="navContainer" class="bg-black border-b-2 border-gcYellow transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
-                <div class="flex items-center gap-4 sm:gap-6">
+                <div class="flex items-center gap-3 sm:gap-4">
+                    <!-- BOTÓ HAMBURGUESA: igual a les tres pàgines -->
+                    <button @click="menuOpen = true" class="text-white hover:text-gcYellow transition-colors p-1 cursor-pointer" aria-label="Obrir menú">
+                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+
                     <!-- LOGO INTEGRAT DES DE /public/logos/ -->
                     <a href="/" data-astro-reload class="flex items-center gap-2 group">
                         <img src="/logos/logo primary GC no GC.png" alt="Gym Cream Logo" class="h-7 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
@@ -529,43 +530,7 @@ const isPrincipal = !isOpenBrand && !isBotiga;
                             <span class="text-white">GYM</span> <span class="text-gcYellow">CREAM</span>
                         </span>
                     </a>
-
-                    <!-- ICONA DE CASA (perímetre blanc): torna a l'Inici. Només a Botiga i Gymcreamer -->
-                    {!isPrincipal && (
-                        <a href="/" data-astro-reload class="text-white hover:text-gcYellow transition-colors" aria-label="Tornar a l'inici" title="Inici">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
-                        </a>
-                    )}
                 </div>
-
-                <!-- NAVEGACIÓ CENTRAL: botó Sóc Gymcreamer a la Botiga; Descàrregues + Botiga a Gymcreamer; res a la Principal -->
-                {isBotiga && (
-                    <a 
-                        href="/gymcreamer" 
-                        data-astro-reload
-                        class="bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-4 sm:px-5 py-1.5 sm:py-2 transition-all shadow-sm rounded-full"
-                    >
-                        <span class="hidden sm:inline">SÓC GYMCREAMER</span>
-                        <span class="sm:hidden">GYMCREAMER</span>
-                    </a>
-                )}
-                {isOpenBrand && (
-                    <div class="flex items-center gap-2 sm:gap-3">
-                        <a 
-                            href="/gymcreamer#descarges"
-                            class="bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-4 sm:px-5 py-1.5 sm:py-2 transition-all shadow-sm rounded-full"
-                        >
-                            Descàrregues
-                        </a>
-                        <a 
-                            href="/botiga" 
-                            data-astro-reload
-                            class="bg-white hover:bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-4 sm:px-5 py-1.5 sm:py-2 transition-all shadow-sm rounded-full"
-                        >
-                            Botiga
-                        </a>
-                    </div>
-                )}
 
                 <div class="flex items-center gap-3 sm:gap-4">
                     <!-- CANVIADORS D'IDIOMA (CA / ES / EN) -->
@@ -581,12 +546,10 @@ const isPrincipal = !isOpenBrand && !isBotiga;
                         </div>
                     </div>
 
-                    <!-- BOTÓ DE CERCA / LUPA EN DIRECTE (no es mostra a la Principal) -->
-                    {!isPrincipal && (
-                        <button @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())" class="text-white hover:text-gcYellow transition-colors p-1" aria-label="Cercar a la lupa">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        </button>
-                    )}
+                    <!-- BOTÓ DE CERCA / LUPA EN DIRECTE -->
+                    <button @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())" class="text-white hover:text-gcYellow transition-colors p-1" aria-label="Cercar a la lupa">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
 
                     <!-- BOTÓ DE CARRET BÉ VISIBLE -->
                     <button @click="cartOpen = true" class="bg-gray-900 border border-gcYellow/80 hover:border-gcYellow text-gcYellow hover:text-white p-2 rounded relative flex items-center justify-center cursor-pointer shadow-lg transition-transform hover:scale-105" aria-label="Carret de la compra">
@@ -597,6 +560,38 @@ const isPrincipal = !isOpenBrand && !isBotiga;
             </div>
         </div>
     </header>
+
+    <!-- MENÚ LATERAL: igual a les tres pàgines -->
+    <div 
+        x-show="menuOpen"
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="-translate-x-full"
+        x-transition:enter-end="translate-x-0"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="translate-x-0"
+        x-transition:leave-end="-translate-x-full"
+        class="fixed inset-y-0 left-0 w-72 bg-gcDark border-r border-gcYellow/30 z-[100] flex flex-col p-6 shadow-2xl"
+        x-cloak
+    >
+        <div class="flex justify-between items-center pb-6 border-b border-gray-800">
+            <a href="/" data-astro-reload class="flex items-center gap-2" @click="menuOpen = false">
+                <img src="/logos/logo white GC no GC.png" alt="Gym Cream Logo" class="h-8 w-auto object-contain" />
+                <span class="font-display font-black text-lg tracking-tighter uppercase leading-none">
+                    <span class="text-white">GYM</span> <span class="text-gcYellow">CREAM</span>
+                </span>
+            </a>
+            <button @click="menuOpen = false" class="text-white hover:text-gcYellow transition-colors">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <nav class="flex-1 mt-8 flex flex-col gap-6 font-display text-sm uppercase tracking-wider font-bold">
+            <a href="/" data-astro-reload @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Inici</a>
+            <a href="/botiga" data-astro-reload @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Botiga</a>
+            <a href="/gymcreamer" data-astro-reload @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Gymcreamer</a>
+            <a href="/gymcreamer#descarges" data-astro-reload @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Descàrregues</a>
+            <a href="/#comunitat" data-astro-reload @click="menuOpen = false" class="hover:text-gcYellow transition-colors">Comunitat</a>
+        </nav>
+    </div>
 
 </div>
 
