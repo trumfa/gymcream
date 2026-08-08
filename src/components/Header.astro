@@ -522,13 +522,6 @@ const isPrincipal = !isOpenBrand && !isBotiga;
         <div id="navContainer" class="bg-black border-b-2 border-gcYellow transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
                 <div class="flex items-center gap-4 sm:gap-6">
-                    <!-- ICONA DE CASA (perímetre blanc): torna a l'Inici. Només a Botiga i Gymcreamer -->
-                    {!isPrincipal && (
-                        <a href="/" data-astro-reload class="text-white hover:text-gcYellow transition-colors" aria-label="Tornar a l'inici" title="Inici">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
-                        </a>
-                    )}
-
                     <!-- LOGO INTEGRAT DES DE /public/logos/ -->
                     <a href="/" data-astro-reload class="flex items-center gap-2 group">
                         <img src="/logos/logo primary GC no GC.png" alt="Gym Cream Logo" class="h-7 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
@@ -536,6 +529,13 @@ const isPrincipal = !isOpenBrand && !isBotiga;
                             <span class="text-white">GYM</span> <span class="text-gcYellow">CREAM</span>
                         </span>
                     </a>
+
+                    <!-- ICONA DE CASA (perímetre blanc): torna a l'Inici. Només a Botiga i Gymcreamer -->
+                    {!isPrincipal && (
+                        <a href="/" data-astro-reload class="text-white hover:text-gcYellow transition-colors" aria-label="Tornar a l'inici" title="Inici">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
+                        </a>
+                    )}
                 </div>
 
                 <!-- NAVEGACIÓ CENTRAL: botó Sóc Gymcreamer a la Botiga; Descàrregues + Botiga a Gymcreamer; res a la Principal -->
