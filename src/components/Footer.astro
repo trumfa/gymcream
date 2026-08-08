@@ -125,8 +125,12 @@ import { FALLBACK_INFO_PAGES } from "@src/data/cmsDefaults";
                         <template x-if="contactSent">
                             <div class="p-4 bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs mb-4 rounded flex items-center gap-2">
                                 <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                <span>El teu missatge s'ha enviat correctament a <strong>bro@gymcream.me</strong>. Et respondrem ben aviat!</span>
+                                <span>El teu missatge s'ha enviat correctament. Et respondrem ben aviat!</span>
                             </div>
+                        </template>
+
+                        <template x-if="contactError">
+                            <div class="p-4 bg-red-950/80 border border-red-500 text-red-200 text-xs mb-4 rounded" x-text="contactError"></div>
                         </template>
 
                         <form @submit.prevent="submitContactForm()" class="space-y-3">
@@ -154,9 +158,10 @@ import { FALLBACK_INFO_PAGES } from "@src/data/cmsDefaults";
 
                             <button 
                                 type="submit" 
-                                class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-3 hover:bg-white transition-colors cursor-pointer tracking-wider rounded"
+                                :disabled="contactSending"
+                                class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-3 hover:bg-white transition-colors cursor-pointer tracking-wider rounded disabled:opacity-50 disabled:cursor-wait"
                             >
-                                Enviar Missatge a bro@gymcream.me
+                                <span x-text="contactSending ? 'Enviant...' : 'Enviar Missatge'"></span>
                             </button>
                         </form>
                     </div>
@@ -209,11 +214,29 @@ import { FALLBACK_INFO_PAGES } from "@src/data/cmsDefaults";
                 window.dispatchEvent(new CustomEvent('open-cookie-preferences'));
             },
 
-            submitContactForm() {
+            contactSending: false,
+            contactError: '',
+
+            async submitContactForm() {
                 if (!this.contactEmail || !this.contactEmail.includes('@') || !this.contactMessage.trim()) {
                     alert('Si us plau, emplena tots els camps amb un correu vàlid.');
                     return;
                 }
+                this.contactError = '';
+                this.contactSending = true;
+                try {
+                    const res = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: this.contactEmail, message: this.contactMessage })
+                    });
+                    if (!res.ok) throw new Error('Error del servidor');
+                } catch (e) {
+                    this.contactSending = false;
+                    this.contactError = 'Hi ha hagut un error enviant el missatge. Torna-ho a provar.';
+                    return;
+                }
+                this.contactSending = false;
                 this.contactSent = true;
                 this.contactEmail = '';
                 this.contactMessage = '';

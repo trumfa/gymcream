@@ -19,13 +19,13 @@ import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/data/cmsDefaults";
                     <button 
                         @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)"
                         :class="[
-                            cat.name === 'REBAIXATS' ? 
+                            cat.isSpecial ? 
                             (activeCategory === cat.name ? 'bg-red-600 text-white font-bold border-red-600' : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100') :
                             (activeCategory === cat.name ? 'bg-black text-white font-bold border-black' : 'bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-300')
                         ]"
                         class="px-4 py-2 border transition-colors flex items-center gap-1 cursor-pointer rounded-sm"
                     >
-                        <template x-if="cat.name === 'REBAIXATS'"><span>🔥</span></template>
+                        <template x-if="cat.isSpecial"><span>🔥</span></template>
                         <span x-text="cat.name"></span>
                     </button>
                 </template>

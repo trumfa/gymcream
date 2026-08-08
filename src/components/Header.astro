@@ -586,12 +586,12 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                                 href="#catalog" 
                                 @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)" 
                                 :class="[
-                                    cat.name === 'REBAIXATS' ? (activeCategory === cat.name ? 'text-red-500 border-b-2 border-red-500 pb-1' : 'text-red-400 hover:text-red-300 pb-1') :
+                                    cat.isSpecial ? (activeCategory === cat.name ? 'text-red-500 border-b-2 border-red-500 pb-1' : 'text-red-400 hover:text-red-300 pb-1') :
                                     (activeCategory === cat.name ? 'text-gcYellow border-b-2 border-gcYellow pb-1' : 'hover:text-gcYellow text-gray-200 transition-colors pb-1')
                                 ]"
                                 class="transition-colors flex items-center gap-1 cursor-pointer"
                             >
-                                <template x-if="cat.name === 'REBAIXATS'"><span>🔥</span></template>
+                                <template x-if="cat.isSpecial"><span>🔥</span></template>
                                 <span x-text="cat.name"></span>
                             </a>
                         </template>
