@@ -158,7 +158,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
             </button>
         </div>
         <nav class="flex-1 mt-8 flex flex-col gap-5 font-display text-sm uppercase tracking-wider font-bold">
-            <a href="/" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+            <a href="/" data-astro-reload @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
                 <span class="text-gcYellow">🛒</span> Botiga Principal
             </a>
             <a href="/open-brand#descarges" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
@@ -580,7 +580,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                     ) : null}
 
                     <!-- LOGO INTEGRAT DES DE /public/logos/ -->
-                    <a href="/" class="flex items-center gap-2 group">
+                    <a href="/" data-astro-reload class="flex items-center gap-2 group">
                         <img src="/logos/logo primary GC no GC.png" alt="Gym Cream Logo" class="h-7 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
                         <span class="font-display font-black text-lg sm:text-xl tracking-tighter uppercase leading-none">
                             <span class="text-white">GYM</span> <span class="text-gcYellow">CREAM</span>
@@ -626,6 +626,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                     {isOpenBrand ? (
                         <a 
                             href="/" 
+                            data-astro-reload
                             class="bg-white hover:bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm rounded-sm"
                             title="Tornar a la botiga principal"
                         >
@@ -635,6 +636,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                     ) : (
                         <a 
                             href="/open-brand" 
+                            data-astro-reload
                             class="bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm rounded-sm"
                             title="Accés a Sóc Gymcreamer"
                         >
