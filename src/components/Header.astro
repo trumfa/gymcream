@@ -133,49 +133,7 @@ const isOpenBrand = Astro.url.pathname.includes('gymcreamer');
         </div>
     </div>
 
-    <!-- ☰ MENÚ LATERAL D'INFORMACIÓ (Drawer Esquerre amb Logo Separat) -->
-    <div 
-        x-show="menuOpen"
-        x-transition:enter="transition ease-out duration-300 transform"
-        x-transition:enter-start="-translate-x-full"
-        x-transition:enter-end="translate-x-0"
-        x-transition:leave="transition ease-in duration-200 transform"
-        x-transition:leave-start="translate-x-0"
-        x-transition:leave-end="-translate-x-full"
-        class="fixed inset-y-0 left-0 w-80 bg-gcDark border-r border-gcYellow/30 z-[100] flex flex-col p-6 shadow-2xl"
-        x-cloak
-    >
-        <div class="flex justify-between items-center pb-6 border-b border-gray-800">
-            <!-- LOGO EN DIRECTE AL MENÚ -->
-            <a href="/" class="flex items-center gap-2">
-                <img src="/logos/logo white GC no GC.png" alt="Gym Cream Logo" class="h-8 w-auto object-contain" />
-                <span class="font-display font-black text-lg tracking-tighter uppercase leading-none">
-                    <span class="text-white">GYM</span> <span class="text-gcYellow">CREAM</span>
-                </span>
-            </a>
-            <button @click="menuOpen = false" class="text-white hover:text-gcYellow transition-colors">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        <nav class="flex-1 mt-8 flex flex-col gap-5 font-display text-sm uppercase tracking-wider font-bold">
-            <a href="/" data-astro-reload @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
-                <span class="text-gcYellow">🛒</span> Botiga Principal
-            </a>
-            <a href="/gymcreamer#descarges" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
-                <span>📦</span> Centre de Descàrregues
-            </a>
-            <a href="/gymcreamer" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
-                <span>💬</span> Digues la Teva Frase
-            </a>
-            <a href="/gymcreamer#comunitat" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
-                <span>📸</span> Comunitat & Frases
-            </a>
-            <a href="/gymcreamer#llicencia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
-                <span>⚖️</span> Llicència Marca Oberta
-            </a>
-        </nav>
-    </div>
-
+    <!-- (Panell lateral de menú eliminat — ja no s'utilitza) -->
     <!-- 🛒 PANEL LATERAL DE CARRET (Drawer Dret) -->
     <div 
         x-show="cartOpen"
@@ -562,13 +520,6 @@ const isOpenBrand = Astro.url.pathname.includes('gymcreamer');
         <div id="navContainer" class="bg-black border-b-2 border-gcYellow transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
                 <div class="flex items-center gap-4 sm:gap-6">
-                    <!-- MENÚ HAMBURGUESA: NOMS A L'APARTAT "SOC GYMCREAMER" (/gymcreamer) -->
-                    {isOpenBrand ? (
-                        <button @click="menuOpen = true" class="text-white hover:text-gcYellow transition-colors p-1 flex items-center gap-1 cursor-pointer" aria-label="Obrir menú Gymcreamer">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                        </button>
-                    ) : null}
-
                     <!-- LOGO INTEGRAT DES DE /public/logos/ -->
                     <a href="/" data-astro-reload class="flex items-center gap-2 group">
                         <img src="/logos/logo primary GC no GC.png" alt="Gym Cream Logo" class="h-7 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
@@ -578,7 +529,7 @@ const isOpenBrand = Astro.url.pathname.includes('gymcreamer');
                     </a>
                 </div>
 
-                <!-- NAVEGACIÓ CENTRAL (NOMÉS A LA BOTIGA; A GYMCREAMER N'HI HA MENU HAMBURGUESA) -->
+                <!-- NAVEGACIÓ CENTRAL: categories a la Botiga, botó Descàrregues a Gymcreamer -->
                 {!isOpenBrand ? (
                     <nav class="hidden lg:flex gap-6 font-display text-xs tracking-widest uppercase font-bold items-center">
                         <template x-for="cat in categories" :key="cat.id">
@@ -596,7 +547,14 @@ const isOpenBrand = Astro.url.pathname.includes('gymcreamer');
                             </a>
                         </template>
                     </nav>
-                ) : null}
+                ) : (
+                    <a 
+                        href="/gymcreamer#descarges"
+                        class="hidden sm:inline-block font-display text-xs sm:text-sm tracking-widest uppercase font-bold text-gray-200 hover:text-gcYellow border-b-2 border-transparent hover:border-gcYellow transition-colors pb-1"
+                    >
+                        Descàrregues
+                    </a>
+                )}
 
                 <div class="flex items-center gap-3 sm:gap-4">
                     <!-- CANVIADORS D'IDIOMA (CA / ES / EN) -->
