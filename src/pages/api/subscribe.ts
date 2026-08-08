@@ -5,7 +5,7 @@ import { writeRow } from '../../lib/cms';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { email, type, productId } = await request.json();
+    const { email, type, productId, productName } = await request.json();
 
     if (!email || !email.includes('@') || !type || !['restock', 'newsletter'].includes(type)) {
       return new Response(JSON.stringify({ error: 'Dades no vàlides' }), { status: 400 });
@@ -15,6 +15,7 @@ export const POST: APIRoute = async ({ request }) => {
       email,
       type,
       productId: productId || '',
+      productName: productName || '',
       notified: false,
     });
 
