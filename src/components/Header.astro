@@ -1,5 +1,5 @@
 ---
-import { DEFAULT_PHRASES, DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
+import { FALLBACK_PHRASES, FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/data/cmsDefaults";
 
 const isOpenBrand = Astro.url.pathname.includes('open-brand');
 ---
@@ -660,7 +660,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
 
 </div>
 
-<script is:inline define:vars={{ defaultPhrases: DEFAULT_PHRASES, defaultCategories: DEFAULT_CATEGORIES, defaultProducts: DEFAULT_PRODUCTS }}>
+<script is:inline define:vars={{ fallbackPhrases: FALLBACK_PHRASES, fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS }}>
     const registerAppState = () => {
         if (!window.Alpine) return;
         Alpine.data('appState', () => ({
@@ -691,51 +691,24 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
             // Cart
             cart: [],
             
-            // Data loaded from CMS / LocalStorage
-            products: [],
-            categories: [],
-            phrases: [],
+            // Data loaded from CMS (Google Sheets vía Apps Script)
+            products: fallbackProducts,
+            categories: fallbackCategories,
+            phrases: fallbackPhrases,
             
             init() {
-                // Load products
-                try {
-                    const prod = localStorage.getItem('gymcream_products');
-                    this.products = prod ? JSON.parse(prod) : defaultProducts;
-                } catch(e) {
-                    this.products = defaultProducts;
-                }
-
-                // Load categories
-                try {
-                    const cat = localStorage.getItem('gymcream_categories');
-                    this.categories = cat ? JSON.parse(cat) : defaultCategories;
-                } catch(e) {
-                    this.categories = defaultCategories;
-                }
-
-                // Load phrases
-                try {
-                    const ph = localStorage.getItem('gymcream_phrases');
-                    this.phrases = ph ? JSON.parse(ph) : defaultPhrases;
-                } catch(e) {
-                    this.phrases = defaultPhrases;
-                }
-
-                // Fetch live server state
-                fetch('/api/cms').then(r => r.json()).then(serverData => {
-                    if (serverData.gymcream_products) {
-                        this.products = serverData.gymcream_products;
-                        localStorage.setItem('gymcream_products', JSON.stringify(this.products));
+                // Carga en vivo desde el CMS; si falla, se queda con el fallback mínimo
+                Promise.all([
+                    fetch('/api/cms/Products').then(r => r.ok ? r.json() : null).catch(() => null),
+                    fetch('/api/cms/Categories').then(r => r.ok ? r.json() : null).catch(() => null),
+                    fetch('/api/cms/Phrases').then(r => r.ok ? r.json() : null).catch(() => null),
+                ]).then(([products, categories, phrases]) => {
+                    if (Array.isArray(products) && products.length > 0) this.products = products;
+                    if (Array.isArray(categories) && categories.length > 0) this.categories = categories;
+                    if (Array.isArray(phrases) && phrases.length > 0) {
+                        this.phrases = phrases.map(p => (typeof p === 'string' ? p : p.text));
                     }
-                    if (serverData.gymcream_categories) {
-                        this.categories = serverData.gymcream_categories;
-                        localStorage.setItem('gymcream_categories', JSON.stringify(this.categories));
-                    }
-                    if (serverData.gymcream_phrases) {
-                        this.phrases = serverData.gymcream_phrases;
-                        localStorage.setItem('gymcream_phrases', JSON.stringify(this.phrases));
-                    }
-                }).catch(e => {});
+                });
 
                 // Load cart
                 try {

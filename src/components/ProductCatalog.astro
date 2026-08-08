@@ -1,5 +1,5 @@
 ---
-import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
+import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/data/cmsDefaults";
 ---
 
 <!-- SECCIÓ DE PRODUCTES (FONS BLANC) -->
@@ -149,13 +149,13 @@ import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
     </div>
 </section>
 
-<script is:inline define:vars={{ defaultCategories: DEFAULT_CATEGORIES, defaultProducts: DEFAULT_PRODUCTS }}>
+<script is:inline define:vars={{ fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS }}>
     const registerCatalogState = () => {
         if (!window.Alpine) return;
         Alpine.data('catalogState', () => ({
             activeCategory: 'TOT',
-            allProducts: [],
-            categories: [],
+            allProducts: fallbackProducts,
+            categories: fallbackCategories,
 
             init() {
                 this.loadData();
@@ -167,33 +167,19 @@ import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@src/data/cmsDefaults";
 
             async loadData() {
                 try {
-                    const prod = localStorage.getItem('gymcream_products');
-                    this.allProducts = prod ? JSON.parse(prod) : defaultProducts;
-                } catch(e) {
-                    this.allProducts = defaultProducts;
-                }
-
-                try {
-                    const cat = localStorage.getItem('gymcream_categories');
-                    this.categories = cat ? JSON.parse(cat) : defaultCategories;
-                } catch(e) {
-                    this.categories = defaultCategories;
-                }
-
-                try {
-                    const res = await fetch('/api/cms');
-                    if (res.ok) {
-                        const serverData = await res.json();
-                        if (serverData.gymcream_products) {
-                            this.allProducts = serverData.gymcream_products;
-                            localStorage.setItem('gymcream_products', JSON.stringify(this.allProducts));
-                        }
-                        if (serverData.gymcream_categories) {
-                            this.categories = serverData.gymcream_categories;
-                            localStorage.setItem('gymcream_categories', JSON.stringify(this.categories));
-                        }
+                    const [prodRes, catRes] = await Promise.all([
+                        fetch('/api/cms/Products'),
+                        fetch('/api/cms/Categories'),
+                    ]);
+                    if (prodRes.ok) {
+                        const prod = await prodRes.json();
+                        if (Array.isArray(prod) && prod.length > 0) this.allProducts = prod;
                     }
-                } catch(e) {}
+                    if (catRes.ok) {
+                        const cat = await catRes.json();
+                        if (Array.isArray(cat) && cat.length > 0) this.categories = cat;
+                    }
+                } catch (e) {}
             },
 
             get visibleProducts() {

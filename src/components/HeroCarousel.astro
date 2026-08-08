@@ -1,5 +1,5 @@
 ---
-import { DEFAULT_SLIDES } from "@src/data/cmsDefaults";
+import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
 ---
 
 <!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS) I OVERLAY DE TEXT -->
@@ -57,36 +57,24 @@ import { DEFAULT_SLIDES } from "@src/data/cmsDefaults";
     </div>
 </section>
 
-<script is:inline define:vars={{ defaultSlides: DEFAULT_SLIDES }}>
+<script is:inline define:vars={{ fallbackSlides: FALLBACK_SLIDES }}>
     const registerHeroState = () => {
         if (!window.Alpine) return;
         Alpine.data('heroState', () => ({
-            slides: [],
+            slides: fallbackSlides,
             activeSlide: 0,
             intervalId: null,
 
             async init() {
                 try {
-                    const saved = localStorage.getItem('gymcream_slides');
-                    this.slides = saved ? JSON.parse(saved) : defaultSlides;
-                } catch(e) {
-                    this.slides = defaultSlides;
-                }
-
-                if (!this.slides || this.slides.length === 0) {
-                    this.slides = defaultSlides;
-                }
-
-                try {
-                    const res = await fetch('/api/cms');
+                    const res = await fetch('/api/cms/Slides');
                     if (res.ok) {
-                        const serverData = await res.json();
-                        if (serverData.gymcream_slides && serverData.gymcream_slides.length > 0) {
-                            this.slides = serverData.gymcream_slides;
-                            localStorage.setItem('gymcream_slides', JSON.stringify(this.slides));
+                        const data = await res.json();
+                        if (Array.isArray(data) && data.length > 0) {
+                            this.slides = data;
                         }
                     }
-                } catch(e) {}
+                } catch (e) {}
 
                 this.startCarousel();
             },
@@ -95,7 +83,7 @@ import { DEFAULT_SLIDES } from "@src/data/cmsDefaults";
                 if (this.slides && this.slides[this.activeSlide]) {
                     return this.slides[this.activeSlide];
                 }
-                return defaultSlides[0];
+                return fallbackSlides[0];
             },
 
             startCarousel() {

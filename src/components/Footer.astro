@@ -1,5 +1,5 @@
 ---
-import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
+import { FALLBACK_INFO_PAGES } from "@src/data/cmsDefaults";
 ---
 
 <!-- FOOTER -->
@@ -175,7 +175,7 @@ import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
     </div>
 </footer>
 
-<script is:inline define:vars={{ defaultInfoPages: DEFAULT_INFO_PAGES }}>
+<script is:inline define:vars={{ fallbackInfoPages: FALLBACK_INFO_PAGES }}>
     const registerFooterState = () => {
         if (!window.Alpine) return;
         Alpine.data('footerState', () => ({
@@ -184,6 +184,20 @@ import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
             contactEmail: '',
             contactMessage: '',
             contactSent: false,
+            infoPages: fallbackInfoPages,
+
+            init() {
+                fetch('/api/cms/InfoPages')
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => {
+                        if (Array.isArray(data) && data.length > 0) {
+                            const keyed = {};
+                            data.forEach(page => { keyed[page.id] = page; });
+                            this.infoPages = keyed;
+                        }
+                    })
+                    .catch(() => {});
+            },
 
             openInfo(key) {
                 this.activeInfoKey = key;
@@ -209,7 +223,7 @@ import { DEFAULT_INFO_PAGES } from "@src/data/cmsDefaults";
             },
 
             get activeInfo() {
-                return defaultInfoPages[this.activeInfoKey] || defaultInfoPages['enviaments'];
+                return this.infoPages[this.activeInfoKey] || Object.values(this.infoPages)[0] || null;
             }
         }));
     };

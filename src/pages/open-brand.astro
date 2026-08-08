@@ -2,7 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import Container from "@src/components/Container.astro";
 import Philosophy from "@src/components/Philosophy.astro";
-import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
+import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
 ---
 
 <Layout title="Gym Cream — Sóc Gymcreamer & Moviment DIY" description="Som una marca oberta (Open Brand). Descarrega els nostres logos de franc per fer-te la teva roba o aconsegueix la Línia Oficial.">
@@ -487,12 +487,13 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
     </main>
 </Layout>
 
-<script is:inline define:vars={{ defaultAssets: DEFAULT_BRAND_ASSETS, defaultQuotes: DEFAULT_COMMUNITY_QUOTES, defaultPhotos: DEFAULT_COMMUNITY_PHOTOS }}>
+<script is:inline define:vars={{ fallbackAssets: FALLBACK_BRAND_ASSETS, fallbackQuotes: FALLBACK_COMMUNITY_QUOTES, fallbackPhotos: FALLBACK_COMMUNITY_PHOTOS }}>
     const registerOpenBrandState = () => {
         if (!window.Alpine) return;
         Alpine.data('openBrandState', () => ({
-            assets: [],
+            assets: fallbackAssets,
             quotes: [],
+            allQuotes: fallbackQuotes,
             instagramQuotes: [
                 { id: 1, author: 'Marc_GC', quote: 'NO PIZZA, NO PARTY' },
                 { id: 2, author: 'CarbLover', quote: '100% REAL FITNESS' },
@@ -500,7 +501,7 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 { id: 4, author: 'Alex_Heavy', quote: 'SENSE ETIQUETES' },
                 { id: 5, author: 'Sonia_Lift', quote: 'AMOR PELS HIDRATS' }
             ],
-            photos: [],
+            photos: fallbackPhotos,
             activeCategory: 'all',
             heartBeating: false,
             quoteModalOpen: false,
@@ -519,57 +520,31 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
             },
 
             async init() {
-                // Carregar actius del CMS
-                const savedAssets = localStorage.getItem('gymcream_brand_assets');
-                if (savedAssets) {
-                    try { this.assets = JSON.parse(savedAssets); } catch(e) { this.assets = defaultAssets; }
-                } else {
-                    this.assets = defaultAssets;
-                }
-
-                // Carregar frases de la comunitat
-                this.loadQuotes();
-
-                // Carregar fotos socials
-                const savedPhotos = localStorage.getItem('gymcream_community_photos');
-                if (savedPhotos) {
-                    try { this.photos = JSON.parse(savedPhotos); } catch(e) { this.photos = defaultPhotos; }
-                } else {
-                    this.photos = defaultPhotos;
-                }
-
-                // Fetch dades del servidor CMS
                 try {
-                    const res = await fetch('/api/cms');
-                    if (res.ok) {
-                        const serverData = await res.json();
-                        if (serverData.gymcream_brand_assets) {
-                            this.assets = serverData.gymcream_brand_assets;
-                            localStorage.setItem('gymcream_brand_assets', JSON.stringify(this.assets));
-                        }
-                        if (serverData.gymcream_community_quotes) {
-                            localStorage.setItem('gymcream_community_quotes', JSON.stringify(serverData.gymcream_community_quotes));
-                            this.loadQuotes();
-                        }
-                        if (serverData.gymcream_community_photos) {
-                            this.photos = serverData.gymcream_community_photos;
-                            localStorage.setItem('gymcream_community_photos', JSON.stringify(this.photos));
-                        }
+                    const [assetsRes, quotesRes, photosRes] = await Promise.all([
+                        fetch('/api/cms/BrandAssets'),
+                        fetch('/api/cms/CommunityQuotes'),
+                        fetch('/api/cms/CommunityPhotos'),
+                    ]);
+                    if (assetsRes.ok) {
+                        const assets = await assetsRes.json();
+                        if (Array.isArray(assets) && assets.length > 0) this.assets = assets;
                     }
-                } catch(e) {}
+                    if (quotesRes.ok) {
+                        const quotes = await quotesRes.json();
+                        if (Array.isArray(quotes) && quotes.length > 0) this.allQuotes = quotes;
+                    }
+                    if (photosRes.ok) {
+                        const photos = await photosRes.json();
+                        if (Array.isArray(photos) && photos.length > 0) this.photos = photos;
+                    }
+                } catch (e) {}
+
+                this.applyQuotes();
             },
 
-            loadQuotes() {
-                const savedQuotes = localStorage.getItem('gymcream_community_quotes');
-                let allQuotes = [];
-                if (savedQuotes) {
-                    try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = defaultQuotes; }
-                } else {
-                    allQuotes = defaultQuotes;
-                    try { localStorage.setItem('gymcream_community_quotes', JSON.stringify(defaultQuotes)); } catch(e) {}
-                }
-                
-                const approved = allQuotes.filter(q => q.status === 'approved');
+            applyQuotes() {
+                const approved = this.allQuotes.filter(q => q.status === 'approved');
                 this.quotes = approved;
 
                 if (approved.length > 0) {
@@ -578,14 +553,6 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                         author: (q.author || 'Gymcreamer').replace('@', ''),
                         quote: (q.quote || '').replace(/^"|"$/g, '').toUpperCase()
                     }));
-                } else {
-                    this.instagramQuotes = [
-                        { id: 1, author: 'Marc_GC', quote: 'NO PIZZA, NO PARTY' },
-                        { id: 2, author: 'CarbLover', quote: '100% REAL FITNESS' },
-                        { id: 3, author: 'Laura_Beast', quote: 'ZERO POSTUREIG' },
-                        { id: 4, author: 'Alex_Heavy', quote: 'SENSE ETIQUETES' },
-                        { id: 5, author: 'Sonia_Lift', quote: 'AMOR PELS HIDRATS' }
-                    ];
                 }
             },
 
@@ -594,52 +561,34 @@ import { DEFAULT_BRAND_ASSETS, DEFAULT_COMMUNITY_QUOTES, DEFAULT_COMMUNITY_PHOTO
                 return this.assets.filter(a => a.category === this.activeCategory);
             },
 
-            submitInstagramQuote() {
+            async submitInstagramQuote() {
                 if (!this.newQuote.trim() || !this.newAuthor.trim()) return;
-                
+
                 const author = this.newAuthor.replace('@', '').trim();
                 const rawQuote = this.newQuote.trim().toUpperCase();
 
-                const savedQuotes = localStorage.getItem('gymcream_community_quotes');
-                let allQuotes = [];
-                if (savedQuotes) {
-                    try { allQuotes = JSON.parse(savedQuotes); } catch(e) { allQuotes = [...defaultQuotes]; }
-                } else {
-                    allQuotes = [...defaultQuotes];
+                this.submissionError = '';
+
+                try {
+                    // Endpoint público: valida, guarda la propuesta como 'pending' en
+                    // Google Sheets, y avisa por email al administrador para que la
+                    // revise. No requiere sesión de admin (es un formulario público),
+                    // pero solo puede crear filas 'pending' — no puede escribir nada más.
+                    const res = await fetch('/api/notify-quote', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ author, quote: rawQuote })
+                    });
+                    if (!res.ok) throw new Error('No s\'ha pogut enviar la proposta.');
+                } catch (e) {
+                    this.submissionError = 'Hi ha hagut un error enviant la proposta. Torna-ho a provar.';
+                    return;
                 }
 
-                // Nova proposta amb estat 'pending' per a la validació al CMS
-                const newEntry = {
-                    id: 'quote-' + Date.now(),
-                    author: author,
-                    quote: '"' + rawQuote + '"',
-                    status: 'pending',
-                    createdAt: new Date().toISOString().split('T')[0]
-                };
-
-                allQuotes.unshift(newEntry);
-                try {
-                    localStorage.setItem('gymcream_community_quotes', JSON.stringify(allQuotes));
-                    fetch('/api/cms', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ key: 'gymcream_community_quotes', value: allQuotes })
-                    }).catch(e => {});
-                } catch(e) {}
-
-                // Enviar notificació per email al servidor (jordibabi@gmail.com)
-                try {
-                    fetch('/api/notify-quote', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ author: author, quote: rawQuote })
-                    }).catch(err => console.log('Email notify request processed:', err));
-                } catch(e) {}
-                
                 this.newAuthor = '';
                 this.newQuote = '';
                 this.submissionSuccess = true;
-                
+
                 if (window.Alpine) {
                     const app = document.querySelector('[x-data]');
                     if (app && app._x_dataStack && app._x_dataStack[0].showToast) {

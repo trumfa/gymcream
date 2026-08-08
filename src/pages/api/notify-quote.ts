@@ -1,6 +1,7 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
+import { writeRow } from '../../lib/cms';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -10,6 +11,23 @@ export const POST: APIRoute = async ({ request }) => {
     if (!quote || !author) {
       return new Response(JSON.stringify({ error: 'Manca autor o frase' }), {
         status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Guarda la propuesta en Google Sheets como 'pending'. El status se fuerza
+    // aquí, server-side — el cliente nunca puede decidir que su propia
+    // propuesta quede 'approved' directamente.
+    try {
+      await writeRow('CommunityQuotes', 'create', {
+        author,
+        quote: `"${quote}"`,
+        status: 'pending',
+      });
+    } catch (err) {
+      console.error('Error guardando la propuesta en el CMS:', err);
+      return new Response(JSON.stringify({ error: 'No s\'ha pogut desar la proposta' }), {
+        status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
     }
