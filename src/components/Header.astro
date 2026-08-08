@@ -1,7 +1,7 @@
 ---
 import { FALLBACK_PHRASES, FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/data/cmsDefaults";
 
-const isOpenBrand = Astro.url.pathname.includes('open-brand');
+const isOpenBrand = Astro.url.pathname.includes('gymcreamer');
 ---
 
 <!-- Header Component with Logos, Live Search, Cart Drawer, +INFO Detail Modal, & Restock Alert Modal -->
@@ -161,16 +161,16 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
             <a href="/" data-astro-reload @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
                 <span class="text-gcYellow">🛒</span> Botiga Principal
             </a>
-            <a href="/open-brand#descarges" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+            <a href="/gymcreamer#descarges" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
                 <span>📦</span> Centre de Descàrregues
             </a>
-            <a href="/open-brand#mur-frases" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
-                <span>💬</span> Mur de Frases Iròniques
+            <a href="/gymcreamer" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+                <span>💬</span> Digues la Teva Frase
             </a>
-            <a href="/open-brand#aparador-social" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+            <a href="/gymcreamer#aparador-social" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
                 <span>📸</span> Aparador Social
             </a>
-            <a href="/open-brand#llicencia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
+            <a href="/gymcreamer#llicencia" @click="menuOpen = false" class="hover:text-gcYellow transition-colors flex items-center gap-2">
                 <span>⚖️</span> Llicència Marca Oberta
             </a>
         </nav>
@@ -562,7 +562,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
         <div id="navContainer" class="bg-black border-b-2 border-gcYellow transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
                 <div class="flex items-center gap-4 sm:gap-6">
-                    <!-- MENÚ HAMBURGUESA: NOMS A L'APARTAT "SOC GYMCREAMER" (/open-brand) -->
+                    <!-- MENÚ HAMBURGUESA: NOMS A L'APARTAT "SOC GYMCREAMER" (/gymcreamer) -->
                     {isOpenBrand ? (
                         <button @click="menuOpen = true" class="text-white hover:text-gcYellow transition-colors p-1 flex items-center gap-1 cursor-pointer" aria-label="Obrir menú Gymcreamer">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -625,7 +625,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                         </a>
                     ) : (
                         <a 
-                            href="/open-brand" 
+                            href="/gymcreamer" 
                             data-astro-reload
                             class="bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm rounded-sm"
                             title="Accés a Sóc Gymcreamer"
@@ -880,7 +880,7 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
         const ironicBar = document.getElementById('ironicBar');
         
         if (header && navContainer && ironicBar) {
-            const isOpenBrand = window.location.pathname.includes('open-brand');
+            const isOpenBrand = window.location.pathname.includes('gymcreamer');
             if (isOpenBrand) {
                 navContainer.classList.add('bg-black', 'border-gray-800');
                 navContainer.classList.remove('bg-transparent', 'border-transparent');
