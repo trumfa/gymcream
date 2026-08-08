@@ -522,6 +522,13 @@ const isPrincipal = !isOpenBrand && !isBotiga;
         <div id="navContainer" class="bg-black border-b-2 border-gcYellow transition-colors duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
                 <div class="flex items-center gap-4 sm:gap-6">
+                    <!-- ICONA DE CASA (perímetre blanc): torna a l'Inici. Només a Botiga i Gymcreamer -->
+                    {!isPrincipal && (
+                        <a href="/" data-astro-reload class="text-white hover:text-gcYellow transition-colors" aria-label="Tornar a l'inici" title="Inici">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
+                        </a>
+                    )}
+
                     <!-- LOGO INTEGRAT DES DE /public/logos/ -->
                     <a href="/" data-astro-reload class="flex items-center gap-2 group">
                         <img src="/logos/logo primary GC no GC.png" alt="Gym Cream Logo" class="h-7 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105" />
@@ -531,32 +538,33 @@ const isPrincipal = !isOpenBrand && !isBotiga;
                     </a>
                 </div>
 
-                <!-- NAVEGACIÓ CENTRAL: categories a la Botiga, botó Descàrregues a Gymcreamer, res a la Principal -->
+                <!-- NAVEGACIÓ CENTRAL: botó Sóc Gymcreamer a la Botiga; Descàrregues + Botiga a Gymcreamer; res a la Principal -->
                 {isBotiga && (
-                    <nav class="hidden lg:flex gap-6 font-display text-xs tracking-widest uppercase font-bold items-center">
-                        <template x-for="cat in categories" :key="cat.id">
-                            <a 
-                                href="#catalog" 
-                                @click="activeCategory = cat.name; $dispatch('filter-category', cat.name)" 
-                                :class="[
-                                    cat.isSpecial ? (activeCategory === cat.name ? 'text-red-500 border-b-2 border-red-500 pb-1' : 'text-red-400 hover:text-red-300 pb-1') :
-                                    (activeCategory === cat.name ? 'text-gcYellow border-b-2 border-gcYellow pb-1' : 'hover:text-gcYellow text-gray-200 transition-colors pb-1')
-                                ]"
-                                class="transition-colors flex items-center gap-1 cursor-pointer"
-                            >
-                                <template x-if="cat.isSpecial"><span>🔥</span></template>
-                                <span x-text="cat.name"></span>
-                            </a>
-                        </template>
-                    </nav>
+                    <a 
+                        href="/gymcreamer" 
+                        data-astro-reload
+                        class="bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-4 sm:px-5 py-1.5 sm:py-2 transition-all shadow-sm rounded-full"
+                    >
+                        <span class="hidden sm:inline">SÓC GYMCREAMER</span>
+                        <span class="sm:hidden">GYMCREAMER</span>
+                    </a>
                 )}
                 {isOpenBrand && (
-                    <a 
-                        href="/gymcreamer#descarges"
-                        class="hidden sm:inline-block bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-4 sm:px-5 py-1.5 sm:py-2 transition-all shadow-sm rounded-full"
-                    >
-                        Descàrregues
-                    </a>
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <a 
+                            href="/gymcreamer#descarges"
+                            class="bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-4 sm:px-5 py-1.5 sm:py-2 transition-all shadow-sm rounded-full"
+                        >
+                            Descàrregues
+                        </a>
+                        <a 
+                            href="/botiga" 
+                            data-astro-reload
+                            class="bg-white hover:bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-4 sm:px-5 py-1.5 sm:py-2 transition-all shadow-sm rounded-full"
+                        >
+                            Botiga
+                        </a>
+                    </div>
                 )}
 
                 <div class="flex items-center gap-3 sm:gap-4">
@@ -572,30 +580,6 @@ const isPrincipal = !isOpenBrand && !isBotiga;
                             <button @click="lang = 'en'; localStorage.setItem('gymcream_lang', 'en'); langOpen = false; showToast('Language changed to English')" class="w-full text-left px-3 py-1.5 hover:bg-gcYellow hover:text-black font-bold">EN</button>
                         </div>
                     </div>
-
-                    <!-- BOTÓ SOC GYMCREAMER / TORNA A LA BOTIGA (no es mostra a la Principal) -->
-                    {isOpenBrand && (
-                        <a 
-                            href="/botiga" 
-                            data-astro-reload
-                            class="bg-white hover:bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm rounded-sm"
-                            title="Tornar a la botiga"
-                        >
-                            <span class="hidden sm:inline" x-text="lang === 'ca' ? 'TORNAR A LA BOTIGA' : (lang === 'es' ? 'VOLVER A LA TIENDA' : 'BACK TO STORE')">TORNAR A LA BOTIGA</span>
-                            <span class="sm:hidden">BOTIGA</span>
-                        </a>
-                    )}
-                    {isBotiga && (
-                        <a 
-                            href="/gymcreamer" 
-                            data-astro-reload
-                            class="bg-gcYellow hover:bg-white text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-3 sm:px-4 py-1.5 sm:py-2 transition-all shadow-sm rounded-sm"
-                            title="Accés a Sóc Gymcreamer"
-                        >
-                            <span class="hidden sm:inline" x-text="lang === 'ca' ? 'SÓC GYMCREAMER' : (lang === 'es' ? 'SOY GYMCREAMER' : 'I\'M A GYMCREAMER')">SÓC GYMCREAMER</span>
-                            <span class="sm:hidden">GYMCREAMER</span>
-                        </a>
-                    )}
 
                     <!-- BOTÓ DE CERCA / LUPA EN DIRECTE (no es mostra a la Principal) -->
                     {!isPrincipal && (

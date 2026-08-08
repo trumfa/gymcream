@@ -39,22 +39,33 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
         </template>
     </div>
 
-    <!-- CAPA 3: BOTÓ D'ACCIÓ -->
-    <div class="absolute bottom-12 sm:bottom-20 z-20 w-full text-center px-4">
+    <!-- BOTÓ BOTIGA — cantonada inferior esquerra -->
+    <div class="absolute bottom-20 sm:bottom-24 left-4 sm:left-10 z-20">
         <a 
-            :href="currentSlideData?.buttonLink || '#catalog'" 
-            class="inline-block bg-gcYellow text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-8 sm:px-12 py-4 sm:py-5 hover:bg-white transition-all duration-300 shadow-[0_0_25px_rgba(255,230,0,0.5)] cursor-pointer"
-            x-text="currentSlideData?.buttonText || 'Entra a la Botiga'"
+            href="/botiga" 
+            data-astro-reload
+            class="inline-block bg-gcYellow text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-6 sm:px-10 py-3.5 sm:py-4 hover:bg-white transition-all duration-300 shadow-[0_0_25px_rgba(255,230,0,0.5)] cursor-pointer text-center"
         >
-            Entra a la Botiga
+            Botiga
         </a>
     </div>
-    
-    <!-- Línia de desplaçament subtil -->
-    <div class="absolute bottom-4 z-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce">
-        <span class="text-white/50 text-[10px] font-display uppercase tracking-widest mb-1">Scroll</span>
-        <svg class="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+
+    <!-- BOTÓ SÓC GYMCREAMER — cantonada inferior dreta -->
+    <div class="absolute bottom-20 sm:bottom-24 right-4 sm:right-10 z-20">
+        <a 
+            href="/gymcreamer" 
+            data-astro-reload
+            class="inline-block bg-gcYellow text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-6 sm:px-10 py-3.5 sm:py-4 hover:bg-white transition-all duration-300 shadow-[0_0_25px_rgba(255,230,0,0.5)] cursor-pointer text-center"
+        >
+            Sóc Gymcreamer
+        </a>
     </div>
+
+    <!-- Fletxa cap a la Comunitat Gymcreamer (part social, a continuació en aquesta mateixa pàgina) -->
+    <a href="#comunitat" class="absolute bottom-4 z-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1 group cursor-pointer">
+        <span class="text-white/60 group-hover:text-gcYellow text-[10px] font-display uppercase tracking-widest transition-colors">Comunitat Gymcreamer</span>
+        <svg class="w-4 h-4 text-white/60 group-hover:text-gcYellow transition-colors animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+    </a>
 </section>
 
 <script is:inline define:vars={{ fallbackSlides: FALLBACK_SLIDES }}>
