@@ -780,9 +780,25 @@ const isOpenBrand = Astro.url.pathname.includes('open-brand');
                 this.restockModalOpen = true;
             },
             
-            submitRestock() {
+            async submitRestock() {
                 if (!this.restockEmail || !this.restockEmail.includes('@')) {
                     this.showToast('S\'il us plau, introdueix un correu electrònic vàlid.', 'error');
+                    return;
+                }
+                try {
+                    const res = await fetch('/api/subscribe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: this.restockEmail,
+                            type: 'restock',
+                            productId: this.restockProduct ? this.restockProduct.id : '',
+                            productName: this.restockProduct ? this.restockProduct.name : ''
+                        })
+                    });
+                    if (!res.ok) throw new Error('Error del servidor');
+                } catch (e) {
+                    this.showToast('Hi ha hagut un error. Torna-ho a provar.', 'error');
                     return;
                 }
                 this.restockSuccess = true;
