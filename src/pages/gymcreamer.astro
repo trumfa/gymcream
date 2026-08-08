@@ -1,7 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Container from "@src/components/Container.astro";
-import Philosophy from "@src/components/Philosophy.astro";
 import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
 ---
 
@@ -12,117 +11,36 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
         class="pt-20 sm:pt-24 bg-gcClassic text-black min-h-screen"
     >
 
-        <!-- FRANJA NEGRA COMUNITAT: FRASES + FOTOS EN EL MATEIX FORMAT -->
-        <div id="comunitat" class="bg-black text-white border-b-2 border-gcYellow py-6 px-4 sm:px-8">
-            <div class="max-w-7xl mx-auto">
-                <!-- Fila Superior -->
-                <div class="flex items-center justify-between gap-4 pb-4 border-b border-gray-800">
-                    <!-- Esquerra: Botó + amb etiqueta cridanera "Digues la teva!" -->
-                    <button 
-                        @click="quoteModalOpen = true" 
-                        class="flex items-center gap-3 group cursor-pointer flex-shrink-0"
-                        title="Afegir la teva frase i pseudònim"
-                    >
-                        <span class="text-white group-hover:text-gcYellow font-extralight text-5xl sm:text-6xl transition-transform group-hover:scale-110 leading-none select-none font-sans">+</span>
-                        <span class="hidden sm:flex flex-col items-start leading-tight">
-                            <span class="bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-2 py-0.5 rounded-sm animate-pulse group-hover:animate-none">
-                                Digues la teva!
-                            </span>
-                            <span class="text-gray-400 text-[10px] uppercase tracking-wide mt-0.5">Proposa la teva frase</span>
-                        </span>
-                    </button>
-
-                    <!-- Mig: Text d'etiqueta + enllaç a Instagram -->
-                    <a 
-                        href="https://instagram.com" 
-                        target="_blank" 
-                        rel="noopener"
-                        class="text-center px-2 hover:opacity-80 transition-opacity"
-                    >
-                        <span class="font-display text-xs sm:text-sm font-extrabold uppercase tracking-wider text-gray-200 flex items-center gap-1.5 justify-center">
-                            <svg class="w-3.5 h-3.5 text-gcYellow shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                            <span class="hidden sm:inline">Etiqueta'ns amb</span> <span class="text-gcYellow">#gymcream</span>
-                        </span>
-                    </a>
-
-                    <!-- Dreta: Cor vermell batega al fer clic (Sense comptador) -->
-                    <button 
-                        @click="triggerHeartbeat()" 
-                        class="flex items-center justify-center bg-zinc-900 border border-gray-700 hover:border-red-500 text-red-500 p-2.5 rounded-full transition-all cursor-pointer flex-shrink-0 shadow-md group"
-                        title="Donar Like a la comunitat"
-                    >
-                        <svg 
-                            :class="heartBeating ? 'animate-heartbeat text-red-500 scale-125' : 'text-red-500 group-hover:scale-110'"
-                            class="w-6 h-6 fill-current transition-transform duration-300" 
-                            viewBox="0 0 24 24"
-                        >
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Fila Inferior: Hexàgons amb perimetre groc i transparents + fletxes laterals -->
-                <div class="pt-6 relative">
-                    <div class="flex items-center gap-3">
-                        <!-- Fletxa Esquerra per desplaçar hexàgons -->
-                        <button 
-                            @click="$refs.hexContainer.scrollBy({ left: -260, behavior: 'smooth' })"
-                            class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
-                            title="Anar cap a l'esquerra"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                        </button>
-
-                        <!-- Contenidor unificat: frases + fotos, mateixa mida de targeta -->
-                        <div x-ref="hexContainer" class="flex gap-6 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start flex-1">
-                            <template x-for="item in communityFeed" :key="item.id">
-                                <div class="flex flex-col items-center flex-shrink-0 w-56 sm:w-64 text-center group cursor-default">
-                                    <!-- Targeta: mateix perímetre blanc + llum groga recorrent per a frases i fotos -->
-                                    <div class="relative w-full h-32 sm:h-36 flex items-center justify-center bg-zinc-950/90 rounded-lg overflow-hidden shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
-
-                                        <!-- VARIANT FOTO -->
-                                        <template x-if="item.kind === 'photo'">
-                                            <div class="absolute inset-0">
-                                                <img :src="item.imageUrl" :alt="item.username" class="w-full h-full object-cover" />
-                                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0"></div>
-                                                <span 
-                                                    :class="item.type === 'DIY' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
-                                                    class="absolute top-2 left-2 text-[9px] font-display font-black uppercase tracking-widest px-2 py-0.5 rounded-sm shadow-sm"
-                                                    x-text="item.type === 'DIY' ? '🎨 DIY' : '🛡️ Oficial'"
-                                                ></span>
-                                            </div>
-                                        </template>
-
-                                        <!-- VARIANT FRASE -->
-                                        <template x-if="item.kind === 'quote'">
-                                            <div class="relative w-full h-full flex items-center justify-center p-4">
-                                                <span class="relative z-10 font-display font-black text-xs sm:text-sm leading-snug uppercase tracking-tight text-white transition-colors duration-300 px-2 select-none text-center drop-shadow-md" x-text="item.quote"></span>
-                                            </div>
-                                        </template>
-
-                                        <!-- Perímetre blanc + llum groga recorrent, comú a totes les targetes -->
-                                        <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="7" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" />
-                                            <rect class="border-glow-beam" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="7" fill="none" stroke="#ffe600" stroke-width="3" stroke-dasharray="90 400" stroke-linecap="round" />
-                                        </svg>
-                                    </div>
-                                    <!-- Peu: autor de la frase o usuari de la foto, mateix estil -->
-                                    <span class="mt-2.5 font-display font-bold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="item.kind === 'quote' ? `@${item.author}` : item.username"></span>
-                                </div>
-                            </template>
-                        </div>
-
-                        <!-- Fletxa Dreta per desplaçar hexàgons -->
-                        <button 
-                            @click="$refs.hexContainer.scrollBy({ left: 260, behavior: 'smooth' })"
-                            class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
-                            title="Anar cap a la dreta"
-                        >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                        </button>
+        <!-- LIGHTBOX: veure la foto d'usuari en gran -->
+        <div 
+            x-show="lightboxPhoto" 
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-[210] flex items-center justify-center p-4 sm:p-8 bg-black/90 backdrop-blur-sm cursor-zoom-out"
+            @click="lightboxPhoto = null"
+            @keydown.escape.window="lightboxPhoto = null"
+            x-cloak
+        >
+            <button @click="lightboxPhoto = null" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/80 hover:text-white transition-colors z-10">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <template x-if="lightboxPhoto">
+                <div class="max-w-3xl max-h-[85vh] flex flex-col items-center" @click.stop>
+                    <img :src="lightboxPhoto.imageUrl" :alt="lightboxPhoto.username" class="max-w-full max-h-[75vh] object-contain rounded-sm shadow-2xl" />
+                    <div class="mt-4 flex items-center gap-3 text-white">
+                        <span 
+                            :class="lightboxPhoto.type === 'DIY' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
+                            class="text-[10px] font-display font-black uppercase tracking-widest px-2.5 py-1 rounded-sm"
+                            x-text="lightboxPhoto.type === 'DIY' ? '🎨 DIY' : '🛡️ Oficial'"
+                        ></span>
+                        <span class="font-display font-bold text-sm uppercase tracking-wider" x-text="lightboxPhoto.username"></span>
                     </div>
                 </div>
-            </div>
+            </template>
         </div>
 
         <!-- MODAL PER INTRODUIR FRASE I PSEUDÒNIM -->
@@ -198,11 +116,11 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
             </div>
         </div>
 
-        <!-- 1. HERO I FILOSOFIA UNIFICADA — ESTÈTICA 'L'ART DE L'ANTÍTESI' -->
-        <section class="py-16 sm:py-24 border-b border-gray-300 relative bg-gcClassic">
+        <!-- 1. HERO + FILOSOFIA, UNIFICATS EN UNA SOLA SECCIÓ COMPACTA -->
+        <section class="py-14 sm:py-20 border-b border-gray-300 relative bg-gcClassic">
             <Container>
                 <div class="max-w-3xl mx-auto text-center">
-                    <div class="h-24 sm:h-32 max-w-xs mx-auto mb-6 flex items-center justify-center">
+                    <div class="h-20 sm:h-28 max-w-xs mx-auto mb-5 flex items-center justify-center">
                         <img src="/logos/logo GC Black.png" alt="Gym Cream Logo Black" class="h-full w-auto object-contain" />
                     </div>
 
@@ -210,7 +128,7 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
                         Comunitat Sóc Gymcreamer (Open Brand)
                     </span>
 
-                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl italic text-black leading-tight mb-8">
+                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl italic text-black leading-tight mb-6">
                         Fes el que vulguis. <br class="hidden sm:inline" />
                         <span>Que no t'importi que et jutgin.</span>
                     </h1>
@@ -221,7 +139,7 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
                 </div>
 
                 <!-- DOS CAMINS, LA MATEIXA FILOSOFIA -->
-                <div class="max-w-4xl mx-auto mt-14">
+                <div class="max-w-4xl mx-auto mt-10">
                     <p class="text-center font-serif italic text-sm text-gray-500 uppercase tracking-widest mb-6">
                         Dos Camins, La Mateixa Filosofia
                     </p>
@@ -258,18 +176,149 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
                     </p>
                 </div>
 
-                <p class="text-center font-serif font-bold text-2xl sm:text-3xl italic text-black mt-14 max-w-2xl mx-auto">
-                    "Llibertat de creació, zero etiquetes."
-                </p>
+                <!-- MANIFEST: continuació directa, sense repetir logo ni capçalera -->
+                <div class="max-w-2xl mx-auto mt-14 pt-10 border-t border-gray-300 text-center" x-data="{ lang: localStorage.getItem('gymcream_lang') || 'ca' }">
+                    <span class="font-serif italic text-sm text-gray-500 uppercase tracking-widest block mb-4" x-text="lang === 'ca' ? 'El Manifest' : (lang === 'es' ? 'El Manifiesto' : 'The Manifesto')">El Manifest</span>
+                    <div class="font-serif text-base sm:text-lg text-gray-800 leading-relaxed space-y-5">
+                        <p x-text="lang === 'ca' ? 'Vam néixer d\'un esgotament profund. Cansats de les cares de gos, dels crits al mirall i de l\'estètica hipermasculinitzada on sembla que si somrius perds massa muscular.' : (lang === 'es' ? 'Nacimos de un agotamiento profundo. Cansados de las caras de perro, los gritos al espejo y la estética hipermasculinizada donde parece que si sonríes pierdes masa muscular.' : 'We were born out of deep exhaustion. Tired of tough faces, screaming at the mirror, and hyper-masculine aesthetics where smiling seems to make you lose muscle mass.')">
+                            Vam néixer d'un esgotament profund. Cansats de les cares de gos, dels crits al mirall i de l'estètica hipermasculinitzada on sembla que si somrius perds massa muscular.
+                        </p>
+                        <p x-text="lang === 'ca' ? 'Creiem en la disciplina ferotge sota la barra de press banca, però també creiem en devorar un paquet de galetes obert sense cap mena de remordiment just en acabar. L\'equilibri no és menjar arròs amb pollastre; l\'equilibri és fer exactament allò que et dona la gana.' : (lang === 'es' ? 'Creemos en la disciplina feroz bajo la barra de press banca, pero también creemos en devorar un paquete de galletas abierto sin remordimientos al acabar. El equilibrio no es comer arroz con pollo; el equilibrio es hacer exactamente lo que te da la gana.' : 'We believe in fierce discipline under the bench press bar, but we also believe in devouring a box of cookies without guilt right when you finish. Balance isn\'t eating chicken and rice; balance is doing whatever you want.')">
+                            Creiem en la disciplina ferotge sota la barra de press banca, però també creiem en devorar un paquet de galetes obert sense cap mena de remordiment just en acabar. L'equilibri no és menjar arròs amb pollastre; l'equilibri és fer exactament allò que et dona la gana.
+                        </p>
+                    </div>
+                    <p class="font-serif font-bold text-2xl sm:text-3xl italic text-black mt-8" x-text="lang === 'ca' ? '&quot;Llibertat de creació, zero etiquetes.&quot;' : (lang === 'es' ? '&quot;Libertad de creación, cero etiquetas.&quot;' : '&quot;Freedom to create, zero labels.&quot;')">
+                        "Llibertat de creació, zero etiquetes."
+                    </p>
+                </div>
             </Container>
         </section>
 
-        <!-- MANIFEST GYM CREAM (LA NOSTRA FILOSOFIA) -->
-        <Philosophy />
 
+        <!-- 2. COMUNITAT: FRASES + FOTOS -->
+        <!-- FRANJA NEGRA COMUNITAT: FRASES + FOTOS EN EL MATEIX FORMAT -->
+        <div id="comunitat" class="bg-black text-white border-b-2 border-gcYellow py-6 px-4 sm:px-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Fila Superior -->
+                <div class="flex items-center justify-between gap-4 pb-4 border-b border-gray-800">
+                    <!-- Esquerra: Botó + amb etiqueta cridanera "Digues la teva!" -->
+                    <button 
+                        @click="quoteModalOpen = true" 
+                        class="flex items-center gap-3 group cursor-pointer flex-shrink-0"
+                        title="Afegir la teva frase i pseudònim"
+                    >
+                        <span class="text-white group-hover:text-gcYellow font-extralight text-5xl sm:text-6xl transition-transform group-hover:scale-110 leading-none select-none font-sans">+</span>
+                        <span class="hidden sm:flex flex-col items-start leading-tight">
+                            <span class="bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-2 py-0.5 rounded-sm animate-pulse group-hover:animate-none">
+                                Digues la teva!
+                            </span>
+                            <span class="text-gray-400 text-[10px] uppercase tracking-wide mt-0.5">Proposa la teva frase</span>
+                        </span>
+                    </button>
 
-        <!-- 2. CENTRE DE DESCÀRREGA D'ACTIUS GRÀFICS (LOGOTIPS I RECURSOS) -->
-        <section id="descarges" class="py-20 border-b border-gray-300 bg-gcClassic">
+                    <!-- Mig: Text d'etiqueta + enllaç a Instagram -->
+                    <a 
+                        href="https://instagram.com" 
+                        target="_blank" 
+                        rel="noopener"
+                        class="text-center px-2 hover:opacity-80 transition-opacity"
+                    >
+                        <span class="font-display text-xs sm:text-sm font-extrabold uppercase tracking-wider text-gray-200 flex items-center gap-1.5 justify-center">
+                            <svg class="w-3.5 h-3.5 text-gcYellow shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            <span class="hidden sm:inline">Etiqueta'ns amb</span> <span class="text-gcYellow">#gymcream</span>
+                        </span>
+                    </a>
+
+                    <!-- Dreta: Cor vermell batega al fer clic (Sense comptador) -->
+                    <button 
+                        @click="triggerHeartbeat()" 
+                        class="flex items-center justify-center bg-zinc-900 border border-gray-700 hover:border-red-500 text-red-500 p-2.5 rounded-full transition-all cursor-pointer flex-shrink-0 shadow-md group"
+                        title="Donar Like a la comunitat"
+                    >
+                        <svg 
+                            :class="heartBeating ? 'animate-heartbeat text-red-500 scale-125' : 'text-red-500 group-hover:scale-110'"
+                            class="w-6 h-6 fill-current transition-transform duration-300" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Fila Inferior: Hexàgons amb perimetre groc i transparents + fletxes laterals -->
+                <div class="pt-6 relative">
+                    <div class="flex items-center gap-3">
+                        <!-- Fletxa Esquerra per desplaçar hexàgons -->
+                        <button 
+                            @click="$refs.hexContainer.scrollBy({ left: -260, behavior: 'smooth' })"
+                            class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
+                            title="Anar cap a l'esquerra"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+
+                        <!-- Contenidor unificat: frases + fotos, mateixa mida de targeta -->
+                        <div x-ref="hexContainer" class="flex gap-6 overflow-x-auto pb-4 pt-2 no-scrollbar scroll-smooth items-start flex-1">
+                            <template x-for="item in communityFeed" :key="item.id">
+                                <div 
+                                    class="flex flex-col items-center flex-shrink-0 w-56 sm:w-64 text-center group"
+                                    :class="item.kind === 'photo' ? 'cursor-pointer' : 'cursor-default'"
+                                    @click="item.kind === 'photo' && (lightboxPhoto = item)"
+                                >
+                                    <!-- Targeta: mateix perímetre blanc + llum groga recorrent per a frases i fotos -->
+                                    <div class="relative w-full h-32 sm:h-36 flex items-center justify-center bg-zinc-950/90 rounded-lg overflow-hidden shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+
+                                        <!-- VARIANT FOTO -->
+                                        <template x-if="item.kind === 'photo'">
+                                            <div class="absolute inset-0">
+                                                <img :src="item.imageUrl" :alt="item.username" class="w-full h-full object-cover" />
+                                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0"></div>
+                                                <span 
+                                                    :class="item.type === 'DIY' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
+                                                    class="absolute top-2 left-2 text-[9px] font-display font-black uppercase tracking-widest px-2 py-0.5 rounded-sm shadow-sm"
+                                                    x-text="item.type === 'DIY' ? '🎨 DIY' : '🛡️ Oficial'"
+                                                ></span>
+                                                <!-- Icona de lupa al hover, indica que és clicable -->
+                                                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                                    <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                                </div>
+                                            </div>
+                                        </template>
+
+                                        <!-- VARIANT FRASE -->
+                                        <template x-if="item.kind === 'quote'">
+                                            <div class="relative w-full h-full flex items-center justify-center p-4">
+                                                <span class="relative z-10 font-display font-black text-xs sm:text-sm leading-snug uppercase tracking-tight text-white transition-colors duration-300 px-2 select-none text-center drop-shadow-md" x-text="item.quote"></span>
+                                            </div>
+                                        </template>
+
+                                        <!-- Perímetre blanc + llum groga recorrent, comú a totes les targetes -->
+                                        <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="7" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" />
+                                            <rect class="border-glow-beam" x="1.5" y="1.5" width="calc(100% - 3px)" height="calc(100% - 3px)" rx="7" fill="none" stroke="#ffe600" stroke-width="3" stroke-dasharray="90 400" stroke-linecap="round" />
+                                        </svg>
+                                    </div>
+                                    <!-- Peu: autor de la frase o usuari de la foto, mateix estil -->
+                                    <span class="mt-2.5 font-display font-bold text-xs text-white uppercase tracking-wider group-hover:text-gcYellow transition-colors truncate max-w-full" x-text="item.kind === 'quote' ? `@${item.author}` : item.username"></span>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Fletxa Dreta per desplaçar hexàgons -->
+                        <button 
+                            @click="$refs.hexContainer.scrollBy({ left: 260, behavior: 'smooth' })"
+                            class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
+                            title="Anar cap a la dreta"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. CENTRE DE DESCÀRREGA D'ACTIUS GRÀFICS (LOGOTIPS I RECURSOS) -->
+        <section id="descarges" class="py-16 border-b border-gray-300 bg-gcClassic">
             <Container>
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
                     <div>
@@ -358,7 +407,7 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
             </Container>
         </section>
 
-        <!-- 3. AVÍS LEGAL I LLICÈNCIA DE MARCA OBERTA -->
+        <!-- 4. AVÍS LEGAL I LLICÈNCIA DE MARCA OBERTA -->
         <section id="llicencia" class="py-16 bg-[#F4F3EF] text-gray-800 text-xs font-serif">
             <Container>
                 <div class="max-w-4xl mx-auto border border-gray-300 bg-white p-6 sm:p-8 space-y-4 shadow-sm">
@@ -410,6 +459,7 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
             ],
             photos: fallbackPhotos,
             communityFeed: [],
+            lightboxPhoto: null,
             activeCategory: 'all',
             heartBeating: false,
             quoteModalOpen: false,
