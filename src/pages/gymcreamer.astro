@@ -35,7 +35,7 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
                         <span 
                             :class="lightboxPhoto.type === 'DIY' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
                             class="text-[10px] font-display font-black uppercase tracking-widest px-2.5 py-1 rounded-sm"
-                            x-text="lightboxPhoto.type === 'DIY' ? '🎨 DIY' : '🛡️ Oficial'"
+                            x-text="lightboxPhoto.type === 'DIY' ? 'DIY' : 'Oficial'"
                         ></span>
                         <span class="font-display font-bold text-sm uppercase tracking-wider" x-text="lightboxPhoto.username"></span>
                     </div>
@@ -116,86 +116,134 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
             </div>
         </div>
 
-        <!-- 1. HERO + FILOSOFIA, UNIFICATS EN UNA SOLA SECCIÓ COMPACTA -->
+        <!-- 1. HERO + FILOSOFIA -->
         <section class="py-14 sm:py-20 border-b border-gray-300 relative bg-gcClassic">
             <Container>
                 <div class="max-w-3xl mx-auto text-center">
-                    <div class="h-20 sm:h-28 max-w-xs mx-auto mb-5 flex items-center justify-center">
+                    <div class="h-20 sm:h-28 max-w-xs mx-auto mb-8 flex items-center justify-center">
                         <img src="/logos/logo GC Black.png" alt="Gym Cream Logo Black" class="h-full w-auto object-contain" />
                     </div>
+                </div>
 
-                    <span class="font-serif italic text-lg sm:text-xl text-gray-600 block mb-3">
-                        Comunitat Sóc Gymcreamer (Open Brand)
-                    </span>
-
-                    <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl italic text-black leading-tight mb-6">
-                        Fes el que vulguis. <br class="hidden sm:inline" />
-                        <span>Que no t'importi que et jutgin.</span>
-                    </h1>
-
-                    <p class="font-serif text-lg sm:text-xl text-gray-800 leading-relaxed max-w-2xl mx-auto">
-                        Gym Cream trenca el proteccionisme clàssic de les marques esportives. Vam néixer amb una idea molt clara: compartir els nostres logotips i actius gràfics de franc perquè tothom pugui fer-se la seva pròpia roba a casa o a la copisteria del seu barri. No creiem en guardar logos com si fossin secrets d'Estat.
+                <div class="max-w-2xl sm:max-w-3xl mx-auto font-serif text-base sm:text-lg text-gray-800 leading-relaxed space-y-5 text-justify">
+                    <p>
+                        Els Gymcreamers vam néixer d'un esgotament profund. Cansats de les cares de gos d'alguns que es pensen que la quota del gimnàs es paguen amb els muscles.
+                    </p>
+                    <p>
+                        Creiem en la disciplina ferotge sota la barra del press banca, però també creiem en devorar canalons o galetes sense cap mena de remordiment o menjar jarret de porc com a font de proteïna.
+                    </p>
+                    <p class="font-bold text-black">
+                        L'equilibri no és menjar arròs amb pollastre; l'equilibri és fer exactament allò que et dona la gana.
                     </p>
                 </div>
 
-                <!-- DOS CAMINS, LA MATEIXA FILOSOFIA -->
-                <div class="max-w-4xl mx-auto mt-10">
-                    <p class="text-center font-serif italic text-sm text-gray-500 uppercase tracking-widest mb-6">
-                        Dos Camins, La Mateixa Filosofia
+                <!-- DOS VIES -->
+                <div class="max-w-2xl sm:max-w-4xl mx-auto mt-14">
+                    <p class="text-center font-serif italic text-lg sm:text-xl text-black mb-10">
+                        Identifica't com a Gymcreamer per dos vies:
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <!-- Camí 1: DIY -->
-                        <a href="#descarges" class="group block bg-white border-2 border-black p-7 sm:p-8 rounded-sm hover:bg-black transition-colors duration-300">
-                            <span class="text-3xl block mb-3">🎨</span>
-                            <h3 class="font-display font-black text-xl uppercase tracking-wide text-black group-hover:text-gcYellow transition-colors mb-2">DIY</h3>
-                            <p class="font-serif text-sm text-gray-700 group-hover:text-gray-300 leading-relaxed transition-colors">
-                                Descarrega els vectors de franc, fes servir paper trànsfer o vés a la impremta del teu barri, i estampa't la samarreta tu mateix sense pagar cap intermediari.
-                            </p>
-                            <span class="inline-flex items-center gap-1.5 mt-4 font-display text-xs font-bold uppercase tracking-wider text-black group-hover:text-gcYellow transition-colors">
-                                Descarrega els logos
-                                <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                            </span>
-                        </a>
 
-                        <!-- Camí 2: Línia Oficial -->
-                        <a href="/" class="group block bg-black border-2 border-black p-7 sm:p-8 rounded-sm hover:bg-gcYellow transition-colors duration-300">
-                            <span class="text-3xl block mb-3">🛡️</span>
-                            <h3 class="font-display font-black text-xl uppercase tracking-wide text-gcYellow group-hover:text-black transition-colors mb-2">Línia Oficial</h3>
-                            <p class="font-serif text-sm text-gray-300 group-hover:text-gray-900 leading-relaxed transition-colors">
-                                Per als qui prefereixen la comoditat de rebre les peces confeccionades amb patrons Heavy Oversize (240-400 GSM) i el Distintiu Físic Gym Cream brodat que n'acredita l'originalitat.
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
+                        <!-- Via 1: LÍNIA OFICIAL -->
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="font-mono text-xs text-gray-400">01</span>
+                                <div class="h-px flex-1 bg-gray-300"></div>
+                            </div>
+                            <h3 class="font-display font-black text-xl sm:text-2xl uppercase tracking-wide text-black mb-3">
+                                Línia Oficial
+                            </h3>
+                            <p class="font-serif text-sm sm:text-base text-gray-700 leading-relaxed text-justify">
+                                Per als qui prefereixen la comoditat de rebre les peces confeccionades amb patrons Heavy Oversize (amb gramatges de 240-400) i el distintiu físic Gym Cream de la nostra botiga que n'acredita originalitat.
                             </p>
-                            <span class="inline-flex items-center gap-1.5 mt-4 font-display text-xs font-bold uppercase tracking-wider text-gcYellow group-hover:text-black transition-colors">
+                            <a href="/" class="inline-flex items-center gap-1.5 mt-4 font-display text-xs font-bold uppercase tracking-wider text-black hover:text-gray-600 transition-colors border-b border-black hover:border-gray-600 pb-0.5">
                                 Ves a la botiga
-                                <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                            </span>
-                        </a>
+                            </a>
+                        </div>
+
+                        <!-- Via 2: FES-T'HO TU -->
+                        <div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="font-mono text-xs text-gray-400">02</span>
+                                <div class="h-px flex-1 bg-gray-300"></div>
+                            </div>
+                            <h3 class="font-display font-black text-xl sm:text-2xl uppercase tracking-wide text-black mb-3">
+                                Fes-t'ho Tu
+                            </h3>
+                            <p class="font-serif text-sm sm:text-base text-gray-700 leading-relaxed text-justify">
+                                Gym Cream trenca el proteccionisme clàssic de les marques esportives. Vam néixer amb una idea molt clara: compartir els nostres logotips i actius gràfics de franc. No creiem en guardar logos com si fossin secrets d'Estat. Descarrega els vectors de franc, fes servir paper trànsfer o demana-ho en algun lloc d'internet i estampa't la samarreta tu mateix.
+                            </p>
+                        </div>
                     </div>
 
-                    <p class="text-center font-serif text-gray-600 text-sm mt-6 italic">
-                        Tria l'opció que millor s'adapti a tu — ambdues formen part de la mateixa comunitat i del mateix esperit lliure.
-                    </p>
-                </div>
+                    <!-- 3 CAIXES DE LOGOS (sense la insígnia) -->
+                    <div id="descarges" class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 scroll-mt-24">
+                        <template x-for="asset in assets.filter(a => a.category !== 'badge')" :key="asset.id">
+                            <div class="bg-white border border-gray-200 p-5 flex flex-col justify-between hover:border-gray-400 transition-colors group">
+                                <div>
+                                    <div class="aspect-square bg-[#FAF9F5] border border-gray-200 p-6 flex items-center justify-center mb-4 relative overflow-hidden">
+                                        <img :src="asset.previewImage" :alt="asset.title" class="max-h-full max-w-full object-contain transition-transform group-hover:scale-105" />
+                                        <span class="absolute top-2 right-2 bg-white text-gray-600 font-mono text-[9px] px-2 py-0.5 border border-gray-200" x-text="asset.colorVariant"></span>
+                                    </div>
+                                    <h4 class="font-serif font-bold text-base text-black mb-1.5" x-text="asset.title"></h4>
+                                    <p class="font-serif text-gray-600 text-xs leading-relaxed mb-4" x-text="asset.description"></p>
+                                </div>
 
-                <!-- MANIFEST: continuació directa, sense repetir logo ni capçalera -->
-                <div class="max-w-2xl mx-auto mt-14 pt-10 border-t border-gray-300 text-center" x-data="{ lang: localStorage.getItem('gymcream_lang') || 'ca' }">
-                    <span class="font-serif italic text-sm text-gray-500 uppercase tracking-widest block mb-4" x-text="lang === 'ca' ? 'El Manifest' : (lang === 'es' ? 'El Manifiesto' : 'The Manifesto')">El Manifest</span>
-                    <div class="font-serif text-base sm:text-lg text-gray-800 leading-relaxed space-y-5">
-                        <p x-text="lang === 'ca' ? 'Vam néixer d\'un esgotament profund. Cansats de les cares de gos, dels crits al mirall i de l\'estètica hipermasculinitzada on sembla que si somrius perds massa muscular.' : (lang === 'es' ? 'Nacimos de un agotamiento profundo. Cansados de las caras de perro, los gritos al espejo y la estética hipermasculinizada donde parece que si sonríes pierdes masa muscular.' : 'We were born out of deep exhaustion. Tired of tough faces, screaming at the mirror, and hyper-masculine aesthetics where smiling seems to make you lose muscle mass.')">
-                            Vam néixer d'un esgotament profund. Cansats de les cares de gos, dels crits al mirall i de l'estètica hipermasculinitzada on sembla que si somrius perds massa muscular.
-                        </p>
-                        <p x-text="lang === 'ca' ? 'Creiem en la disciplina ferotge sota la barra de press banca, però també creiem en devorar un paquet de galetes obert sense cap mena de remordiment just en acabar. L\'equilibri no és menjar arròs amb pollastre; l\'equilibri és fer exactament allò que et dona la gana.' : (lang === 'es' ? 'Creemos en la disciplina feroz bajo la barra de press banca, pero también creemos en devorar un paquete de galletas abierto sin remordimientos al acabar. El equilibrio no es comer arroz con pollo; el equilibrio es hacer exactamente lo que te da la gana.' : 'We believe in fierce discipline under the bench press bar, but we also believe in devouring a box of cookies without guilt right when you finish. Balance isn\'t eating chicken and rice; balance is doing whatever you want.')">
-                            Creiem en la disciplina ferotge sota la barra de press banca, però també creiem en devorar un paquet de galetes obert sense cap mena de remordiment just en acabar. L'equilibri no és menjar arròs amb pollastre; l'equilibri és fer exactament allò que et dona la gana.
-                        </p>
+                                <div class="pt-3 border-t border-gray-100 space-y-3">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="text-[10px] text-gray-500 font-mono">Formats:</span>
+                                        <template x-for="fmt in asset.formats" :key="fmt">
+                                            <span class="bg-gray-100 text-gray-800 text-[9px] font-mono font-bold px-1.5 py-0.5 border border-gray-200" x-text="fmt"></span>
+                                        </template>
+                                    </div>
+                                    <a 
+                                        :href="asset.fileUrl" 
+                                        :download="asset.title" 
+                                        class="w-full bg-black hover:bg-gcYellow hover:text-black text-white font-sans text-xs uppercase tracking-wider font-bold py-2.5 px-3 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                                    >
+                                        Descarregar Arxiu
+                                    </a>
+                                </div>
+                            </div>
+                        </template>
                     </div>
-                    <p class="font-serif font-bold text-2xl sm:text-3xl italic text-black mt-8" x-text="lang === 'ca' ? '&quot;Llibertat de creació, zero etiquetes.&quot;' : (lang === 'es' ? '&quot;Libertad de creación, cero etiquetas.&quot;' : '&quot;Freedom to create, zero labels.&quot;')">
-                        "Llibertat de creació, zero etiquetes."
-                    </p>
                 </div>
             </Container>
         </section>
 
+        <!-- 2. LLICÈNCIA D'ÚS -->
+        <section id="llicencia" class="py-14 sm:py-16 bg-[#F4F3EF] text-gray-800 font-serif">
+            <Container>
+                <div class="max-w-2xl sm:max-w-3xl mx-auto">
+                    <h3 class="font-serif font-bold text-lg sm:text-xl text-black mb-1">
+                        Llicència d'Ús de la Marca Gym Cream (Creative Commons BY-NC)
+                    </h3>
+                    <p class="text-xs text-gray-500 font-mono mb-8">Normes d'ús personal i prohibició comercial</p>
 
-        <!-- 2. COMUNITAT: FRASES + FOTOS -->
+                    <div class="space-y-8">
+                        <div>
+                            <h4 class="font-serif font-bold text-sm text-emerald-800 uppercase tracking-wide mb-2">
+                                Ús Personal (Permès i Fomentat)
+                            </h4>
+                            <p class="text-sm sm:text-base leading-relaxed text-gray-700 text-justify">
+                                Tothom té permís per descarregar i utilitzar els arxius de la marca per fabricar-se les seves pròpies samarretes, tovalloles, gorres o accessoris exclusivament per a ús propi o per a regal no lucratiu.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h4 class="font-serif font-bold text-sm text-red-700 uppercase tracking-wide mb-2">
+                                Ús Comercial (Prohibit sense autorització)
+                            </h4>
+                            <p class="text-sm sm:text-base leading-relaxed text-red-700 text-justify">
+                                Queda totalment prohibida la comercialització, revenda, producció en massa o utilització de la marca Gym Cream per part de tercers (gimnasos, marques o particulars) amb finalitats lucratives directes o indirectes sense permís.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </Container>
+        </section>
+
+        <!-- 3. COMUNITAT: FRASES + FOTOS -->
         <!-- FRANJA NEGRA COMUNITAT: FRASES + FOTOS EN EL MATEIX FORMAT -->
         <div id="comunitat" class="bg-black text-white border-b-2 border-gcYellow py-6 px-4 sm:px-8">
             <div class="max-w-7xl mx-auto">
@@ -276,7 +324,7 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
                                                 <span 
                                                     :class="item.type === 'DIY' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
                                                     class="absolute top-2 left-2 text-[9px] font-display font-black uppercase tracking-widest px-2 py-0.5 rounded-sm shadow-sm"
-                                                    x-text="item.type === 'DIY' ? '🎨 DIY' : '🛡️ Oficial'"
+                                                    x-text="item.type === 'DIY' ? 'DIY' : 'Oficial'"
                                                 ></span>
                                                 <!-- Icona de lupa al hover, indica que és clicable -->
                                                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
@@ -317,132 +365,6 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
             </div>
         </div>
 
-        <!-- 3. CENTRE DE DESCÀRREGA D'ACTIUS GRÀFICS (LOGOTIPS I RECURSOS) -->
-        <section id="descarges" class="py-16 border-b border-gray-300 bg-gcClassic">
-            <Container>
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-                    <div>
-                        <span class="font-serif italic text-base text-gray-600 block">🎨 El teu camí DIY comença aquí</span>
-                        <h2 class="font-serif text-3xl sm:text-5xl italic text-black mt-1">
-                            Centre de Descàrrega
-                        </h2>
-                        <p class="font-serif text-gray-700 text-sm sm:text-base mt-2 max-w-xl italic">
-                            Tots els logotips oficials en formats vectorials (.AI, .SVG) i d'alta definició (.PNG, .JPG), llestos per portar-los a la impremta del teu barri.
-                        </p>
-                    </div>
-
-                    <!-- Botó de descarregar tot el pack -->
-                    <button 
-                        @click="downloadPack()"
-                        class="bg-black text-white hover:bg-gcYellow hover:text-black font-sans text-xs uppercase tracking-widest font-bold px-6 py-3.5 transition-colors flex items-center gap-2 shadow-sm rounded-sm cursor-pointer"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        <span>Descarregar Pack Complet (.ZIP)</span>
-                    </button>
-                </div>
-
-                <!-- Filtres per categoria d'actiu -->
-                <div class="flex gap-2 mb-8 overflow-x-auto pb-2 text-xs font-sans uppercase tracking-wider">
-                    <button 
-                        @click="activeCategory = 'all'" 
-                        :class="activeCategory === 'all' ? 'bg-black text-white font-bold' : 'bg-white text-gray-700 border border-gray-300 hover:border-black'"
-                        class="px-4 py-2 transition-colors rounded-sm cursor-pointer"
-                    >
-                        Tots els Actius (<span x-text="assets.length"></span>)
-                    </button>
-                    <button 
-                        @click="activeCategory = 'logo'" 
-                        :class="activeCategory === 'logo' ? 'bg-black text-white font-bold' : 'bg-white text-gray-700 border border-gray-300 hover:border-black'"
-                        class="px-4 py-2 transition-colors rounded-sm cursor-pointer"
-                    >
-                        Logotips Principals
-                    </button>
-                    <button 
-                        @click="activeCategory = 'badge'" 
-                        :class="activeCategory === 'badge' ? 'bg-black text-white font-bold' : 'bg-white text-gray-700 border border-gray-300 hover:border-black'"
-                        class="px-4 py-2 transition-colors rounded-sm cursor-pointer"
-                    >
-                        Insignies & Escuts
-                    </button>
-                </div>
-
-                <!-- Graella d'Actius Gràfics -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <template x-for="asset in filteredAssets" :key="asset.id">
-                        <div class="bg-white border border-gray-200 p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow group">
-                            <div>
-                                <!-- Preview de la imatge -->
-                                <div class="aspect-square bg-[#FAF9F5] border border-gray-200 p-6 flex items-center justify-center mb-4 relative overflow-hidden">
-                                    <img :src="asset.previewImage" :alt="asset.title" class="max-h-full max-w-full object-contain filter drop-shadow-sm transition-transform group-hover:scale-105" />
-                                    
-                                    <span class="absolute top-2 right-2 bg-white text-gray-600 font-mono text-[9px] px-2 py-0.5 border border-gray-200" x-text="asset.colorVariant"></span>
-                                </div>
-
-                                <h3 class="font-serif font-bold text-base text-black mb-1.5" x-text="asset.title"></h3>
-                                <p class="font-serif text-gray-600 text-xs leading-relaxed mb-4" x-text="asset.description"></p>
-                            </div>
-
-                            <div class="pt-3 border-t border-gray-100 space-y-3">
-                                <!-- Formats disponibles -->
-                                <div class="flex items-center gap-1.5 flex-wrap">
-                                    <span class="text-[10px] text-gray-500 font-mono">Formats:</span>
-                                    <template x-for="fmt in asset.formats" :key="fmt">
-                                        <span class="bg-gray-100 text-gray-800 text-[9px] font-mono font-bold px-1.5 py-0.5 border border-gray-200" x-text="fmt"></span>
-                                    </template>
-                                </div>
-
-                                <!-- Botó de descarregar -->
-                                <a 
-                                    :href="asset.fileUrl" 
-                                    :download="asset.title" 
-                                    class="w-full bg-black hover:bg-gcYellow hover:text-black text-white font-sans text-xs uppercase tracking-wider font-bold py-2.5 px-3 transition-colors flex items-center justify-center gap-2 rounded-sm cursor-pointer"
-                                >
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                    <span>Descarregar Arxiu</span>
-                                </a>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </Container>
-        </section>
-
-        <!-- 4. AVÍS LEGAL I LLICÈNCIA DE MARCA OBERTA -->
-        <section id="llicencia" class="py-16 bg-[#F4F3EF] text-gray-800 text-xs font-serif">
-            <Container>
-                <div class="max-w-4xl mx-auto border border-gray-300 bg-white p-6 sm:p-8 space-y-4 shadow-sm">
-                    <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
-                        <span class="text-2xl">⚖️</span>
-                        <div>
-                            <h3 class="font-serif font-bold text-base text-black uppercase tracking-wider">
-                                Llicència d'Ús de la Marca Gym Cream (Creative Commons BY-NC)
-                            </h3>
-                            <p class="text-[11px] text-gray-500 font-mono">Normes d'ús personal i prohibició comercial</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-                        <div>
-                            <h4 class="font-serif font-bold text-emerald-800 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                                <span>✅ Ús Personal (Permès i Fomentat)</span>
-                            </h4>
-                            <p class="leading-relaxed text-gray-700">
-                                Tothom té permís per descarregar i utilitzar els arxius de la marca per fabricar-se les seves pròpies samarretes, tovalloles, gorres o accessoris exclusivament per a ús propi o per a regal no lucratiu.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h4 class="font-serif font-bold text-red-800 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                                <span>🚫 Ús Comercial (Prohibit sense autorització)</span>
-                            </h4>
-                            <p class="leading-relaxed text-gray-700">
-                                Queda totalment prohibida la comercialització, revenda, producció en massa o utilització de la marca Gym Cream per part de tercers (gimnasos, marques o particulars) amb finalitats lucratives directes o indirectes sense permís.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </Container>
-        </section>
 
     </main>
 </Layout>
@@ -460,7 +382,6 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
             photos: fallbackPhotos,
             communityFeed: [],
             lightboxPhoto: null,
-            activeCategory: 'all',
             heartBeating: false,
             quoteModalOpen: false,
             
@@ -542,11 +463,6 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
                 this.communityFeed = feed;
             },
 
-            get filteredAssets() {
-                if (this.activeCategory === 'all') return this.assets;
-                return this.assets.filter(a => a.category === this.activeCategory);
-            },
-
             async submitInstagramQuote() {
                 if (!this.newQuote.trim() || !this.newAuthor.trim()) return;
 
@@ -586,10 +502,6 @@ import { FALLBACK_BRAND_ASSETS, FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PH
                     this.submissionSuccess = false;
                     this.quoteModalOpen = false;
                 }, 3500);
-            },
-
-            downloadPack() {
-                alert('Iniciant la descàrrega del Pack Complet de la Marca GYM CREAM (.ZIP)...');
             }
         }));
     };
