@@ -12,6 +12,7 @@ module.exports = {
 			colors: {
 				gcDark: "#080808",
 				gcYellow: "#ffe600",
+				gcPink: "#ff2eb8",
 				gcClassic: "#f9f6f0",
 				primary: {
 					50: "#fef1f7",
