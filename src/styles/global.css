@@ -14,6 +14,7 @@
 html {
 	scrollbar-gutter: stable;
 	scroll-behavior: smooth;
+	scrollbar-color: #ff2eb8 #080808;
 }
 
 body {
@@ -28,7 +29,7 @@ body {
 	background: #080808;
 }
 ::-webkit-scrollbar-thumb {
-	background: #ffe600;
+	background: #ff2eb8;
 }
 
 /* Marquee Animation for Ironic Quotes Bar */
