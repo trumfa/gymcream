@@ -2,68 +2,105 @@
 import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
 ---
 
-<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS), ADAPTATIU AMB OPCIÓ DE PANTALLA COMPLETA -->
-<section x-data="heroState" class="relative bg-gcDark">
+<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS) A PANTALLA COMPLETA -->
+<section x-data="heroState" class="relative w-full h-screen overflow-hidden bg-gcDark">
 
-    <!-- CONTENIDOR DEL CARRUSEL: alçada adaptativa per defecte, pantalla completa si es prem ampliar -->
-    <div 
-        class="relative w-full h-[65vh] sm:h-[80vh] flex flex-col items-center justify-center overflow-hidden"
-    >
-        <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS -->
-        <div class="absolute inset-0 z-0">
-            <template x-for="(slide, index) in slides" :key="slide.id || index">
-                <div
-                    x-show="activeSlide === index"
-                    x-transition:enter="transition-opacity duration-1000"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition-opacity duration-1000"
-                    x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0"
-                    class="absolute inset-0"
-                >
-                    <template x-if="slide.type === 'video'">
-                        <video :src="slide.url" class="w-full h-full object-cover opacity-60" autoplay loop muted playsinline></video>
-                    </template>
-                    <template x-if="slide.type !== 'video'">
-                        <!-- Sense ampliar: la foto sencera sense retallar (object-contain). Ampliat: immersiu a sang (object-cover) -->
-                        <img
-                            :src="slide.url"
-                            class="w-full h-full object-contain opacity-60 transition-all duration-300"
-                            :alt="slide.title || 'Hero slide'"
-                        />
-                    </template>
-                </div>
-            </template>
-        </div>
-
-        <!-- CAPA 2: LLETRES DE LA MARCA NEÓ -->
-        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none text-center px-4">
-            <template x-if="currentSlideData">
-                <div>
-                    <span class="font-display text-xs sm:text-sm text-gcYellow uppercase tracking-[0.3em] font-extrabold mb-2 block drop-shadow-lg" x-text="currentSlideData.subtitle || 'COL·LECCIÓ 2026'"></span>
-                    <h1 id="neonText" class="font-display text-[13vw] sm:text-[10vw] md:text-[9vw] font-black uppercase tracking-tighter leading-none neon-text-overlay text-center" x-text="currentSlideData.title || 'GYM CREAM'">
-                    </h1>
-                </div>
-            </template>
-        </div>
-
-        <!-- BOTÓ BOTIGA: perímetre groc, cos transparent -->
-        <a
-            href="/botiga"
-            data-astro-reload
-            class="absolute bottom-6 sm:bottom-8 z-20 left-1/2 transform -translate-x-1/2 border-2 border-gcYellow text-gcYellow bg-transparent hover:bg-gcYellow hover:text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-8 sm:px-12 py-3 sm:py-3.5 transition-all duration-300 cursor-pointer whitespace-nowrap"
-        >
-            Botiga
-        </a>
+    <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS -->
+    <div class="absolute inset-0 z-0">
+        <template x-for="(slide, index) in slides" :key="slide.id || index">
+            <div
+                x-show="activeSlide === index"
+                x-transition:enter="transition-opacity duration-1000"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition-opacity duration-1000"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="absolute inset-0"
+            >
+                <template x-if="slide.type === 'video'">
+                    <video :src="slide.url" class="w-full h-full object-cover opacity-60" autoplay loop muted playsinline></video>
+                </template>
+                <template x-if="slide.type !== 'video'">
+                    <img
+                        :src="slide.url"
+                        class="w-full h-full object-cover opacity-60"
+                        :alt="slide.title || 'Hero slide'"
+                    />
+                </template>
+            </div>
+        </template>
     </div>
 
-    <!-- FLETXA CAP A LA COMUNITAT GYMCREAMER: fora de la imatge, sempre visible sota el carrusel -->
-    <a href="#comunitat" class="relative z-10 flex flex-col items-center gap-1 py-4 group cursor-pointer bg-gcDark">
+    <!-- CAPA 2: LLETRES DE LA MARCA NEÓ -->
+    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none text-center px-4">
+        <template x-if="currentSlideData">
+            <div>
+                <span class="font-display text-xs sm:text-sm text-gcYellow uppercase tracking-[0.3em] font-extrabold mb-2 block drop-shadow-lg" x-text="currentSlideData.subtitle || 'COL·LECCIÓ 2026'"></span>
+                <h1 id="neonText" class="font-display text-[13vw] sm:text-[10vw] md:text-[9vw] font-black uppercase tracking-tighter leading-none neon-text-overlay text-center" x-text="currentSlideData.title || 'GYM CREAM'">
+                </h1>
+            </div>
+        </template>
+    </div>
+
+    <!-- BOTÓ BOTIGA: perímetre groc, cos transparent -->
+    <a
+        href="/botiga"
+        data-astro-reload
+        class="absolute bottom-20 sm:bottom-24 z-20 left-1/2 transform -translate-x-1/2 border-2 border-gcYellow text-gcYellow bg-transparent hover:bg-gcYellow hover:text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-8 sm:px-12 py-3 sm:py-3.5 transition-all duration-300 cursor-pointer whitespace-nowrap"
+    >
+        Botiga
+    </a>
+
+    <!-- FLETXA CAP A LA COMUNITAT GYMCREAMER -->
+    <a href="#comunitat" class="absolute bottom-4 sm:bottom-6 z-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1 group cursor-pointer">
         <span class="text-white/60 group-hover:text-gcYellow text-[10px] font-display uppercase tracking-widest transition-colors">Comunitat Gymcreamer</span>
         <svg class="w-4 h-4 text-white/60 group-hover:text-gcYellow transition-colors animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
     </a>
+
+    <!-- GUIONS DE PROGRÉS PER SLIDE + PAUSA, cantonada inferior dreta -->
+    <div class="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-20 flex items-center gap-2.5">
+        <div class="flex items-center gap-1.5">
+            <template x-for="(slide, index) in slides" :key="'dash-' + index">
+                <button
+                    @click="goToSlide(index)"
+                    class="relative h-1 w-6 sm:w-8 rounded-full bg-white/25 overflow-hidden cursor-pointer"
+                    :aria-label="`Ves a la slide ${index + 1}`"
+                >
+                    <template x-if="index < activeSlide">
+                        <div class="absolute inset-0 bg-gcPink rounded-full"></div>
+                    </template>
+                    <template x-if="index === activeSlide">
+                        <div
+                            class="absolute inset-0 bg-gcPink rounded-full origin-left progress-fill-bar"
+                            :style="`animation-play-state: ${paused ? 'paused' : 'running'}`"
+                            @animationend="nextSlide()"
+                        ></div>
+                    </template>
+                </button>
+            </template>
+        </div>
+
+        <button @click="togglePause()" class="text-white/80 hover:text-gcPink transition-colors cursor-pointer" :aria-label="paused ? 'Reprendre el carrusel' : 'Pausar el carrusel'">
+            <template x-if="!paused">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+            </template>
+            <template x-if="paused">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </template>
+        </button>
+    </div>
 </section>
+
+<style>
+    @keyframes progressFillBar {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+    }
+    .progress-fill-bar {
+        animation: progressFillBar 5s linear forwards;
+    }
+</style>
 
 <script is:inline define:vars={{ fallbackSlides: FALLBACK_SLIDES }}>
     const registerHeroState = () => {
@@ -71,7 +108,7 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
         Alpine.data('heroState', () => ({
             slides: fallbackSlides,
             activeSlide: 0,
-            intervalId: null,
+            paused: false,
 
             async init() {
                 try {
@@ -83,8 +120,6 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
                         }
                     }
                 } catch (e) {}
-
-                this.startCarousel();
             },
 
             get currentSlideData() {
@@ -94,13 +129,17 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
                 return fallbackSlides[0];
             },
 
-            startCarousel() {
-                if (this.intervalId) clearInterval(this.intervalId);
-                if (this.slides.length > 1) {
-                    this.intervalId = setInterval(() => {
-                        this.activeSlide = (this.activeSlide + 1) % this.slides.length;
-                    }, 5000);
-                }
+            nextSlide() {
+                if (this.paused) return;
+                this.activeSlide = (this.activeSlide + 1) % this.slides.length;
+            },
+
+            goToSlide(index) {
+                this.activeSlide = index;
+            },
+
+            togglePause() {
+                this.paused = !this.paused;
             }
         }));
     };
