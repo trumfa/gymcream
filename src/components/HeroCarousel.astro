@@ -7,8 +7,7 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
 
     <!-- CONTENIDOR DEL CARRUSEL: alçada adaptativa per defecte, pantalla completa si es prem ampliar -->
     <div 
-        :class="fullscreen ? 'fixed inset-0 z-[95] h-screen' : 'relative h-[65vh] sm:h-[80vh]'"
-        class="w-full flex flex-col items-center justify-center overflow-hidden transition-all duration-300"
+        class="relative w-full h-[65vh] sm:h-[80vh] flex flex-col items-center justify-center overflow-hidden"
     >
         <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS -->
         <div class="absolute inset-0 z-0">
@@ -30,8 +29,7 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
                         <!-- Sense ampliar: la foto sencera sense retallar (object-contain). Ampliat: immersiu a sang (object-cover) -->
                         <img
                             :src="slide.url"
-                            :class="fullscreen ? 'object-cover' : 'object-contain'"
-                            class="w-full h-full opacity-60 transition-all duration-300"
+                            class="w-full h-full object-contain opacity-60 transition-all duration-300"
                             :alt="slide.title || 'Hero slide'"
                         />
                     </template>
@@ -50,20 +48,6 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
             </template>
         </div>
 
-        <!-- BOTÓ AMPLIAR / TANCAR PANTALLA COMPLETA -->
-        <button
-            @click="fullscreen = !fullscreen"
-            class="absolute top-4 right-4 z-30 text-white/70 hover:text-gcYellow transition-colors bg-black/30 hover:bg-black/50 rounded-full p-2 cursor-pointer"
-            :aria-label="fullscreen ? 'Sortir de pantalla completa' : 'Ampliar a pantalla completa'"
-        >
-            <template x-if="!fullscreen">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/></svg>
-            </template>
-            <template x-if="fullscreen">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4v4a1 1 0 01-1 1H4M20 9h-4a1 1 0 01-1-1V4M15 20v-4a1 1 0 011-1h4M4 15h4a1 1 0 011 1v4"/></svg>
-            </template>
-        </button>
-
         <!-- BOTÓ BOTIGA: perímetre groc, cos transparent -->
         <a
             href="/botiga"
@@ -75,7 +59,7 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
     </div>
 
     <!-- FLETXA CAP A LA COMUNITAT GYMCREAMER: fora de la imatge, sempre visible sota el carrusel -->
-    <a href="#comunitat" x-show="!fullscreen" class="relative z-10 flex flex-col items-center gap-1 py-4 group cursor-pointer bg-gcDark">
+    <a href="#comunitat" class="relative z-10 flex flex-col items-center gap-1 py-4 group cursor-pointer bg-gcDark">
         <span class="text-white/60 group-hover:text-gcYellow text-[10px] font-display uppercase tracking-widest transition-colors">Comunitat Gymcreamer</span>
         <svg class="w-4 h-4 text-white/60 group-hover:text-gcYellow transition-colors animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
     </a>
@@ -88,7 +72,6 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
             slides: fallbackSlides,
             activeSlide: 0,
             intervalId: null,
-            fullscreen: false,
 
             async init() {
                 try {
