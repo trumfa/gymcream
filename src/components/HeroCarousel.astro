@@ -2,54 +2,80 @@
 import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
 ---
 
-<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS) I OVERLAY DE TEXT -->
-<section x-data="heroState" class="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-gcDark">
-    
-    <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS -->
-    <div class="absolute inset-0 z-0">
-        <template x-for="(slide, index) in slides" :key="slide.id || index">
-            <div 
-                x-show="activeSlide === index"
-                x-transition:enter="transition-opacity duration-1000"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="transition-opacity duration-1000"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                class="absolute inset-0"
-            >
-                <template x-if="slide.type === 'video'">
-                    <video :src="slide.url" class="w-full h-full object-cover opacity-60" autoplay loop muted playsinline></video>
-                </template>
-                <template x-if="slide.type !== 'video'">
-                    <img :src="slide.url" class="w-full h-full object-cover opacity-60" :alt="slide.title || 'Hero slide'" />
-                </template>
-            </div>
-        </template>
-    </div>
+<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS), ADAPTATIU AMB OPCIÓ DE PANTALLA COMPLETA -->
+<section x-data="heroState" class="relative bg-gcDark">
 
-    <!-- CAPA 2: LLETRES DE LA MARCA NEÓ (Vora directa sobre la imatge) -->
-    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none text-center px-4 mt-12">
-        <template x-if="currentSlideData">
-            <div>
-                <span class="font-display text-xs sm:text-sm text-gcYellow uppercase tracking-[0.3em] font-extrabold mb-2 block drop-shadow-lg" x-text="currentSlideData.subtitle || 'COL·LECCIÓ 2026'"></span>
-                <h1 id="neonText" class="font-display text-[15vw] md:text-[12vw] font-black uppercase tracking-tighter leading-none neon-text-overlay text-center" x-text="currentSlideData.title || 'GYM CREAM'">
-                </h1>
-            </div>
-        </template>
-    </div>
-
-    <!-- BOTÓ BOTIGA: perímetre groc, cos transparent -->
-    <a 
-        href="/botiga" 
-        data-astro-reload
-        class="absolute bottom-24 sm:bottom-28 z-20 left-1/2 transform -translate-x-1/2 border-2 border-gcYellow text-gcYellow bg-transparent hover:bg-gcYellow hover:text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-8 sm:px-12 py-3 sm:py-3.5 transition-all duration-300 cursor-pointer whitespace-nowrap"
+    <!-- CONTENIDOR DEL CARRUSEL: alçada adaptativa per defecte, pantalla completa si es prem ampliar -->
+    <div 
+        :class="fullscreen ? 'fixed inset-0 z-[95] h-screen' : 'relative h-[65vh] sm:h-[80vh]'"
+        class="w-full flex flex-col items-center justify-center overflow-hidden transition-all duration-300"
     >
-        Botiga
-    </a>
+        <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS -->
+        <div class="absolute inset-0 z-0">
+            <template x-for="(slide, index) in slides" :key="slide.id || index">
+                <div
+                    x-show="activeSlide === index"
+                    x-transition:enter="transition-opacity duration-1000"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition-opacity duration-1000"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="absolute inset-0"
+                >
+                    <template x-if="slide.type === 'video'">
+                        <video :src="slide.url" class="w-full h-full object-cover opacity-60" autoplay loop muted playsinline></video>
+                    </template>
+                    <template x-if="slide.type !== 'video'">
+                        <!-- Sense ampliar: la foto sencera sense retallar (object-contain). Ampliat: immersiu a sang (object-cover) -->
+                        <img
+                            :src="slide.url"
+                            :class="fullscreen ? 'object-cover' : 'object-contain'"
+                            class="w-full h-full opacity-60 transition-all duration-300"
+                            :alt="slide.title || 'Hero slide'"
+                        />
+                    </template>
+                </div>
+            </template>
+        </div>
 
-    <!-- Fletxa cap a la Comunitat Gymcreamer (part social, a continuació en aquesta mateixa pàgina) -->
-    <a href="#comunitat" class="absolute bottom-8 sm:bottom-10 z-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1 group cursor-pointer">
+        <!-- CAPA 2: LLETRES DE LA MARCA NEÓ -->
+        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none text-center px-4">
+            <template x-if="currentSlideData">
+                <div>
+                    <span class="font-display text-xs sm:text-sm text-gcYellow uppercase tracking-[0.3em] font-extrabold mb-2 block drop-shadow-lg" x-text="currentSlideData.subtitle || 'COL·LECCIÓ 2026'"></span>
+                    <h1 id="neonText" class="font-display text-[13vw] sm:text-[10vw] md:text-[9vw] font-black uppercase tracking-tighter leading-none neon-text-overlay text-center" x-text="currentSlideData.title || 'GYM CREAM'">
+                    </h1>
+                </div>
+            </template>
+        </div>
+
+        <!-- BOTÓ AMPLIAR / TANCAR PANTALLA COMPLETA -->
+        <button
+            @click="fullscreen = !fullscreen"
+            class="absolute top-4 right-4 z-30 text-white/70 hover:text-gcYellow transition-colors bg-black/30 hover:bg-black/50 rounded-full p-2 cursor-pointer"
+            :aria-label="fullscreen ? 'Sortir de pantalla completa' : 'Ampliar a pantalla completa'"
+        >
+            <template x-if="!fullscreen">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/></svg>
+            </template>
+            <template x-if="fullscreen">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4v4a1 1 0 01-1 1H4M20 9h-4a1 1 0 01-1-1V4M15 20v-4a1 1 0 011-1h4M4 15h4a1 1 0 011 1v4"/></svg>
+            </template>
+        </button>
+
+        <!-- BOTÓ BOTIGA: perímetre groc, cos transparent -->
+        <a
+            href="/botiga"
+            data-astro-reload
+            class="absolute bottom-6 sm:bottom-8 z-20 left-1/2 transform -translate-x-1/2 border-2 border-gcYellow text-gcYellow bg-transparent hover:bg-gcYellow hover:text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-8 sm:px-12 py-3 sm:py-3.5 transition-all duration-300 cursor-pointer whitespace-nowrap"
+        >
+            Botiga
+        </a>
+    </div>
+
+    <!-- FLETXA CAP A LA COMUNITAT GYMCREAMER: fora de la imatge, sempre visible sota el carrusel -->
+    <a href="#comunitat" x-show="!fullscreen" class="relative z-10 flex flex-col items-center gap-1 py-4 group cursor-pointer bg-gcDark">
         <span class="text-white/60 group-hover:text-gcYellow text-[10px] font-display uppercase tracking-widest transition-colors">Comunitat Gymcreamer</span>
         <svg class="w-4 h-4 text-white/60 group-hover:text-gcYellow transition-colors animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
     </a>
@@ -62,6 +88,7 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
             slides: fallbackSlides,
             activeSlide: 0,
             intervalId: null,
+            fullscreen: false,
 
             async init() {
                 try {
