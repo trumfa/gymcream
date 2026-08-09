@@ -2,10 +2,24 @@
 import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
 ---
 
-<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS) A PANTALLA COMPLETA -->
-<section x-data="heroState" class="relative w-full h-screen overflow-hidden bg-gcDark">
+<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS). L'alçada s'ajusta
+     a la proporció real de cada imatge (ample sempre a pantalla completa). -->
+<section x-data="heroState" class="relative w-full overflow-hidden bg-gcDark">
 
-    <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS -->
+    <!-- ESPAIADOR INVISIBLE: fixa l'alçada del contenidor segons la proporció
+         real de la slide activa (ample 100%, alt proporcional). -->
+    <template x-for="(slide, index) in slides" :key="'spacer-' + index">
+        <template x-if="activeSlide === index">
+            <template x-if="slide.type !== 'video'">
+                <img :src="slide.url" class="w-full h-auto block invisible" aria-hidden="true" />
+            </template>
+        </template>
+    </template>
+    <template x-if="!slides.length || slides[activeSlide]?.type === 'video'">
+        <div class="w-full aspect-video"></div>
+    </template>
+
+    <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS, superposada sobre l'espai de l'espaiador -->
     <div class="absolute inset-0 z-0">
         <template x-for="(slide, index) in slides" :key="slide.id || index">
             <div
@@ -19,7 +33,7 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
                 class="absolute inset-0"
             >
                 <template x-if="slide.type === 'video'">
-                    <video :src="slide.url" class="w-full h-full object-contain opacity-60" autoplay loop muted playsinline></video>
+                    <video :src="slide.url" class="w-full h-full object-cover opacity-60" autoplay loop muted playsinline></video>
                 </template>
                 <template x-if="slide.type !== 'video'">
                     <img
