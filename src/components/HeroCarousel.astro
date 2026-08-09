@@ -2,24 +2,10 @@
 import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
 ---
 
-<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS). L'alçada s'ajusta
-     a la proporció real de cada imatge (ample sempre a pantalla completa). -->
-<section x-data="heroState" class="relative w-full overflow-hidden bg-gcDark">
+<!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS) A PANTALLA COMPLETA -->
+<section x-data="heroState" class="relative w-full h-screen overflow-hidden bg-gcDark">
 
-    <!-- ESPAIADOR INVISIBLE: fixa l'alçada del contenidor segons la proporció
-         real de la slide activa (ample 100%, alt proporcional). -->
-    <template x-for="(slide, index) in slides" :key="'spacer-' + index">
-        <template x-if="activeSlide === index">
-            <template x-if="slide.type !== 'video'">
-                <img :src="slide.url" class="w-full h-auto block invisible" aria-hidden="true" />
-            </template>
-        </template>
-    </template>
-    <template x-if="!slides.length || slides[activeSlide]?.type === 'video'">
-        <div class="w-full aspect-video"></div>
-    </template>
-
-    <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS, superposada sobre l'espai de l'espaiador -->
+    <!-- CAPA 1: CARRUSEL D'IMATGES / VÍDEOS -->
     <div class="absolute inset-0 z-0">
         <template x-for="(slide, index) in slides" :key="slide.id || index">
             <div
@@ -38,7 +24,7 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
                 <template x-if="slide.type !== 'video'">
                     <img
                         :src="slide.url"
-                        class="w-full h-full object-contain opacity-60"
+                        class="w-full h-full object-cover opacity-60"
                         :alt="slide.title || 'Hero slide'"
                     />
                 </template>
@@ -61,24 +47,24 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
     <a
         href="/botiga"
         data-astro-reload
-        class="absolute bottom-20 sm:bottom-24 z-20 left-1/2 transform -translate-x-1/2 border-2 border-gcYellow text-gcYellow bg-transparent hover:bg-gcYellow hover:text-black font-display font-extrabold text-xs sm:text-sm uppercase tracking-widest px-8 sm:px-12 py-3 sm:py-3.5 transition-all duration-300 cursor-pointer whitespace-nowrap"
+        class="absolute bottom-28 sm:bottom-24 z-20 left-1/2 transform -translate-x-1/2 border-2 border-gcYellow text-gcYellow bg-transparent hover:bg-gcYellow hover:text-black font-display font-extrabold text-[11px] sm:text-sm uppercase tracking-widest px-6 sm:px-12 py-2.5 sm:py-3.5 transition-all duration-300 cursor-pointer whitespace-nowrap"
     >
         Botiga
     </a>
 
-    <!-- FLETXA CAP A LA COMUNITAT GYMCREAMER -->
+    <!-- FLETXA CAP A LA COMUNITAT GYMCREAMER: en mòbil només la fletxa (sense text, per no envair les ratlletes de progrés) -->
     <a href="#comunitat" class="absolute bottom-4 sm:bottom-6 z-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1 group cursor-pointer">
-        <span class="text-white/60 group-hover:text-gcYellow text-[10px] font-display uppercase tracking-widest transition-colors">Comunitat Gymcreamer</span>
-        <svg class="w-4 h-4 text-white/60 group-hover:text-gcYellow transition-colors animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        <span class="hidden sm:block text-white/60 group-hover:text-gcYellow text-[10px] font-display uppercase tracking-widest transition-colors">Comunitat Gymcreamer</span>
+        <svg class="w-5 h-5 sm:w-4 sm:h-4 text-white/60 group-hover:text-gcYellow transition-colors animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
     </a>
 
     <!-- GUIONS DE PROGRÉS PER SLIDE + PAUSA, cantonada inferior dreta -->
-    <div class="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 z-20 flex items-center gap-2.5">
-        <div class="flex items-center gap-1.5">
+    <div class="absolute bottom-4 sm:bottom-6 right-3 sm:right-6 z-20 flex items-center gap-2">
+        <div class="flex items-center gap-1">
             <template x-for="(slide, index) in slides" :key="'dash-' + index">
                 <button
                     @click="goToSlide(index)"
-                    class="relative h-1 w-6 sm:w-8 rounded-full bg-white/25 overflow-hidden cursor-pointer"
+                    class="relative h-1 w-4 sm:w-8 rounded-full bg-white/25 overflow-hidden cursor-pointer"
                     :aria-label="`Ves a la slide ${index + 1}`"
                 >
                     <template x-if="index < activeSlide">
@@ -95,12 +81,12 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
             </template>
         </div>
 
-        <button @click="togglePause()" class="text-white/80 hover:text-gcPink transition-colors cursor-pointer" :aria-label="paused ? 'Reprendre el carrusel' : 'Pausar el carrusel'">
+        <button @click="togglePause()" class="text-white/80 hover:text-gcPink transition-colors cursor-pointer shrink-0" :aria-label="paused ? 'Reprendre el carrusel' : 'Pausar el carrusel'">
             <template x-if="!paused">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+                <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
             </template>
             <template x-if="paused">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </template>
         </button>
     </div>
