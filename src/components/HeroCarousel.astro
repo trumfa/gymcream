@@ -33,6 +33,7 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
                         decoding="async"
                         class="w-full h-full object-cover opacity-60"
                         :alt="slide.title || 'Hero slide'"
+                        @error="console.warn(`[HeroCarousel] No s'ha pogut carregar la imatge del slide ${index}: ${slide.url}. Comprova que el nom de fitxer a /public/slides coincideix exactament (majúscules/minúscules incloses) amb la URL del Sheet.`)"
                     />
                 </template>
             </div>
@@ -140,9 +141,15 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
                         const data = await res.json();
                         if (Array.isArray(data) && data.length > 0) {
                             this.slides = data;
+                        } else {
+                            console.warn('[HeroCarousel] /api/cms/Slides ha respost buit o amb format inesperat, es fa servir el fallback.');
                         }
+                    } else {
+                        console.warn(`[HeroCarousel] /api/cms/Slides ha respost ${res.status}, es fa servir el fallback.`);
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.warn('[HeroCarousel] Error connectant amb /api/cms/Slides, es fa servir el fallback.', e);
+                }
 
                 // Reinicia el set de càrrega amb els slides definitius i
                 // pre-carrega ja el segon perquè estigui llest per la
