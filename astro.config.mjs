@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import tailwind from "@astrojs/tailwind";
+import tailwindcss from "@tailwindcss/vite";
 import alpinejs from "@astrojs/alpinejs";
 import node from "@astrojs/node";
 import vercel from "@astrojs/vercel/serverless";
@@ -34,12 +34,10 @@ export default defineConfig({
 		define: {
 			__DATE__: `'${new Date()}'`,
 		},
+		plugins: [tailwindcss()],
 	},
 	integrations: [
 		mdx(),
-		tailwind({
-			applyBaseStyles: false,
-		}),
 		alpinejs(),
 		i18n({
 			locales,
