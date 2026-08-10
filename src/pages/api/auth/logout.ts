@@ -1,9 +1,0 @@
-export const prerender = false;
-
-import type { APIRoute } from 'astro';
-import { clearSessionCookie } from '../../../lib/auth';
-
-export const POST: APIRoute = async ({ cookies }) => {
-  clearSessionCookie(cookies);
-  return new Response(JSON.stringify({ success: true }), { status: 200 });
-};
