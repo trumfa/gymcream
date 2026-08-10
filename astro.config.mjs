@@ -19,7 +19,7 @@ export default defineConfig({
     '/open-brand': '/gymcreamer',
   },
 	site: SITE_URL,
-	output: "hybrid",
+	output: "static",
 	adapter: isVercel ? vercel() : node({ mode: "standalone" }),
 	trailingSlash: "ignore",
 	build: {
