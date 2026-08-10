@@ -23,7 +23,17 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
                 class="absolute inset-0"
             >
                 <template x-if="slide.type === 'video' && shouldLoad(index)">
-                    <video :src="slide.url" class="w-full h-full object-cover opacity-60" autoplay loop muted playsinline></video>
+                    <video
+                        :src="slide.url"
+                        :poster="slide.poster || undefined"
+                        preload="metadata"
+                        class="w-full h-full object-cover opacity-60"
+                        autoplay
+                        loop
+                        muted
+                        playsinline
+                        @error="console.warn(`[HeroCarousel] No s'ha pogut carregar el vídeo del slide ${index}: ${slide.url}`)"
+                    ></video>
                 </template>
                 <template x-if="slide.type !== 'video' && shouldLoad(index)">
                     <img
