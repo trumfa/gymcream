@@ -1,7 +1,32 @@
 /* Global Styles for Gym Cream */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────
+   TEMA DE MARCA (portat de tailwind.config.cjs — Tailwind v4 fa
+   servir CSS en comptes d'un fitxer de configuració JS)
+───────────────────────────────────────────────────────────────── */
+@theme {
+	--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+	--font-display: "Syncopate", ui-sans-serif, system-ui, sans-serif;
+	--font-serif: "Playfair Display", ui-serif, Georgia, serif;
+
+	--color-gcDark: #080808;
+	--color-gcYellow: #ffe600;
+	--color-gcPink: #ff2eb8;
+	--color-gcClassic: #f9f6f0;
+
+	--color-primary-50: #fef1f7;
+	--color-primary-100: #fee5f0;
+	--color-primary-200: #fecce3;
+	--color-primary-300: #ffa2cb;
+	--color-primary-400: #fe68a7;
+	--color-primary-500: #f83c86;
+	--color-primary-600: #e91f64;
+	--color-primary-700: #ca0c47;
+	--color-primary-800: #a70d3b;
+	--color-primary-900: #8b1034;
+	--color-primary-950: #55021a;
+}
 
 [x-cloak] {
 	display: none !important;
@@ -19,6 +44,16 @@ html {
 
 body {
 	@apply m-0 bg-gcDark p-0 text-white font-sans antialiased overflow-x-hidden selection:bg-gcYellow selection:text-black;
+}
+
+/* Amaga la barra de scroll (però manté el scroll funcional) — s'usa a
+   la tira horitzontal de frases/fotos de la comunitat */
+.no-scrollbar {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
 }
 
 /* Custom Scrollbar */
