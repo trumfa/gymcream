@@ -22,5 +22,36 @@
 
 	"footer_rights": "Tots els drets reservats.",
 	"footer_contacte": "Contacte",
-	"footer_llicencia": "Llicència d'Ús de Marca"
+	"footer_llicencia": "Llicència d'Ús de Marca",
+
+	"gc_meta_title": "Gym Cream — Sóc Gymcreamer & Moviment DIY",
+	"gc_meta_description": "Som una marca oberta (Open Brand). Descarrega els nostres logos de franc per fer-te la teva roba o aconsegueix la Línia Oficial.",
+
+	"gc_manifest_p1": "Els Gymcreamers vam néixer d'un esgotament profund. Cansats de les cares de gos d'alguns que es pensen que la quota del gimnàs es paguen amb els muscles.",
+	"gc_manifest_p2": "Creiem en la disciplina ferotge sota la barra del press banca, però també creiem en devorar canalons o galetes sense cap mena de remordiment o menjar jarret de porc com a font de proteïna.",
+	"gc_manifest_p3": "L'equilibri no és menjar arròs amb pollastre; l'equilibri és fer exactament allò que et dona la gana.",
+
+	"gc_dues_vies_intro": "Identifica't com a Gymcreamer per dos vies:",
+
+	"gc_oficial_title": "Línia Oficial",
+	"gc_oficial_text": "Per als qui prefereixen la comoditat de rebre les peces confeccionades amb patrons Heavy Oversize (amb gramatges de 240-400) i el distintiu físic Gym Cream de la nostra botiga que n'acredita originalitat.",
+
+	"gc_diy_title": "Fes-t'ho Tu",
+	"gc_diy_text": "Gym Cream trenca el proteccionisme clàssic de les marques esportives. Vam néixer amb una idea molt clara: compartir els nostres logotips i actius gràfics de franc. No creiem en guardar logos com si fossin secrets d'Estat. Descarrega els vectors de franc, fes servir paper trànsfer o demana-ho en algun lloc d'internet i estampa't la samarreta tu mateix.",
+
+	"gc_descarrega_format": "Descarrega en el format que necessitis:",
+
+	"gc_llicencia_title": "Llicència d'Ús de la Marca Gym Cream (Creative Commons BY-NC)",
+	"gc_llicencia_subtitle": "Normes d'ús personal i prohibició comercial",
+	"gc_us_personal_title": "Ús Personal (Permès i Fomentat)",
+	"gc_us_personal_text": "Tothom té permís per descarregar i utilitzar els arxius de la marca per fabricar-se les seves pròpies samarretes, tovalloles, gorres o accessoris exclusivament per a ús propi o per a regal no lucratiu.",
+	"gc_us_comercial_title": "Ús Comercial (Prohibit sense autorització)",
+	"gc_us_comercial_text": "Queda totalment prohibida la comercialització, revenda, producció en massa o utilització de la marca Gym Cream per part de tercers (gimnasos, marques o particulars) amb finalitats lucratives directes o indirectes sense permís.",
+
+	"gc_logo_black_title": "Logo Negre",
+	"gc_logo_black_desc": "Ideal per a fons clars, roba de color gris o impressió en bosses de tela.",
+	"gc_logo_primary_title": "Logo Principal",
+	"gc_logo_primary_desc": "Logo oficial a tot color, preparat per a serigrafia, DTF o impressió digital.",
+	"gc_logo_white_title": "Logo Blanc",
+	"gc_logo_white_desc": "Versió en blanc per a estampació en fons foscos, xandalls o dessuadores."
 }

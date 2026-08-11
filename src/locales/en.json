@@ -22,5 +22,36 @@
 
 	"footer_rights": "All rights reserved.",
 	"footer_contacte": "Contact",
-	"footer_llicencia": "Brand Usage License"
+	"footer_llicencia": "Brand Usage License",
+
+	"gc_meta_title": "Gym Cream — I'm a Gymcreamer & DIY Movement",
+	"gc_meta_description": "We're an open brand. Download our logos for free to make your own clothes, or get the Official Line.",
+
+	"gc_manifest_p1": "We Gymcreamers were born from deep exhaustion. Tired of the tough-guy faces of people who think a gym membership gets paid off in muscle.",
+	"gc_manifest_p2": "We believe in fierce discipline under the bench press bar, but we also believe in devouring cannelloni or cookies without an ounce of guilt, or eating pork knuckle as a protein source.",
+	"gc_manifest_p3": "Balance isn't eating chicken and rice; balance is doing exactly whatever the hell you want.",
+
+	"gc_dues_vies_intro": "Become a Gymcreamer through two paths:",
+
+	"gc_oficial_title": "Official Line",
+	"gc_oficial_text": "For those who prefer the convenience of receiving garments made with Heavy Oversize patterns (240-400 GSM) and the physical Gym Cream tag from our shop that certifies their authenticity.",
+
+	"gc_diy_title": "Do It Yourself",
+	"gc_diy_text": "Gym Cream breaks the classic protectionism of sports brands. We were born with one clear idea: share our logos and graphic assets for free. We don't believe in guarding logos like state secrets. Download the vector files for free, use transfer paper, or order it from anywhere online, and print the t-shirt yourself.",
+
+	"gc_descarrega_format": "Download in whichever format you need:",
+
+	"gc_llicencia_title": "Gym Cream Brand Usage License (Creative Commons BY-NC)",
+	"gc_llicencia_subtitle": "Personal use rules and commercial prohibition",
+	"gc_us_personal_title": "Personal Use (Allowed and Encouraged)",
+	"gc_us_personal_text": "Anyone is allowed to download and use the brand files to make their own t-shirts, towels, caps, or accessories exclusively for personal use or as a non-profit gift.",
+	"gc_us_comercial_title": "Commercial Use (Prohibited without authorization)",
+	"gc_us_comercial_text": "The commercialization, resale, mass production, or use of the Gym Cream brand by third parties (gyms, brands, or individuals) for direct or indirect profit purposes without permission is strictly prohibited.",
+
+	"gc_logo_black_title": "Black Logo",
+	"gc_logo_black_desc": "Ideal for light backgrounds, grey clothing, or printing on tote bags.",
+	"gc_logo_primary_title": "Primary Logo",
+	"gc_logo_primary_desc": "Full-color official logo, ready for screen printing, DTF, or digital printing.",
+	"gc_logo_white_title": "White Logo",
+	"gc_logo_white_desc": "White version for printing on dark backgrounds, tracksuits, or hoodies."
 }
