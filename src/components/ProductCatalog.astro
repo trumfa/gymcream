@@ -1,8 +1,10 @@
 ---
 import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/data/cmsDefaults";
 import translations from "@utils/t.ts";
+import { getLocale } from "astro-i18n-aut";
 
 const nav = translations(Astro.url);
+const currentLocale = getLocale(Astro.url);
 ---
 
 <!-- SECCIÓ DE PRODUCTES (FONS BLANC) -->
@@ -152,7 +154,7 @@ const nav = translations(Astro.url);
     </div>
 </section>
 
-<script is:inline define:vars={{ fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS }}>
+<script is:inline define:vars={{ fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS, currentLocale: currentLocale }}>
     const registerCatalogState = () => {
         if (!window.Alpine) return;
         Alpine.data('catalogState', () => ({
@@ -171,8 +173,8 @@ const nav = translations(Astro.url);
             async loadData() {
                 try {
                     const [prodRes, catRes] = await Promise.all([
-                        fetch('/api/cms/Products'),
-                        fetch('/api/cms/Categories'),
+                        fetch('/api/cms/Products?lang=' + currentLocale),
+                        fetch('/api/cms/Categories?lang=' + currentLocale),
                     ]);
                     if (prodRes.ok) {
                         const prod = await prodRes.json();

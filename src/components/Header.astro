@@ -620,7 +620,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
 
 </div>
 
-<script is:inline define:vars={{ fallbackPhrases: FALLBACK_PHRASES, fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS, i18nTalla: nav.cart_talla, i18nToastPrefix: nav.toast_afegit_prefix, i18nToastSuffix: nav.toast_afegit_suffix }}>
+<script is:inline define:vars={{ fallbackPhrases: FALLBACK_PHRASES, fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS, i18nTalla: nav.cart_talla, i18nToastPrefix: nav.toast_afegit_prefix, i18nToastSuffix: nav.toast_afegit_suffix, currentLocale: currentLocale }}>
     const registerAppState = () => {
         if (!window.Alpine) return;
         Alpine.data('appState', () => ({
@@ -658,9 +658,9 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
             init() {
                 // Carga en vivo desde el CMS; si falla, se queda con el fallback mínimo
                 Promise.all([
-                    fetch('/api/cms/Products').then(r => r.ok ? r.json() : null).catch(() => null),
-                    fetch('/api/cms/Categories').then(r => r.ok ? r.json() : null).catch(() => null),
-                    fetch('/api/cms/Phrases').then(r => r.ok ? r.json() : null).catch(() => null),
+                    fetch('/api/cms/Products?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
+                    fetch('/api/cms/Categories?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
+                    fetch('/api/cms/Phrases?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
                 ]).then(([products, categories, phrases]) => {
                     if (Array.isArray(products) && products.length > 0) this.products = products;
                     if (Array.isArray(categories) && categories.length > 0) this.categories = categories;

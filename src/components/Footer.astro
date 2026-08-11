@@ -1,5 +1,8 @@
 ---
 import { FALLBACK_INFO_PAGES } from "@src/data/cmsDefaults";
+import { getLocale } from "astro-i18n-aut";
+
+const currentLocale = getLocale(Astro.url);
 ---
 
 <!-- FOOTER -->
@@ -180,7 +183,7 @@ import { FALLBACK_INFO_PAGES } from "@src/data/cmsDefaults";
     </div>
 </footer>
 
-<script is:inline define:vars={{ fallbackInfoPages: FALLBACK_INFO_PAGES }}>
+<script is:inline define:vars={{ fallbackInfoPages: FALLBACK_INFO_PAGES, currentLocale: currentLocale }}>
     const registerFooterState = () => {
         if (!window.Alpine) return;
         Alpine.data('footerState', () => ({
@@ -192,7 +195,7 @@ import { FALLBACK_INFO_PAGES } from "@src/data/cmsDefaults";
             infoPages: fallbackInfoPages,
 
             init() {
-                fetch('/api/cms/InfoPages')
+                fetch('/api/cms/InfoPages?lang=' + currentLocale)
                     .then(r => r.ok ? r.json() : null)
                     .then(data => {
                         if (Array.isArray(data) && data.length > 0) {
