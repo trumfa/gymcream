@@ -7,9 +7,10 @@ import { getSheet } from '../../../lib/cms';
 // no hay ningún panel en la web que escriba aquí. Las únicas escrituras
 // públicas siguen siendo /api/notify-quote y /api/subscribe, que solo crean
 // filas concretas con status forzado server-side.
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, url }) => {
   try {
-    const data = await getSheet(params.sheet!);
+    const lang = url.searchParams.get('lang') || undefined;
+    const data = await getSheet(params.sheet!, lang);
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
