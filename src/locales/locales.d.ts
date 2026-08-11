@@ -47,4 +47,51 @@ declare interface Locales {
 	gc_logo_primary_desc: string;
 	gc_logo_white_title: string;
 	gc_logo_white_desc: string;
+
+	botiga_meta_title: string;
+	botiga_eyebrow: string;
+	botiga_title: string;
+	badge_esgotat: string;
+	badge_rebaixat: string;
+	badge_sense_estoc: string;
+	product_distintiu: string;
+	btn_info_detalls: string;
+	btn_avisam_estoc: string;
+
+	search_title: string;
+	search_input_placeholder: string;
+	search_hint: string;
+	search_tags_populars: string;
+
+	cart_titol: string;
+	cart_buit: string;
+	cart_talla: string;
+	cart_eliminar: string;
+	cart_reduir: string;
+	cart_augmentar: string;
+	cart_total: string;
+	cart_pagar: string;
+
+	modal_miniatures_hint: string;
+	modal_oferta: string;
+	modal_distintiu_titol: string;
+	modal_distintiu_text: string;
+	modal_descripcio_titol: string;
+	modal_selecciona_talla: string;
+	modal_quantitat: string;
+	modal_preu_total: string;
+	modal_afegir_carret: string;
+	modal_esgotat_btn: string;
+	modal_avisam_titol: string;
+	modal_email_placeholder: string;
+	modal_avisam_btn: string;
+	modal_zoom_hint: string;
+
+	restock_avis_titol: string;
+	restock_text: string;
+	restock_email_placeholder: string;
+	restock_subscriure_btn: string;
+
+	toast_afegit_prefix: string;
+	toast_afegit_suffix: string;
 }
