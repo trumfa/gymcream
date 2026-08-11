@@ -10,6 +10,7 @@ import Container from "@src/components/Container.astro";
 import { getSheet } from "@src/lib/cms";
 import { getLocale, getLocaleUrl } from "astro-i18n-aut";
 import translations from "@utils/t.ts";
+import { SITE_URL } from "@src/consts";
 
 const currentLocale = getLocale(Astro.url);
 const nav = translations(Astro.url);
@@ -22,72 +23,99 @@ const productId = slug?.split("-").pop();
 let product: any = null;
 let categories: any[] = [];
 
+// TOT el que pot fallar (crida al CMS, parsing de camps, construcció
+// d'URLs...) queda dins d'aquest bloc — qualsevol error inesperat aquí
+// dins acaba en un 404 controlat, mai en un error 500 sense explicació.
 try {
 	const [products, cats] = await Promise.all([
 		getSheet<any>("Products", currentLocale),
 		getSheet<any>("Categories", currentLocale),
 	]);
 	product = products.find((p) => String(p.id) === String(productId)) || null;
-	categories = cats;
+	categories = Array.isArray(cats) ? cats : [];
 } catch (err) {
-	console.error("Error carregant el producte:", err);
+	console.error("[botiga/[slug]] Error carregant el producte des del CMS:", err);
+	product = null;
 }
 
-// Producte no trobat (id inexistent, esborrat del Sheet, URL mal
-// escrita...) -> 404 real, no una pàgina en blanc.
+// Producte no trobat (id inexistent, esborrat del Sheet, error del
+// CMS, URL mal escrita...) -> 404 real, no una pàgina en blanc ni un 500.
 if (!product) {
 	return new Response(null, { status: 404 });
 }
 
-const categoryMatch = categories.find((c) => (c.slug || c.name) === product.category);
-const categoryLabel = categoryMatch ? categoryMatch.name : product.category;
+// Astro.site pot arribar com a undefined en el context d'una funció
+// serverless en algunes circumstàncies — fem servir sempre SITE_URL
+// (constant fixa) com a base fiable per construir URLs absolutes,
+// en comptes de confiar cegament en Astro.site.
+const siteBase = Astro.site?.toString() || SITE_URL;
 
-const images: string[] = Array.isArray(product.images) && product.images.length > 0
-	? product.images
-	: [product.imageFront, product.imageBack].filter(Boolean);
+let categoryLabel = product.category || "";
+let images: string[] = [];
+let isSoldOut = false;
+let pageTitle = "Gym Cream";
+let pageDescription = "";
+let botigaUrl = "/botiga";
+let productSchema: any = null;
+let breadcrumbSchema: any = null;
 
-const isSoldOut = product.isSoldOut || (product.stock !== undefined && Number(product.stock) <= 0);
-const pageTitle = `${product.name} | Gym Cream`;
-const pageDescription = (product.description || nav.botiga_title || "").slice(0, 160);
+try {
+	const categoryMatch = categories.find((c) => (c.slug || c.name) === product.category);
+	categoryLabel = categoryMatch ? categoryMatch.name : product.category;
 
-const botigaUrl = getLocaleUrl("/botiga", currentLocale);
+	images = Array.isArray(product.images) && product.images.length > 0
+		? product.images
+		: [product.imageFront, product.imageBack].filter(Boolean);
 
-// Dades estructurades JSON-LD de tipus Product — habiliten resultats
-// enriquits a Google (preu, disponibilitat, imatge) per a aquest
-// producte en concret.
-const productSchema = {
-	"@context": "https://schema.org",
-	"@type": "Product",
-	name: product.name,
-	description: product.description,
-	image: images,
-	sku: product.sku,
-	brand: { "@type": "Brand", name: "Gym Cream" },
-	offers: {
-		"@type": "Offer",
-		url: new URL(Astro.url.pathname, Astro.site).toString(),
-		priceCurrency: "EUR",
-		price: product.price,
-		availability: isSoldOut
-			? "https://schema.org/OutOfStock"
-			: "https://schema.org/InStock",
-	},
-};
+	isSoldOut = !!product.isSoldOut || (product.stock !== undefined && Number(product.stock) <= 0);
+	pageTitle = `${product.name || "Producte"} | Gym Cream`;
+	pageDescription = (product.description || nav.botiga_title || "").toString().slice(0, 160);
 
-const breadcrumbSchema = {
-	"@context": "https://schema.org",
-	"@type": "BreadcrumbList",
-	itemListElement: [
-		{ "@type": "ListItem", position: 1, name: nav.nav_inici, item: new URL(getLocaleUrl("/", currentLocale), Astro.site).toString() },
-		{ "@type": "ListItem", position: 2, name: nav.nav_botiga, item: new URL(botigaUrl, Astro.site).toString() },
-		{ "@type": "ListItem", position: 3, name: product.name, item: new URL(Astro.url.pathname, Astro.site).toString() },
-	],
-};
+	botigaUrl = getLocaleUrl("/botiga", currentLocale);
+
+	const currentFullUrl = new URL(Astro.url.pathname, siteBase).toString();
+
+	// Dades estructurades JSON-LD de tipus Product — habiliten resultats
+	// enriquits a Google (preu, disponibilitat, imatge) per a aquest
+	// producte en concret.
+	productSchema = {
+		"@context": "https://schema.org",
+		"@type": "Product",
+		name: product.name,
+		description: product.description,
+		image: images,
+		sku: product.sku,
+		brand: { "@type": "Brand", name: "Gym Cream" },
+		offers: {
+			"@type": "Offer",
+			url: currentFullUrl,
+			priceCurrency: "EUR",
+			price: product.price,
+			availability: isSoldOut
+				? "https://schema.org/OutOfStock"
+				: "https://schema.org/InStock",
+		},
+	};
+
+	breadcrumbSchema = {
+		"@context": "https://schema.org",
+		"@type": "BreadcrumbList",
+		itemListElement: [
+			{ "@type": "ListItem", position: 1, name: nav.nav_inici, item: new URL(getLocaleUrl("/", currentLocale), siteBase).toString() },
+			{ "@type": "ListItem", position: 2, name: nav.nav_botiga, item: new URL(botigaUrl, siteBase).toString() },
+			{ "@type": "ListItem", position: 3, name: product.name, item: currentFullUrl },
+		],
+	};
+} catch (err) {
+	console.error("[botiga/[slug]] Error preparant les dades de la pàgina:", err);
+	// No tallem la pàgina per això — sense schema/breadcrumb la pàgina
+	// encara es pot mostrar amb la info bàsica del producte.
+}
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-	<script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
-	<script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+	{productSchema && <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />}
+	{breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
 
 	<div class="pt-20 sm:pt-24 bg-white min-h-screen">
 		<Container>
