@@ -7,7 +7,6 @@ export const SITE_TITLE: string = "Gym Cream";
 export const SITE_DESCRIPTION: string = "Trenca les regles - Marca independent d'equipament i apparel de gimnàs.";
 
 // SEO metadata
-export const TWITTER_CREATOR: string = "@xxx";
 
 // Navigation
 type Page = {
