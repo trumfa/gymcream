@@ -1,6 +1,9 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import Container from "@src/components/Container.astro";
+import translations from "@utils/t.ts";
+
+const nav = translations(Astro.url);
 
 // Fitxers reals a /public/logos/{black,primary,white}/ — estàtics, no
 // gestionats des del Sheet perquè són arxius de marca fixos, no
@@ -16,22 +19,22 @@ function buildFiles(folder: string, filename: string) {
 
 const logoVariants = [
 	{
-		title: "Logo Negre",
-		description: "Ideal per a fons clars, roba de color gris o impressió en bosses de tela.",
+		title: nav.gc_logo_black_title,
+		description: nav.gc_logo_black_desc,
 		previewSrc: "/logos/black/logo%20black%20GC.png",
 		previewBg: "bg-[#FAF9F5]",
 		files: buildFiles("black", "logo black GC"),
 	},
 	{
-		title: "Logo Principal",
-		description: "Logo oficial a tot color, preparat per a serigrafia, DTF o impressió digital.",
+		title: nav.gc_logo_primary_title,
+		description: nav.gc_logo_primary_desc,
 		previewSrc: "/logos/primary/logo%20primari%20GC.png",
 		previewBg: "bg-[#FAF9F5]",
 		files: buildFiles("primary", "logo primari GC"),
 	},
 	{
-		title: "Logo Blanc",
-		description: "Versió en blanc per a estampació en fons foscos, xandalls o dessuadores.",
+		title: nav.gc_logo_white_title,
+		description: nav.gc_logo_white_desc,
 		previewSrc: "/logos/white/logo%20white%20GC.png",
 		previewBg: "bg-black",
 		files: buildFiles("white", "logo white GC"),
@@ -39,7 +42,7 @@ const logoVariants = [
 ];
 ---
 
-<Layout title="Gym Cream — Sóc Gymcreamer & Moviment DIY" description="Som una marca oberta (Open Brand). Descarrega els nostres logos de franc per fer-te la teva roba o aconsegueix la Línia Oficial.">
+<Layout title={nav.gc_meta_title} description={nav.gc_meta_description}>
     <!-- CONTINGUT PRINCIPAL OPEN BRAND — ESTÈTICA 'L'ART DE L'ANTÍTESI' -->
 
     <main 
@@ -57,20 +60,20 @@ const logoVariants = [
 
                 <div class="max-w-2xl sm:max-w-3xl mx-auto font-serif text-base sm:text-lg text-gray-800 leading-relaxed space-y-5 text-justify">
                     <p>
-                        Els Gymcreamers vam néixer d'un esgotament profund. Cansats de les cares de gos d'alguns que es pensen que la quota del gimnàs es paguen amb els muscles.
+                        {nav.gc_manifest_p1}
                     </p>
                     <p>
-                        Creiem en la disciplina ferotge sota la barra del press banca, però també creiem en devorar canalons o galetes sense cap mena de remordiment o menjar jarret de porc com a font de proteïna.
+                        {nav.gc_manifest_p2}
                     </p>
                     <p class="font-bold text-black">
-                        L'equilibri no és menjar arròs amb pollastre; l'equilibri és fer exactament allò que et dona la gana.
+                        {nav.gc_manifest_p3}
                     </p>
                 </div>
 
                 <!-- DOS VIES -->
                 <div class="max-w-2xl sm:max-w-4xl mx-auto mt-14">
                     <p class="text-center font-serif italic text-lg sm:text-xl text-black mb-10">
-                        Identifica't com a Gymcreamer per dos vies:
+                        {nav.gc_dues_vies_intro}
                     </p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
@@ -81,13 +84,13 @@ const logoVariants = [
                                 <div class="h-px flex-1 bg-gray-300"></div>
                             </div>
                             <h3 class="font-display font-black text-xl sm:text-2xl uppercase tracking-wide text-black mb-3">
-                                Línia Oficial
+                                {nav.gc_oficial_title}
                             </h3>
                             <p class="font-serif text-sm sm:text-base text-gray-700 leading-relaxed text-justify">
-                                Per als qui prefereixen la comoditat de rebre les peces confeccionades amb patrons Heavy Oversize (amb gramatges de 240-400) i el distintiu físic Gym Cream de la nostra botiga que n'acredita originalitat.
+                                {nav.gc_oficial_text}
                             </p>
                             <a href="/botiga" data-astro-reload class="inline-flex items-center gap-1.5 mt-4 font-display text-xs font-bold uppercase tracking-wider text-black hover:text-gray-600 transition-colors border-b border-black hover:border-gray-600 pb-0.5">
-                                Ves a la botiga
+                                {nav.btn_veure_botiga}
                             </a>
                         </div>
 
@@ -98,10 +101,10 @@ const logoVariants = [
                                 <div class="h-px flex-1 bg-gray-300"></div>
                             </div>
                             <h3 class="font-display font-black text-xl sm:text-2xl uppercase tracking-wide text-black mb-3">
-                                Fes-t'ho Tu
+                                {nav.gc_diy_title}
                             </h3>
                             <p class="font-serif text-sm sm:text-base text-gray-700 leading-relaxed text-justify">
-                                Gym Cream trenca el proteccionisme clàssic de les marques esportives. Vam néixer amb una idea molt clara: compartir els nostres logotips i actius gràfics de franc. No creiem en guardar logos com si fossin secrets d'Estat. Descarrega els vectors de franc, fes servir paper trànsfer o demana-ho en algun lloc d'internet i estampa't la samarreta tu mateix.
+                                {nav.gc_diy_text}
                             </p>
                         </div>
                     </div>
@@ -119,7 +122,7 @@ const logoVariants = [
                                 </div>
 
                                 <div class="pt-3 border-t border-gray-100">
-                                    <div class="text-[10px] text-gray-500 font-mono mb-2">Descarrega en el format que necessitis:</div>
+                                    <div class="text-[10px] text-gray-500 font-mono mb-2">{nav.gc_descarrega_format}</div>
                                     <div class="grid grid-cols-3 gap-1.5">
                                         {variant.files.map((file) => (
                                             <a
@@ -140,26 +143,26 @@ const logoVariants = [
                 <!-- LLICÈNCIA D'ÚS: continuació directa, sense secció apart -->
                 <div id="llicencia" class="max-w-2xl sm:max-w-3xl mx-auto mt-16 pt-10 border-t border-gray-300 text-gray-800 font-serif">
                     <h3 class="font-serif font-bold text-lg sm:text-xl text-black mb-1">
-                        Llicència d'Ús de la Marca Gym Cream (Creative Commons BY-NC)
+                        {nav.gc_llicencia_title}
                     </h3>
-                    <p class="text-xs text-gray-500 font-mono mb-8">Normes d'ús personal i prohibició comercial</p>
+                    <p class="text-xs text-gray-500 font-mono mb-8">{nav.gc_llicencia_subtitle}</p>
 
                     <div class="space-y-8">
                         <div>
                             <h4 class="font-serif font-bold text-sm text-emerald-800 uppercase tracking-wide mb-2">
-                                Ús Personal (Permès i Fomentat)
+                                {nav.gc_us_personal_title}
                             </h4>
                             <p class="text-sm sm:text-base leading-relaxed text-gray-700 text-justify">
-                                Tothom té permís per descarregar i utilitzar els arxius de la marca per fabricar-se les seves pròpies samarretes, tovalloles, gorres o accessoris exclusivament per a ús propi o per a regal no lucratiu.
+                                {nav.gc_us_personal_text}
                             </p>
                         </div>
 
                         <div>
                             <h4 class="font-serif font-bold text-sm text-red-700 uppercase tracking-wide mb-2">
-                                Ús Comercial (Prohibit sense autorització)
+                                {nav.gc_us_comercial_title}
                             </h4>
                             <p class="text-sm sm:text-base leading-relaxed text-red-700 text-justify">
-                                Queda totalment prohibida la comercialització, revenda, producció en massa o utilització de la marca Gym Cream per part de tercers (gimnasos, marques o particulars) amb finalitats lucratives directes o indirectes sense permís.
+                                {nav.gc_us_comercial_text}
                             </p>
                         </div>
                     </div>
