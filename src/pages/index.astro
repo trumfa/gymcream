@@ -2,9 +2,14 @@
 import Layout from "@layouts/Layout.astro";
 import HeroCarousel from "@components/HeroCarousel.astro";
 import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
+import translations from "@utils/t.ts";
+import { getLocale } from "astro-i18n-aut";
+
+const nav = translations(Astro.url);
+const currentLocale = getLocale(Astro.url);
 ---
 
-<Layout title="Gym Cream | Trenca les regles" description="Trenca les regles - Marca independent d'equipament i apparel de gimnàs.">
+<Layout title={nav.idx_meta_title} description={nav.idx_meta_description}>
 	<HeroCarousel />
 
 	<!-- PART SOCIAL: continua directament sota el carrusel, sense separació -->
@@ -33,7 +38,7 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                         <span 
                             :class="lightboxPhoto.type === 'DIY' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
                             class="text-[10px] font-display font-black uppercase tracking-widest px-2.5 py-1 rounded-sm"
-                            x-text="lightboxPhoto.type === 'DIY' ? 'DIY' : 'Oficial'"
+                            x-text="lightboxPhoto.type === 'DIY' ? i18nTypeDiy : i18nTypeOficial"
                         ></span>
                         <span class="font-display font-bold text-sm uppercase tracking-wider" x-text="lightboxPhoto.username"></span>
                     </div>
@@ -61,27 +66,27 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                 <div class="flex items-center gap-3 pb-4 border-b border-gray-800 mb-6">
                     <div class="w-10 h-10 bg-gcYellow text-black font-black text-xl rounded-full flex items-center justify-center">+</div>
                     <div>
-                        <h3 class="font-display font-black text-lg uppercase text-gcYellow tracking-wider">Proposar La Teva Frase Gymcreamer</h3>
-                        <p class="text-xs text-gray-400">Pendent de validació al CMS abans de publicar-se a la franja de dalt.</p>
+                        <h3 class="font-display font-black text-lg uppercase text-gcYellow tracking-wider">{nav.idx_quote_modal_title}</h3>
+                        <p class="text-xs text-gray-400">{nav.idx_quote_modal_subtitle}</p>
                     </div>
                 </div>
 
                 <template x-if="submissionSuccess">
                     <div class="p-4 bg-emerald-950/90 border border-emerald-500 text-emerald-200 text-xs mb-4 rounded flex items-center gap-2">
                         <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        <span><strong>Frase enviada amb èxit!</strong> Està registrada i <strong>pendent de validació al CMS</strong>. Un cop l'equip l'aprovi des de l'administració, apareixerà al mur!</span>
+                        <span set:html={nav.idx_success_text}></span>
                     </div>
                 </template>
 
                 <form @submit.prevent="submitInstagramQuote()" class="space-y-4">
                     <div>
                         <label class="block font-display text-xs uppercase text-gray-300 font-bold mb-1">
-                            El teu Seudònim / Nom *
+                            {nav.idx_label_pseudonim}
                         </label>
                         <input 
                             type="text" 
                             x-model="newAuthor" 
-                            placeholder="Exemple: Gymcreamer_33 o @fittoni" 
+                            placeholder={nav.idx_placeholder_pseudonim}
                             class="w-full bg-black border border-gray-800 text-white p-3 text-sm focus:border-gcYellow focus:outline-none font-sans rounded-sm"
                             required
                         />
@@ -89,26 +94,26 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
 
                     <div>
                         <label class="block font-display text-xs uppercase text-gray-300 font-bold mb-1">
-                            La teva Frase Irònica *
+                            {nav.idx_label_frase}
                         </label>
                         <textarea 
                             x-model="newQuote" 
                             rows="3" 
-                            placeholder="Exemple: MENYS POSTUREIG I MÉS HIDRATS DE CARBONI" 
+                            placeholder={nav.idx_placeholder_frase}
                             class="w-full bg-black border border-gray-800 text-white p-3 text-sm focus:border-gcYellow focus:outline-none font-display text-xs uppercase rounded-sm"
                             required
                         ></textarea>
                     </div>
 
                     <p class="text-[10px] text-gray-400 italic">
-                        ℹ️ Totes les frases són revisades per l'administrador al CMS per mantenir el respecte i la qualitat a la comunitat.
+                        ℹ️ {nav.idx_disclaimer}
                     </p>
 
                     <button 
                         type="submit" 
                         class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-3.5 hover:bg-white transition-colors cursor-pointer tracking-wider rounded-sm mt-4"
                     >
-                        Enviar Frase a Validació (CMS)
+                        {nav.idx_submit_btn}
                     </button>
                 </form>
             </div>
@@ -124,14 +129,14 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                     <button 
                         @click="quoteModalOpen = true" 
                         class="flex items-center gap-3 group cursor-pointer flex-shrink-0"
-                        title="Afegir la teva frase i pseudònim"
+                        title={nav.idx_title_afegir}
                     >
                         <span class="text-white group-hover:text-gcYellow font-extralight text-5xl sm:text-6xl transition-transform group-hover:scale-110 leading-none select-none font-sans">+</span>
                         <span class="hidden sm:flex flex-col items-start leading-tight">
                             <span class="bg-gcYellow text-black font-display font-black text-[10px] sm:text-xs uppercase tracking-wider px-2 py-0.5 rounded-sm animate-pulse group-hover:animate-none">
-                                Digues la teva!
+                                {nav.idx_cta_badge}
                             </span>
-                            <span class="text-gray-400 text-[10px] uppercase tracking-wide mt-0.5">Proposa la teva frase</span>
+                            <span class="text-gray-400 text-[10px] uppercase tracking-wide mt-0.5">{nav.idx_cta_subtitle}</span>
                         </span>
                     </button>
 
@@ -144,7 +149,7 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                     >
                         <span class="font-display text-xs sm:text-sm font-extrabold uppercase tracking-wider text-gray-200 flex items-center gap-1.5 justify-center">
                             <svg class="w-3.5 h-3.5 text-gcYellow shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                            <span class="hidden sm:inline">Etiqueta'ns amb</span> <span class="text-gcYellow">#gymcream</span>
+                            <span class="hidden sm:inline">{nav.idx_instagram_tag}</span> <span class="text-gcYellow">#gymcream</span>
                         </span>
                     </a>
 
@@ -152,7 +157,7 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                     <button 
                         @click="triggerHeartbeat()" 
                         class="flex items-center justify-center bg-zinc-900 border border-gray-700 hover:border-red-500 text-red-500 p-2.5 rounded-full transition-all cursor-pointer flex-shrink-0 shadow-md group"
-                        title="Donar Like a la comunitat"
+                        title={nav.idx_title_like}
                     >
                         <svg 
                             :class="heartBeating ? 'animate-heartbeat text-red-500 scale-125' : 'text-red-500 group-hover:scale-110'"
@@ -171,7 +176,7 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                         <button 
                             @click="$refs.hexContainer.scrollBy({ left: -260, behavior: 'smooth' })"
                             class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
-                            title="Anar cap a l'esquerra"
+                            title={nav.idx_title_esquerra}
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                         </button>
@@ -195,7 +200,7 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                                                 <span 
                                                     :class="item.type === 'DIY' ? 'bg-gcYellow text-black' : 'bg-white text-black'"
                                                     class="absolute top-2 left-2 text-[9px] font-display font-black uppercase tracking-widest px-2 py-0.5 rounded-sm shadow-sm"
-                                                    x-text="item.type === 'DIY' ? 'DIY' : 'Oficial'"
+                                                    x-text="item.type === 'DIY' ? i18nTypeDiy : i18nTypeOficial"
                                                 ></span>
                                                 <!-- Icona de lupa al hover, indica que és clicable -->
                                                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
@@ -227,7 +232,7 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                         <button 
                             @click="$refs.hexContainer.scrollBy({ left: 260, behavior: 'smooth' })"
                             class="bg-zinc-900 border border-gray-700 hover:border-gcYellow text-gcYellow p-2.5 rounded-full hidden sm:flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shrink-0 shadow-lg"
-                            title="Anar cap a la dreta"
+                            title={nav.idx_title_dreta}
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                         </button>
@@ -239,14 +244,14 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
 	</div>
 </Layout>
 
-<script is:inline define:vars={{ fallbackQuotes: FALLBACK_COMMUNITY_QUOTES, fallbackPhotos: FALLBACK_COMMUNITY_PHOTOS }}>
+<script is:inline define:vars={{ fallbackQuotes: FALLBACK_COMMUNITY_QUOTES, fallbackPhotos: FALLBACK_COMMUNITY_PHOTOS, i18nTypeDiy: nav.type_diy, i18nTypeOficial: nav.type_oficial, i18nLoadingQuote: nav.idx_loading_quote, i18nErrorSubmit: nav.idx_error_submit, i18nToastSuccess: nav.idx_toast_success, currentLocale: currentLocale }}>
     const registerCommunityState = () => {
         if (!window.Alpine) return;
         Alpine.data('communityState', () => ({
             quotes: [],
             allQuotes: fallbackQuotes,
             instagramQuotes: [
-                { id: 'fallback-1', author: 'GymCream', quote: 'CARREGANT FRASES...' }
+                { id: 'fallback-1', author: 'GymCream', quote: i18nLoadingQuote }
             ],
             photos: fallbackPhotos,
             communityFeed: [],
@@ -270,8 +275,8 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
             async init() {
                 try {
                     const [quotesRes, photosRes] = await Promise.all([
-                        fetch('/api/cms/CommunityQuotes'),
-                        fetch('/api/cms/CommunityPhotos'),
+                        fetch('/api/cms/CommunityQuotes?lang=' + currentLocale),
+                        fetch('/api/cms/CommunityPhotos?lang=' + currentLocale),
                     ]);
                     if (quotesRes.ok) {
                         const quotes = await quotesRes.json();
@@ -347,7 +352,7 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                     });
                     if (!res.ok) throw new Error('No s\'ha pogut enviar la proposta.');
                 } catch (e) {
-                    this.submissionError = 'Hi ha hagut un error enviant la proposta. Torna-ho a provar.';
+                    this.submissionError = i18nErrorSubmit;
                     return;
                 }
 
@@ -358,7 +363,7 @@ import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/
                 if (window.Alpine) {
                     const app = document.querySelector('[x-data]');
                     if (app && app._x_dataStack && app._x_dataStack[0].showToast) {
-                        app._x_dataStack[0].showToast("Frase enviada! S'ha registrat i enviat avís per email a l'administrador.");
+                        app._x_dataStack[0].showToast(i18nToastSuccess);
                     }
                 }
 
