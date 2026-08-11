@@ -1,9 +1,12 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import ProductCatalog from "@components/ProductCatalog.astro";
+import translations from "@utils/t.ts";
+
+const nav = translations(Astro.url);
 ---
 
-<Layout title="Gym Cream | Botiga" description="Trenca les regles - Marca independent d'equipament i apparel de gimnàs.">
+<Layout title={nav.botiga_meta_title} description="Trenca les regles - Marca independent d'equipament i apparel de gimnàs.">
 	<div class="pt-20 sm:pt-24">
 		<ProductCatalog />
 	</div>
