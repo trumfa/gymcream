@@ -95,11 +95,12 @@ const currentLocale = getLocale(Astro.url);
                     <div class="p-5 flex-1 flex flex-col justify-between bg-white border-t border-gray-100">
                         <div>
                             <div class="text-[10px] font-sans font-bold text-gray-500 uppercase tracking-widest mb-1" x-text="categoryLabel(product.category)"></div>
-                            <h3 
-                                @click="$dispatch('open-product-modal', product)"
-                                class="font-serif text-base font-bold tracking-wide cursor-pointer hover:text-gray-700 transition-colors line-clamp-2 min-h-[2.5rem] flex items-center text-black"
+                            <a
+                                :href="product.url"
+                                data-astro-reload
+                                class="font-serif text-base font-bold tracking-wide hover:text-gray-700 transition-colors line-clamp-2 min-h-[2.5rem] flex items-center text-black"
                                 x-text="product.name"
-                            ></h3>
+                            ></a>
 
                             <!-- Display de Preu vell ratllat + preu nou -->
                             <div class="mt-2 mb-2 flex items-baseline gap-2">
@@ -178,7 +179,9 @@ const currentLocale = getLocale(Astro.url);
                     ]);
                     if (prodRes.ok) {
                         const prod = await prodRes.json();
-                        if (Array.isArray(prod) && prod.length > 0) this.allProducts = prod;
+                        if (Array.isArray(prod) && prod.length > 0) {
+                            this.allProducts = prod.map(p => ({ ...p, url: this.buildProductUrl(p) }));
+                        }
                     }
                     if (catRes.ok) {
                         const cat = await catRes.json();
@@ -207,7 +210,31 @@ const currentLocale = getLocale(Astro.url);
                 if (!categorySlug) return '';
                 const match = this.categories.find(c => (c.slug || c.name) === categorySlug);
                 return match ? match.name : categorySlug;
-            }
+            },
+
+            // Genera la URL real i indexable d'un producte:
+            // /botiga/{slug-del-nom}-{id}  (o /es/botiga/..., /en/botiga/...
+            // segons l'idioma actual). Es crida NOMÉS un cop, en carregar
+            // les dades (loadData), i es guarda com product.url — mai es
+            // recalcula al propi enllaç, per evitar qualsevol fallada
+            // silenciosa d'Alpine en temps de render.
+            buildProductUrl(product) {
+                try {
+                    const rawName = (product && product.name) ? String(product.name) : 'producte';
+                    const slug = rawName
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/(^-|-$)/g, '');
+                    const id = product && product.id ? product.id : '0';
+                    const prefix = currentLocale === 'ca' ? '' : `/${currentLocale}`;
+                    return `${prefix}/botiga/${slug}-${id}`;
+                } catch (err) {
+                    console.error('Error generant la URL del producte:', err);
+                    const prefix = currentLocale === 'ca' ? '' : `/${currentLocale}`;
+                    return `${prefix}/botiga`;
+                }
+            },
         }));
     };
 
