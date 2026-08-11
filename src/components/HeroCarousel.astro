@@ -1,8 +1,10 @@
 ---
 import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
-import { getLocale } from "astro-i18n-aut";
+import { getLocale, getLocaleUrl } from "astro-i18n-aut";
+import translations from "@utils/t.ts";
 
 const currentLocale = getLocale(Astro.url);
+const nav = translations(Astro.url);
 ---
 
 <!-- HERO SECTION AMB CARRUSEL DINÀMIC (FOTOS I VÍDEOS) A PANTALLA COMPLETA -->
@@ -66,16 +68,16 @@ const currentLocale = getLocale(Astro.url);
 
     <!-- BOTÓ BOTIGA: perímetre groc, cos transparent -->
     <a
-        href="/botiga"
+        href={getLocaleUrl('/botiga', currentLocale)}
         data-astro-reload
         class="absolute bottom-28 sm:bottom-24 z-20 left-1/2 transform -translate-x-1/2 border-2 border-gcYellow text-gcYellow bg-transparent hover:bg-gcYellow hover:text-black font-display font-extrabold text-[11px] sm:text-sm uppercase tracking-widest px-6 sm:px-12 py-2.5 sm:py-3.5 transition-all duration-300 cursor-pointer whitespace-nowrap"
     >
-        Botiga
+        {nav.hero_btn_botiga}
     </a>
 
     <!-- FLETXA CAP A LA COMUNITAT GYMCREAMER: en mòbil només la fletxa (sense text, per no envair les ratlletes de progrés) -->
     <a href="#comunitat" class="absolute bottom-4 sm:bottom-6 z-20 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-1 group cursor-pointer">
-        <span class="hidden sm:block text-white/60 group-hover:text-gcYellow text-[10px] font-display uppercase tracking-widest transition-colors">Comunitat Gymcreamer</span>
+        <span class="hidden sm:block text-white/60 group-hover:text-gcYellow text-[10px] font-display uppercase tracking-widest transition-colors">{nav.hero_comunitat_gymcreamer}</span>
         <svg class="w-5 h-5 sm:w-4 sm:h-4 text-white/60 group-hover:text-gcYellow transition-colors animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
     </a>
 

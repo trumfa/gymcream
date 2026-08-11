@@ -122,7 +122,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                     <img :src="item.imageFront" :alt="item.name" class="w-16 h-20 object-cover bg-gray-900 border border-gray-800 flex-shrink-0">
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="text-[9px] font-display text-gray-500 uppercase tracking-wider" x-text="item.category"></span>
+                            <span class="text-[9px] font-display text-gray-500 uppercase tracking-wider" x-text="categoryLabel(item.category)"></span>
                             <template x-if="item.isSoldOut">
                                 <span class="text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.5 uppercase">{nav.badge_esgotat}</span>
                             </template>
@@ -296,7 +296,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                 <div class="w-full md:w-1/2 p-6 sm:p-8 flex flex-col justify-between bg-white">
                     <div>
                         <div class="flex items-center justify-between text-xs text-gray-500 font-display uppercase tracking-widest mb-2 font-bold">
-                            <span x-text="modalProduct.category"></span>
+                            <span x-text="categoryLabel(modalProduct.category)"></span>
                             <span x-text="`SKU: ${modalProduct.sku}`"></span>
                         </div>
 
@@ -788,6 +788,15 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                     (p.sku && p.sku.toLowerCase().includes(q)) ||
                     (p.details && p.details.some(d => d.toLowerCase().includes(q)))
                 );
+            },
+
+            // Igual que a ProductCatalog.astro: product.category sempre és
+            // estable en català (clau de coincidència), aquí la traduïm
+            // per mostrar-la a la llista de resultats de cerca.
+            categoryLabel(categorySlug) {
+                if (!categorySlug) return '';
+                const match = this.categories.find(c => (c.slug || c.name) === categorySlug);
+                return match ? match.name : categorySlug;
             },
             
             showToast(msg, type = 'success') {
