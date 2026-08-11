@@ -118,4 +118,30 @@ declare interface Locales {
 	idx_loading_quote: string;
 	idx_error_submit: string;
 	idx_toast_success: string;
+
+	footer_tagline: string;
+	footer_informacio: string;
+	footer_enviaments: string;
+	footer_termes: string;
+	footer_privacitat: string;
+	footer_cookies: string;
+	footer_talles: string;
+	footer_contacte_atencio: string;
+	footer_pagament_segur: string;
+	footer_designed_irony: string;
+	footer_modal_default_title: string;
+	footer_contacte_directe: string;
+	footer_contact_success: string;
+	footer_label_email: string;
+	footer_placeholder_email: string;
+	footer_label_missatge: string;
+	footer_placeholder_missatge: string;
+	footer_enviant: string;
+	footer_enviar_missatge: string;
+	footer_tancar: string;
+	footer_contact_error: string;
+	footer_alert_camps: string;
+
+	hero_btn_botiga: string;
+	hero_comunitat_gymcreamer: string;
 }
