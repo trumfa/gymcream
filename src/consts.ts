@@ -8,28 +8,6 @@ export const SITE_DESCRIPTION: string = "Trenca les regles - Marca independent d
 
 // SEO metadata
 
-// Navigation
-type Page = {
-	title: string;
-	href: string;
-	children?: Page[];
-};
-
-export const PAGES: Page[] = [
-	{
-		title: "home",
-		href: "/",
-	},
-	{
-		title: "blog",
-		href: "/blog",
-	},
-	{
-		title: "about",
-		href: "/about",
-	},
-];
-
 // i18n
 export const DEFAULT_LOCALE = "ca";
 export const LOCALES = {
