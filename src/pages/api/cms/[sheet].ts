@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ params, url }) => {
     const data = await getSheet(params.sheet!, lang);
     return new Response(JSON.stringify(data), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=60' },
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300, stale-while-revalidate=600' },
     });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });
