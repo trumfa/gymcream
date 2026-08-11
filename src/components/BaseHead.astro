@@ -8,8 +8,8 @@
 import "@styles/global.css";
 import "@fontsource-variable/inter";
 import { SEO } from "astro-seo";
-import { SITE_TITLE, SITE_DESCRIPTION, TWITTER_CREATOR } from "@src/consts";
-import { getLocale } from "astro-i18n-aut";
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from "@src/consts";
+import { getLocale, getLocaleUrl } from "astro-i18n-aut";
 
 interface Props {
 	title: string;
@@ -22,16 +22,46 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const resolvedImageWithDomain = new URL("/meta/opengraph.png", Astro.site).toString();
 
 const { title = SITE_TITLE, description = SITE_DESCRIPTION, image = "/blog-placeholder-1.jpg" } = Astro.props;
+
+// Alternes d'idioma (hreflang): li diem a Google que aquesta mateixa
+// pàgina existeix en català, castellà i anglès, i quina és la versió
+// per defecte quan cap coincideix amb l'idioma del cercador.
+const SUPPORTED_LOCALES = ["ca", "es", "en"];
+const hreflangAlternates = SUPPORTED_LOCALES.map((lc) => ({
+	lang: lc,
+	url: new URL(getLocaleUrl(Astro.url, lc), Astro.site).toString(),
+}));
+const xDefaultUrl = new URL(getLocaleUrl(Astro.url, "ca"), Astro.site).toString();
+
+// Dades estructurades (JSON-LD) de l'organització — ajuden Google a
+// entendre qui ets més enllà del text pla, i habiliten resultats
+// enriquits a la cerca.
+const organizationSchema = {
+	"@context": "https://schema.org",
+	"@type": "ClothingStore",
+	name: "Gym Cream",
+	url: SITE_URL,
+	logo: new URL("/logos/logo primary GC no GC.png", Astro.site).toString(),
+	image: resolvedImageWithDomain,
+	description: SITE_DESCRIPTION,
+	sameAs: [],
+};
 ---
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Syncopate:wght@400;700;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
+
+<!-- Hreflang: versions per idioma d'aquesta mateixa pàgina -->
+{hreflangAlternates.map((alt) => (
+	<link rel="alternate" hreflang={alt.lang} href={alt.url} />
+))}
+<link rel="alternate" hreflang="x-default" href={xDefaultUrl} />
+
+<!-- Dades estructurades JSON-LD -->
+<script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
 
 <SEO
 	title={title}
@@ -55,12 +85,10 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION, image = "/blog-place
 	}}
 	twitter={{
 		card: "summary_large_image",
-		site: canonicalURL.toString(),
 		title: title,
 		description: description,
 		image: resolvedImageWithDomain,
 		imageAlt: title,
-		creator: TWITTER_CREATOR,
 	}}
 	extend={{
 		// extending the default link tags
@@ -103,12 +131,6 @@ const { title = SITE_TITLE, description = SITE_DESCRIPTION, image = "/blog-place
 				name: "viewport",
 				content: "width=device-width,initial-scale=1",
 			},
-			{
-				name: "twitter:image",
-				content: "https://user-images.githubusercontent.com/5182256/131216951-8f74f425-f775-463d-a11b-0e01ad9fce8d.png",
-			},
-			{ name: "twitter:title", content: "Tinker Tailor Soldier Spy" },
-			{ name: "twitter:description", content: "Agent" },
 		],
 	}}
 />
