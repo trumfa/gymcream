@@ -94,4 +94,28 @@ declare interface Locales {
 
 	toast_afegit_prefix: string;
 	toast_afegit_suffix: string;
+
+	idx_meta_title: string;
+	idx_meta_description: string;
+	idx_quote_modal_title: string;
+	idx_quote_modal_subtitle: string;
+	idx_success_text: string;
+	idx_label_pseudonim: string;
+	idx_placeholder_pseudonim: string;
+	idx_label_frase: string;
+	idx_placeholder_frase: string;
+	idx_disclaimer: string;
+	idx_submit_btn: string;
+	idx_cta_badge: string;
+	idx_cta_subtitle: string;
+	idx_title_afegir: string;
+	idx_instagram_tag: string;
+	idx_title_like: string;
+	idx_title_esquerra: string;
+	idx_title_dreta: string;
+	type_diy: string;
+	type_oficial: string;
+	idx_loading_quote: string;
+	idx_error_submit: string;
+	idx_toast_success: string;
 }
