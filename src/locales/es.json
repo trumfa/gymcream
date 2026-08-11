@@ -1,0 +1,26 @@
+{
+	"home_description": "Rompe las reglas.",
+	"about_description": "Gym Cream es una marca independiente de equipamiento y apparel de gimnasio.",
+	"home": "Inicio",
+
+	"nav_inici": "Inicio",
+	"nav_botiga": "Tienda",
+	"nav_gymcreamer": "Gymcreamer",
+	"nav_descarregues": "Descargas",
+	"nav_comunitat": "Comunidad",
+
+	"search_placeholder": "Buscar productos...",
+	"cart_title": "Tu carrito",
+	"cart_empty": "Tu carrito está vacío.",
+
+	"btn_botiga": "Tienda",
+	"btn_soc_gymcreamer": "Soy Gymcreamer",
+	"btn_tornar_botiga": "Volver a la Tienda",
+	"btn_descarregar": "Descargar Archivo",
+	"btn_enviar": "Enviar",
+	"btn_veure_botiga": "Ir a la tienda",
+
+	"footer_rights": "Todos los derechos reservados.",
+	"footer_contacte": "Contacto",
+	"footer_llicencia": "Licencia de Uso de Marca"
+}

@@ -1,0 +1,26 @@
+{
+	"home_description": "Trenca les regles.",
+	"about_description": "Gym Cream és una marca independent d'equipament i apparel de gimnàs.",
+	"home": "Inici",
+
+	"nav_inici": "Inici",
+	"nav_botiga": "Botiga",
+	"nav_gymcreamer": "Gymcreamer",
+	"nav_descarregues": "Descàrregues",
+	"nav_comunitat": "Comunitat",
+
+	"search_placeholder": "Cercar productes...",
+	"cart_title": "El teu carret",
+	"cart_empty": "El teu carret està buit.",
+
+	"btn_botiga": "Botiga",
+	"btn_soc_gymcreamer": "Sóc Gymcreamer",
+	"btn_tornar_botiga": "Tornar a la Botiga",
+	"btn_descarregar": "Descarregar Arxiu",
+	"btn_enviar": "Enviar",
+	"btn_veure_botiga": "Ves a la botiga",
+
+	"footer_rights": "Tots els drets reservats.",
+	"footer_contacte": "Contacte",
+	"footer_llicencia": "Llicència d'Ús de Marca"
+}
