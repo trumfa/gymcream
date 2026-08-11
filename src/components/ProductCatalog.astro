@@ -96,7 +96,7 @@ const currentLocale = getLocale(Astro.url);
                         <div>
                             <div class="text-[10px] font-sans font-bold text-gray-500 uppercase tracking-widest mb-1" x-text="categoryLabel(product.category)"></div>
                             <a
-                                :href="productUrl(product)"
+                                :href="product.url"
                                 data-astro-reload
                                 class="font-serif text-base font-bold tracking-wide hover:text-gray-700 transition-colors line-clamp-2 min-h-[2.5rem] flex items-center text-black"
                                 x-text="product.name"
@@ -179,7 +179,9 @@ const currentLocale = getLocale(Astro.url);
                     ]);
                     if (prodRes.ok) {
                         const prod = await prodRes.json();
-                        if (Array.isArray(prod) && prod.length > 0) this.allProducts = prod;
+                        if (Array.isArray(prod) && prod.length > 0) {
+                            this.allProducts = prod.map(p => ({ ...p, url: this.buildProductUrl(p) }));
+                        }
                     }
                     if (catRes.ok) {
                         const cat = await catRes.json();
@@ -212,19 +214,26 @@ const currentLocale = getLocale(Astro.url);
 
             // Genera la URL real i indexable d'un producte:
             // /botiga/{slug-del-nom}-{id}  (o /es/botiga/..., /en/botiga/...
-            // segons l'idioma actual). El nom es transforma en slug
-            // (minúscules, sense accents, guions en comptes d'espais) i
-            // sempre s'hi afegeix l'id al final perquè la URL sigui
-            // sempre única encara que dos productes tinguin noms semblants.
-            productUrl(product) {
-                const slug = (product.name || '')
-                    .toString()
-                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // treu accents
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/(^-|-$)/g, '');
-                const prefix = currentLocale === 'ca' ? '' : `/${currentLocale}`;
-                return `${prefix}/botiga/${slug}-${product.id}`;
+            // segons l'idioma actual). Es crida NOMÉS un cop, en carregar
+            // les dades (loadData), i es guarda com product.url — mai es
+            // recalcula al propi enllaç, per evitar qualsevol fallada
+            // silenciosa d'Alpine en temps de render.
+            buildProductUrl(product) {
+                try {
+                    const rawName = (product && product.name) ? String(product.name) : 'producte';
+                    const slug = rawName
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/(^-|-$)/g, '');
+                    const id = product && product.id ? product.id : '0';
+                    const prefix = currentLocale === 'ca' ? '' : `/${currentLocale}`;
+                    return `${prefix}/botiga/${slug}-${id}`;
+                } catch (err) {
+                    console.error('Error generant la URL del producte:', err);
+                    const prefix = currentLocale === 'ca' ? '' : `/${currentLocale}`;
+                    return `${prefix}/botiga`;
+                }
             }
         }));
     };
