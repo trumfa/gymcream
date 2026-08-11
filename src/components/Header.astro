@@ -70,7 +70,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
             <div class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-gcYellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <h3 class="font-display text-sm uppercase text-gcYellow tracking-widest font-black">Cerca en temps real</h3>
+                <h3 class="font-display text-sm uppercase text-gcYellow tracking-widest font-black">{nav.search_title}</h3>
             </div>
             <button @click="searchOpen = false" class="text-white hover:text-gcYellow transition-colors p-1">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -82,7 +82,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                 <input 
                     type="text" 
                     x-model="searchQuery" 
-                    placeholder="Escriu qualsevol paraula (p. ex. Carbs, Belt, Sudadera...)" 
+                    placeholder={nav.search_input_placeholder}
                     class="w-full bg-black border border-gray-800 focus:border-gcYellow text-white p-4 pr-10 font-sans text-sm focus:outline-none transition-colors"
                     x-ref="searchInput"
                 >
@@ -92,7 +92,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                     </button>
                 </template>
             </div>
-            <p class="text-gray-500 mt-2 text-xs">Apareixeran tots els articles que convinguin amb les paraules cercades.</p>
+            <p class="text-gray-500 mt-2 text-xs">{nav.search_hint}</p>
         </div>
 
         <!-- LISTA EN DIRECTO DE RESULTADOS DE BÚSQUEDA -->
@@ -106,7 +106,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
 
             <template x-if="searchQuery.trim() === ''">
                 <div class="space-y-4 pt-2">
-                    <span class="text-xs font-display text-gray-500 uppercase tracking-widest">Etiquetes Populars:</span>
+                    <span class="text-xs font-display text-gray-500 uppercase tracking-widest">{nav.search_tags_populars}</span>
                     <div class="flex flex-wrap gap-2">
                         <button @click="searchQuery = 'Carbs'" class="text-xs bg-gray-900 border border-gray-800 hover:border-gcYellow hover:text-gcYellow px-3 py-1.5 text-gray-300 transition-colors">#Carbs</button>
                         <button @click="searchQuery = 'Rebaixat'" class="text-xs bg-red-950/60 border border-red-900 text-red-300 hover:bg-red-900 px-3 py-1.5 transition-colors">🔥 #Rebaixat</button>
@@ -124,10 +124,10 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                         <div class="flex items-center gap-2 mb-1">
                             <span class="text-[9px] font-display text-gray-500 uppercase tracking-wider" x-text="item.category"></span>
                             <template x-if="item.isSoldOut">
-                                <span class="text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.5 uppercase">Esgotat</span>
+                                <span class="text-[9px] bg-red-600 text-white font-bold px-1.5 py-0.5 uppercase">{nav.badge_esgotat}</span>
                             </template>
                             <template x-if="!item.isSoldOut && item.isSale">
-                                <span class="text-[9px] bg-red-500 text-white font-bold px-1.5 py-0.5 uppercase">Rebaixat</span>
+                                <span class="text-[9px] bg-red-500 text-white font-bold px-1.5 py-0.5 uppercase">{nav.badge_rebaixat}</span>
                             </template>
                         </div>
                         <h4 class="font-display text-xs text-gray-200 group-hover:text-gcYellow transition-colors truncate" x-text="item.name"></h4>
@@ -164,7 +164,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
     >
         <div class="flex justify-between items-center pb-6 border-b border-gray-800">
             <div class="flex items-center gap-3">
-                <h3 class="font-display text-sm uppercase text-gcYellow tracking-widest font-black">El Teu Carret</h3>
+                <h3 class="font-display text-sm uppercase text-gcYellow tracking-widest font-black">{nav.cart_titol}</h3>
                 <span class="bg-gcYellow text-black font-bold text-xs px-2.5 py-0.5 rounded-full" x-text="cartCount">0</span>
             </div>
             <button @click="cartOpen = false" class="text-white hover:text-gcYellow transition-colors p-1">
@@ -175,7 +175,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
         <div class="flex-1 overflow-y-auto my-6 space-y-4 pr-1">
             <template x-if="cart.length === 0">
                 <div class="text-center py-16 text-gray-500 font-sans text-sm">
-                    El teu carret està buit actualment.
+                    {nav.cart_buit}
                 </div>
             </template>
             <template x-for="(item, index) in cart" :key="index">
@@ -183,7 +183,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                     <img :src="item.image" :alt="item.name" class="w-16 h-20 object-cover bg-gray-900 flex-shrink-0">
                     <div class="flex-1 min-w-0">
                         <h4 class="font-display text-xs text-gray-200 truncate font-bold" x-text="item.name"></h4>
-                        <p class="text-xs text-gray-400 mt-1">Talla: <span class="text-gcYellow font-bold" x-text="item.size"></span></p>
+                        <p class="text-xs text-gray-400 mt-1">{nav.cart_talla} <span class="text-gcYellow font-bold" x-text="item.size"></span></p>
                         <div class="flex items-baseline gap-2 mt-1">
                             <template x-if="item.oldPrice">
                                 <span class="text-xs text-gray-500 line-through font-sans" x-text="`${item.oldPrice.toFixed(2)} €`"></span>
@@ -192,13 +192,13 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                         </div>
                     </div>
                     <div class="flex flex-col items-end gap-2">
-                        <button @click="removeFromCart(index)" class="text-gray-600 hover:text-red-500 transition-colors p-1" title="Eliminar del carret">
+                        <button @click="removeFromCart(index)" class="text-gray-600 hover:text-red-500 transition-colors p-1" title={nav.cart_eliminar}>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                         <div class="flex items-center border border-gray-800 bg-gray-950 text-xs">
-                            <button @click="updateQty(index, -1)" class="px-2 py-0.5 text-gray-400 hover:text-gcYellow hover:bg-gray-800 font-bold" title="Reduir quantitat">-</button>
+                            <button @click="updateQty(index, -1)" class="px-2 py-0.5 text-gray-400 hover:text-gcYellow hover:bg-gray-800 font-bold" title={nav.cart_reduir}>-</button>
                             <span class="px-2 font-bold text-white" x-text="item.qty"></span>
-                            <button @click="updateQty(index, 1)" class="px-2 py-0.5 text-gray-400 hover:text-gcYellow hover:bg-gray-800 font-bold" title="Augmentar quantitat">+</button>
+                            <button @click="updateQty(index, 1)" class="px-2 py-0.5 text-gray-400 hover:text-gcYellow hover:bg-gray-800 font-bold" title={nav.cart_augmentar}>+</button>
                         </div>
                     </div>
                 </div>
@@ -207,14 +207,14 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
 
         <div class="border-t border-gray-800 pt-4 space-y-4">
             <div class="flex justify-between items-center font-display text-sm">
-                <span class="uppercase tracking-widest text-gray-400">Total</span>
+                <span class="uppercase tracking-widest text-gray-400">{nav.cart_total}</span>
                 <span class="text-gcYellow font-black text-xl" x-text="`${cartTotal} €`"></span>
             </div>
             
             <div class="space-y-2">
                 <button @click="showToast('Redirigint a la passarel·la de pagament PayPal / Stripe...')" class="w-full bg-gcYellow text-black font-display font-black text-xs uppercase py-4 hover:bg-white transition-colors tracking-widest flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    PAGAR ARA (PayPal / Stripe)
+                    {nav.cart_pagar}
                 </button>
             </div>
         </div>
@@ -289,7 +289,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                         </div>
                     </div>
 
-                    <p class="text-[11px] text-gray-500 mt-4 text-center font-sans">Feu clic a qualsevol miniatura per veure més fotos del producte.</p>
+                    <p class="text-[11px] text-gray-500 mt-4 text-center font-sans">{nav.modal_miniatures_hint}</p>
                 </div>
 
                 <!-- Columna Dreta: DESCRIPCIÓ, TALLES I BOTÓ AFEGIR AL CARRET / ESGOTAT -->
@@ -307,7 +307,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                             <template x-if="modalProduct.oldPrice || modalProduct.isSale">
                                 <div class="flex items-center gap-2">
                                     <span class="font-sans text-sm text-gray-400 line-through" x-text="`${modalProduct.oldPrice ? modalProduct.oldPrice.toFixed(2) : (modalProduct.price * 1.25).toFixed(2)} €`"></span>
-                                    <span class="bg-red-600 text-white font-display text-[10px] font-black px-2 py-0.5 uppercase">OFERTA</span>
+                                    <span class="bg-red-600 text-white font-display text-[10px] font-black px-2 py-0.5 uppercase">{nav.modal_oferta}</span>
                                 </div>
                             </template>
                             <span 
@@ -323,16 +323,14 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                                 <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                             </div>
                             <div class="text-xs">
-                                <h5 class="font-display font-black text-black uppercase tracking-wider">Inclou Distintiu Físic Oficial</h5>
-                                <p class="text-[11px] text-gray-700 mt-0.5 leading-snug">
-                                    Articles de la Línia Oficial inclouen el <strong>Distintiu Físic Gym Cream</strong> brodat/físic que en certifica l'autenticitat i l'experiència prèmium.
-                                </p>
+                                <h5 class="font-display font-black text-black uppercase tracking-wider">{nav.modal_distintiu_titol}</h5>
+                                <p class="text-[11px] text-gray-700 mt-0.5 leading-snug" set:html={nav.modal_distintiu_text}></p>
                             </div>
                         </div>
 
                         <!-- DESCRIPCIÓ DEL PRODUCTE -->
                         <div class="mb-6 space-y-3">
-                            <h4 class="font-display text-xs uppercase text-black tracking-widest font-black">Descripció del Producte</h4>
+                            <h4 class="font-display text-xs uppercase text-black tracking-widest font-black">{nav.modal_descripcio_titol}</h4>
                             <p class="text-gray-800 font-sans text-sm leading-relaxed" x-text="modalProduct.description"></p>
                             
                             <template x-if="modalProduct.details && modalProduct.details.length">
@@ -347,7 +345,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                         <!-- SELECCIÓ DE TALLES -->
                         <div class="mb-6">
                             <label class="block font-display text-xs uppercase text-black tracking-widest font-extrabold mb-3">
-                                Selecciona la Talla: <span class="text-black font-black ml-2 underline" x-text="modalSelectedSize"></span>
+                                {nav.modal_selecciona_talla} <span class="text-black font-black ml-2 underline" x-text="modalSelectedSize"></span>
                             </label>
                             <div class="flex flex-wrap gap-2">
                                 <template x-for="sz in modalProduct.sizes" :key="sz">
@@ -365,7 +363,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                         <!-- SELECCIÓ DE QUANTITAT -->
                         <div class="mb-6" x-show="!modalProduct.isSoldOut">
                             <label class="block font-display text-xs uppercase text-black tracking-widest font-extrabold mb-2.5">
-                                Quantitat:
+                                {nav.modal_quantitat}
                             </label>
                             <div class="flex items-center gap-4">
                                 <div class="flex items-center border-2 border-black rounded-sm overflow-hidden bg-gray-50 shadow-sm">
@@ -373,7 +371,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                                         type="button"
                                         @click="modalQuantity = Math.max(1, modalQuantity - 1)"
                                         class="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-black hover:text-white transition-colors text-black font-black text-lg cursor-pointer select-none"
-                                        title="Reduir quantitat"
+                                        title={nav.cart_reduir}
                                     >
                                         -
                                     </button>
@@ -382,13 +380,13 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                                         type="button"
                                         @click="modalQuantity = modalQuantity + 1"
                                         class="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-black hover:text-white transition-colors text-black font-black text-lg cursor-pointer select-none"
-                                        title="Augmentar quantitat"
+                                        title={nav.cart_augmentar}
                                     >
                                         +
                                     </button>
                                 </div>
                                 <div class="text-xs text-gray-700 font-bold font-sans">
-                                    Preu total: <span class="text-black font-black text-sm" x-text="`${(modalProduct.price * modalQuantity).toFixed(2)} €`"></span>
+                                    {nav.modal_preu_total} <span class="text-black font-black text-sm" x-text="`${(modalProduct.price * modalQuantity).toFixed(2)} €`"></span>
                                 </div>
                             </div>
                         </div>
@@ -402,7 +400,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                                 class="w-full bg-black text-white font-display font-black text-sm uppercase py-4 hover:bg-gcYellow hover:text-black transition-all cursor-pointer shadow-lg tracking-wider flex items-center justify-center gap-2 rounded-sm"
                             >
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                                AFEGIR AL CARRET (<span x-text="modalQuantity"></span>)
+                                {nav.modal_afegir_carret} (<span x-text="modalQuantity"></span>)
                             </button>
                         </template>
 
@@ -413,26 +411,26 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                                     disabled 
                                     class="w-full bg-gray-200 text-gray-500 border border-gray-300 font-display text-xs font-black uppercase py-4 cursor-not-allowed opacity-80"
                                 >
-                                    🔒 ESGOTAT - SENSE ESTOC
+                                    🔒 {nav.modal_esgotat_btn}
                                 </button>
 
                                 <div class="bg-red-50 border border-red-200 p-4 rounded-none">
                                     <h5 class="font-display text-xs text-red-700 font-bold uppercase tracking-wider mb-2 flex items-center gap-2">
                                         <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v2.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                                        Avisa'm quan torni a haver-hi estoc:
+                                        {nav.modal_avisam_titol}
                                     </h5>
                                     <div class="flex gap-2">
                                         <input 
                                             type="email" 
                                             x-model="restockEmail" 
-                                            placeholder="El teu email..." 
+                                            placeholder={nav.modal_email_placeholder}
                                             class="bg-white border border-gray-300 text-black p-2.5 text-xs font-sans flex-1 focus:border-red-500 focus:outline-none"
                                         />
                                         <button 
                                             @click="submitRestock()"
                                             class="bg-red-600 hover:bg-red-700 text-white font-display text-xs font-bold uppercase px-4 py-2.5 transition-colors cursor-pointer"
                                         >
-                                            Avisa'm
+                                            {nav.modal_avisam_btn}
                                         </button>
                                     </div>
                                 </div>
@@ -457,7 +455,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
             <div class="max-w-4xl max-h-[85vh] p-2">
                 <img :src="modalActiveImage" class="max-w-full max-h-[80vh] object-contain mx-auto border-2 border-gcYellow" />
             </div>
-            <p class="text-xs font-display text-gcYellow tracking-widest mt-4 uppercase">Mode Foto Gran / Zoom Actiu</p>
+            <p class="text-xs font-display text-gcYellow tracking-widest mt-4 uppercase">{nav.modal_zoom_hint}</p>
         </div>
     </template>
 
@@ -485,27 +483,27 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v2.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                     </div>
                     <div>
-                        <span class="text-[10px] font-display uppercase tracking-widest text-red-400 font-bold">Avís de reposició</span>
+                        <span class="text-[10px] font-display uppercase tracking-widest text-red-400 font-bold">{nav.restock_avis_titol}</span>
                         <h3 class="font-display text-lg font-black text-white uppercase" x-text="restockProduct.name"></h3>
                     </div>
                 </div>
 
                 <p class="text-xs text-gray-300 font-sans mb-4 leading-relaxed">
-                    Aquest producte es troba actualment esgotat. Deixa el teu correu electrònic i seràs el primer a rebre un avís quan rebi estoc de nou.
+                    {nav.restock_text}
                 </p>
 
                 <div class="space-y-3">
                     <input 
                         type="email" 
                         x-model="restockEmail" 
-                        placeholder="Exemple: elteuemail@gmail.com" 
+                        placeholder={nav.restock_email_placeholder}
                         class="w-full bg-black border border-gray-800 text-white p-3 font-sans text-sm focus:border-red-500 focus:outline-none"
                     />
                     <button 
                         @click="submitRestock()"
                         class="w-full bg-red-600 hover:bg-red-500 text-white font-display font-black text-xs uppercase py-3.5 transition-colors cursor-pointer tracking-wider"
                     >
-                        Subscriure'm ara
+                        {nav.restock_subscriure_btn}
                     </button>
                 </div>
             </div>
@@ -622,7 +620,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
 
 </div>
 
-<script is:inline define:vars={{ fallbackPhrases: FALLBACK_PHRASES, fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS }}>
+<script is:inline define:vars={{ fallbackPhrases: FALLBACK_PHRASES, fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS, i18nTalla: nav.cart_talla, i18nToastPrefix: nav.toast_afegit_prefix, i18nToastSuffix: nav.toast_afegit_suffix }}>
     const registerAppState = () => {
         if (!window.Alpine) return;
         Alpine.data('appState', () => ({
@@ -808,7 +806,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
                 this.saveCart();
                 this.productModalOpen = false;
                 this.cartOpen = true;
-                this.showToast(`S'ha afegit ${addQty > 1 ? addQty + 'x ' : ''}"${item.name}" (Talla: ${item.size}) al carret!`);
+                this.showToast(`${i18nToastPrefix}${addQty > 1 ? addQty + 'x ' : ''}"${item.name}" (${i18nTalla} ${item.size})${i18nToastSuffix}`);
             },
             
             updateQty(index, delta) {
