@@ -7,16 +7,20 @@ function assertConfigured() {
   }
 }
 
-export async function getSheet<T = any>(sheetName: string): Promise<T[]> {
+export async function getSheet<T = any>(sheetName: string, lang?: string): Promise<T[]> {
   assertConfigured();
-  const res = await fetch(`${CMS_API_URL}?sheet=${encodeURIComponent(sheetName)}`);
+  const params = new URLSearchParams({ sheet: sheetName });
+  if (lang) params.set('lang', lang);
+  const res = await fetch(`${CMS_API_URL}?${params.toString()}`);
   if (!res.ok) throw new Error(`Error leyendo ${sheetName}: ${res.status}`);
   return res.json();
 }
 
-export async function getAllSheets(): Promise<Record<string, any[]>> {
+export async function getAllSheets(lang?: string): Promise<Record<string, any[]>> {
   assertConfigured();
-  const res = await fetch(`${CMS_API_URL}?sheet=all`);
+  const params = new URLSearchParams({ sheet: 'all' });
+  if (lang) params.set('lang', lang);
+  const res = await fetch(`${CMS_API_URL}?${params.toString()}`);
   if (!res.ok) throw new Error(`Error leyendo el CMS: ${res.status}`);
   return res.json();
 }
