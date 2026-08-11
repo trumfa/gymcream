@@ -20,7 +20,7 @@ export default defineConfig({
   },
 	site: SITE_URL,
 	output: "static",
-	adapter: isVercel ? vercel() : node({ mode: "standalone" }),
+	adapter: isVercel ? vercel({ maxDuration: 30 }) : node({ mode: "standalone" }),
 	trailingSlash: "ignore",
 	build: {
 		format: "directory",
