@@ -42,7 +42,7 @@ export default defineConfig({
 		i18n({
 			locales,
 			defaultLocale,
-			exclude: ["pages/api/**/*", "src/pages/api/**/*", "api/**/*", "pages/rss.xml.ts", "pages/[locale]/rss.xml.ts"],
+			exclude: ["pages/api/**/*", "src/pages/api/**/*", "api/**/*"],
 		}),
 		sitemap({
 			i18n: {
