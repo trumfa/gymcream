@@ -44,5 +44,12 @@ export default defineConfig({
 			defaultLocale,
 			exclude: ["pages/api/**/*", "src/pages/api/**/*", "api/**/*", "pages/rss.xml.ts", "pages/[locale]/rss.xml.ts"],
 		}),
+		sitemap({
+			i18n: {
+				locales,
+				defaultLocale,
+			},
+			filter: filterSitemapByDefaultLocale({ defaultLocale }),
+		}),
 	],
 });
