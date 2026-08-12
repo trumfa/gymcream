@@ -1,9 +1,11 @@
 ---
-// Pàgina individual de producte, generada EN VIU (prerender = false):
-// cada visita llegeix el Sheet en temps real, així que un producte
-// nou o editat té URL funcional immediatament, sense necessitat de
-// cap redeploy.
-export const prerender = false;
+// Pàgina individual de producte, generada 100% EN ESTÀTIC al moment
+// del build (com totes les altres). Una pàgina .html real per cada
+// producte, per cada idioma — no hi ha cap funció que s'executi en
+// cada visita, així que no hi pot haver mai cap timeout ni error 500
+// per lentitud d'Apps Script. Per veure un producte nou o editat cal
+// que es dispari un build nou (el Deploy Hook connectat al Sheet
+// s'encarrega d'això automàticament).
 
 import Layout from "@layouts/Layout.astro";
 import Container from "@src/components/Container.astro";
@@ -12,26 +14,32 @@ import translations from "@utils/t.ts";
 import { SITE_URL } from "@src/consts";
 import { getSheet } from "@src/lib/cms";
 
+// getStaticPaths() només s'executa UNA VEGADA (no per idioma) — aquí
+// només decidim QUINS productes existeixen i quin slug (nom+id) té
+// cadascun. El contingut real de cada idioma es demana més avall,
+// al cos de la pàgina, que SÍ es torna a executar per cada idioma.
+export async function getStaticPaths() {
+	const products = await getSheet<any>("Products", "ca");
+	return products.map((p: any) => {
+		const slug = String(p.name || "producte")
+			.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, "-")
+			.replace(/(^-|-$)/g, "");
+		return { params: { slug: `${slug}-${p.id}` } };
+	});
+}
+
 const currentLocale = getLocale(Astro.url);
 const nav = translations(Astro.url);
 
 const { slug } = Astro.params;
-// L'id del producte és sempre el tros final del slug, després de
-// l'últim guió (el slug complet és {nom-en-slug}-{id}).
 const productId = slug?.split("-").pop();
 
 let product: any = null;
 let categories: any[] = [];
 let products: any[] = [];
 
-// TOT el que pot fallar (crida al CMS, parsing de camps, construcció
-// d'URLs...) queda dins d'aquest bloc — qualsevol error inesperat aquí
-// dins acaba en un 404 controlat, mai en un error 500 sense explicació.
-//
-// IMPORTANT: es fa servir getSheet() (crida DIRECTA a Apps Script, amb
-// memòria cau pròpia dins de cms.ts) en comptes de trucar al nostre
-// propi domini per HTTP — fer que una funció serverless de Vercel es
-// truqui a si mateixa pot fallar de forma imprevisible.
 try {
 	const [productsData, catsData] = await Promise.all([
 		getSheet<any>("Products", currentLocale),
@@ -41,23 +49,12 @@ try {
 	categories = Array.isArray(catsData) ? catsData : [];
 	product = products.find((p: any) => String(p.id) === String(productId)) || null;
 } catch (err) {
-	console.error("[botiga/[slug]] Error carregant el producte des del CMS:", err);
-	product = null;
+	console.error("[botiga/[slug]] Error carregant el producte durant el build:", err);
 }
 
-// Producte no trobat (id inexistent, esborrat del Sheet, error del
-// CMS, URL mal escrita...) -> 404 real, no una pàgina en blanc ni un 500.
-if (!product) {
-	return new Response(null, { status: 404 });
-}
+const siteBase = SITE_URL;
 
-// Astro.site pot arribar com a undefined en el context d'una funció
-// serverless en algunes circumstàncies — fem servir sempre SITE_URL
-// (constant fixa) com a base fiable per construir URLs absolutes,
-// en comptes de confiar cegament en Astro.site.
-const siteBase = Astro.site?.toString() || SITE_URL;
-
-let categoryLabel = product.category || "";
+let categoryLabel = product?.category || "";
 let images: string[] = [];
 let isSoldOut = false;
 let pageTitle = "Gym Cream";
@@ -66,57 +63,54 @@ let botigaUrl = "/botiga";
 let productSchema: any = null;
 let breadcrumbSchema: any = null;
 
-try {
-	const categoryMatch = categories.find((c) => (c.slug || c.name) === product.category);
-	categoryLabel = categoryMatch ? categoryMatch.name : product.category;
+if (product) {
+	try {
+		const categoryMatch = categories.find((c) => (c.slug || c.name) === product.category);
+		categoryLabel = categoryMatch ? categoryMatch.name : product.category;
 
-	images = Array.isArray(product.images) && product.images.length > 0
-		? product.images
-		: [product.imageFront, product.imageBack].filter(Boolean);
+		images = Array.isArray(product.images) && product.images.length > 0
+			? product.images
+			: [product.imageFront, product.imageBack].filter(Boolean);
 
-	isSoldOut = !!product.isSoldOut || (product.stock !== undefined && Number(product.stock) <= 0);
-	pageTitle = `${product.name || "Producte"} | Gym Cream`;
-	pageDescription = (product.description || nav.botiga_title || "").toString().slice(0, 160);
+		isSoldOut = !!product.isSoldOut || (product.stock !== undefined && Number(product.stock) <= 0);
+		pageTitle = `${product.name || "Producte"} | Gym Cream`;
+		pageDescription = (product.description || nav.botiga_title || "").toString().slice(0, 160);
 
-	botigaUrl = getLocaleUrl("/botiga", currentLocale);
+		botigaUrl = getLocaleUrl("/botiga", currentLocale);
 
-	const currentFullUrl = new URL(Astro.url.pathname, siteBase).toString();
+		const currentFullUrl = new URL(Astro.url.pathname, siteBase).toString();
 
-	// Dades estructurades JSON-LD de tipus Product — habiliten resultats
-	// enriquits a Google (preu, disponibilitat, imatge) per a aquest
-	// producte en concret.
-	productSchema = {
-		"@context": "https://schema.org",
-		"@type": "Product",
-		name: product.name,
-		description: product.description,
-		image: images,
-		sku: product.sku,
-		brand: { "@type": "Brand", name: "Gym Cream" },
-		offers: {
-			"@type": "Offer",
-			url: currentFullUrl,
-			priceCurrency: "EUR",
-			price: product.price,
-			availability: isSoldOut
-				? "https://schema.org/OutOfStock"
-				: "https://schema.org/InStock",
-		},
-	};
+		productSchema = {
+			"@context": "https://schema.org",
+			"@type": "Product",
+			name: product.name,
+			description: product.description,
+			image: images,
+			sku: product.sku,
+			brand: { "@type": "Brand", name: "Gym Cream" },
+			offers: {
+				"@type": "Offer",
+				url: currentFullUrl,
+				priceCurrency: "EUR",
+				price: product.price,
+				availability: isSoldOut
+					? "https://schema.org/OutOfStock"
+					: "https://schema.org/InStock",
+			},
+		};
 
-	breadcrumbSchema = {
-		"@context": "https://schema.org",
-		"@type": "BreadcrumbList",
-		itemListElement: [
-			{ "@type": "ListItem", position: 1, name: nav.nav_inici, item: new URL(getLocaleUrl("/", currentLocale), siteBase).toString() },
-			{ "@type": "ListItem", position: 2, name: nav.nav_botiga, item: new URL(botigaUrl, siteBase).toString() },
-			{ "@type": "ListItem", position: 3, name: product.name, item: currentFullUrl },
-		],
-	};
-} catch (err) {
-	console.error("[botiga/[slug]] Error preparant les dades de la pàgina:", err);
-	// No tallem la pàgina per això — sense schema/breadcrumb la pàgina
-	// encara es pot mostrar amb la info bàsica del producte.
+		breadcrumbSchema = {
+			"@context": "https://schema.org",
+			"@type": "BreadcrumbList",
+			itemListElement: [
+				{ "@type": "ListItem", position: 1, name: nav.nav_inici, item: new URL(getLocaleUrl("/", currentLocale), siteBase).toString() },
+				{ "@type": "ListItem", position: 2, name: nav.nav_botiga, item: new URL(botigaUrl, siteBase).toString() },
+				{ "@type": "ListItem", position: 3, name: product.name, item: currentFullUrl },
+			],
+		};
+	} catch (err) {
+		console.error("[botiga/[slug]] Error preparant les dades de la pàgina:", err);
+	}
 }
 ---
 
@@ -131,6 +125,12 @@ try {
 
 	<div class="pt-20 sm:pt-24 bg-white min-h-screen">
 		<Container>
+			{!product ? (
+				<div class="py-24 text-center">
+					<p class="font-serif text-lg text-gray-600">Aquest producte ja no està disponible.</p>
+					<a href={botigaUrl} data-astro-reload class="inline-block mt-4 underline text-black">{nav.nav_botiga}</a>
+				</div>
+			) : (
 			<div class="py-8 sm:py-12">
 				<!-- Breadcrumb -->
 				<nav class="text-xs text-gray-500 font-sans mb-6 flex items-center gap-2 flex-wrap">
@@ -216,14 +216,12 @@ try {
 					</div>
 				</div>
 			</div>
+			)}
 		</Container>
 	</div>
 </Layout>
 
 <script>
-	// Botó de la pàgina de producte -> obre el mateix modal complet que
-	// ja fa servir tota la resta del catàleg (talla, quantitat, afegir
-	// al carret), sense duplicar cap lògica de carret.
 	const btn = document.getElementById("open-full-product-modal");
 	if (btn) {
 		btn.addEventListener("click", () => {
