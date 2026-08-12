@@ -20,7 +20,7 @@
 	"scripts": {
 		"dev": "astro dev --host 0.0.0.0 --port 3000",
 		"start": "astro dev --host 0.0.0.0 --port 3000",
-		"build": "node scripts/fetch-cms-data.mjs && astro build",
+		"build": "astro build",
 		"preview": "astro preview --host 0.0.0.0 --port 3000",
 		"lint": "astro build",
 		"astro": "astro"

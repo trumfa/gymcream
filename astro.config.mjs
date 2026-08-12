@@ -6,6 +6,7 @@ import alpinejs from "@astrojs/alpinejs";
 import node from "@astrojs/node";
 import vercel from "@astrojs/vercel/serverless";
 import { i18n, filterSitemapByDefaultLocale } from "astro-i18n-aut/integration";
+import preloadCms from "./src/integrations/preloadCms.mjs";
 import { DEFAULT_LOCALE, LOCALES, SITE_URL } from "./src/consts";
 
 const defaultLocale = DEFAULT_LOCALE;
@@ -39,6 +40,7 @@ export default defineConfig({
 		plugins: [tailwindcss()],
 	},
 	integrations: [
+		preloadCms(),
 		mdx(),
 		alpinejs(),
 		i18n({
