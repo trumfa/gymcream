@@ -11,7 +11,6 @@ import { getLocale, getLocaleUrl } from "astro-i18n-aut";
 import translations from "@utils/t.ts";
 import { SITE_URL } from "@src/consts";
 import { getSheet } from "@src/lib/cms";
-import { getSharedLayoutData } from "@src/lib/pageData";
 
 const currentLocale = getLocale(Astro.url);
 const nav = translations(Astro.url);
@@ -50,22 +49,6 @@ try {
 // CMS, URL mal escrita...) -> 404 real, no una pàgina en blanc ni un 500.
 if (!product) {
 	return new Response(null, { status: 404 });
-}
-
-// Header/Footer necessiten Phrases i InfoPages, que aquesta pàgina no
-// demanava encara — Products i Categories ja els tenim de dalt, no
-// cal tornar-los a demanar.
-let phrases: any[] = [];
-let infoPages: any[] = [];
-try {
-	const [phrasesData, infoPagesData] = await Promise.all([
-		getSheet<any>("Phrases", currentLocale),
-		getSheet<any>("InfoPages", currentLocale),
-	]);
-	phrases = Array.isArray(phrasesData) ? phrasesData : [];
-	infoPages = Array.isArray(infoPagesData) ? infoPagesData : [];
-} catch (err) {
-	console.error("[botiga/[slug]] Error carregant dades compartides:", err);
 }
 
 // Astro.site pot arribar com a undefined en el context d'una funció
@@ -142,8 +125,6 @@ try {
 	description={pageDescription}
 	products={products}
 	categories={categories}
-	phrases={phrases}
-	infoPages={infoPages}
 >
 	{productSchema && <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />}
 	{breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
