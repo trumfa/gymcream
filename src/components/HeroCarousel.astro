@@ -3,6 +3,12 @@ import { FALLBACK_SLIDES } from "@src/data/cmsDefaults";
 import { getLocale, getLocaleUrl } from "astro-i18n-aut";
 import translations from "@utils/t.ts";
 
+interface Props {
+	slides?: any[];
+}
+const { slides: serverSlides } = Astro.props as Props;
+const initialSlides = serverSlides && serverSlides.length > 0 ? serverSlides : FALLBACK_SLIDES;
+
 const currentLocale = getLocale(Astro.url);
 const nav = translations(Astro.url);
 ---
@@ -125,11 +131,11 @@ const nav = translations(Astro.url);
     }
 </style>
 
-<script is:inline define:vars={{ fallbackSlides: FALLBACK_SLIDES, currentLocale: currentLocale }}>
+<script is:inline define:vars={{ initialSlides: initialSlides }}>
     const registerHeroState = () => {
         if (!window.Alpine) return;
         Alpine.data('heroState', () => ({
-            slides: fallbackSlides,
+            slides: initialSlides,
             activeSlide: 0,
             paused: false,
 
@@ -149,27 +155,7 @@ const nav = translations(Astro.url);
                 this.loadedIndices.add(next);
             },
 
-            async init() {
-                try {
-                    const res = await fetch('/api/cms/Slides?lang=' + currentLocale);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (Array.isArray(data) && data.length > 0) {
-                            this.slides = data;
-                        } else {
-                            console.warn('[HeroCarousel] /api/cms/Slides ha respost buit o amb format inesperat, es fa servir el fallback.');
-                        }
-                    } else {
-                        console.warn(`[HeroCarousel] /api/cms/Slides ha respost ${res.status}, es fa servir el fallback.`);
-                    }
-                } catch (e) {
-                    console.warn('[HeroCarousel] Error connectant amb /api/cms/Slides, es fa servir el fallback.', e);
-                }
-
-                // Reinicia el set de càrrega amb els slides definitius i
-                // pre-carrega ja el segon perquè estigui llest per la
-                // transició quan toqui, sense fer-ho amb tots.
-                this.loadedIndices = new Set([0]);
+            init() {
                 this.preloadNext();
             },
 
@@ -177,7 +163,7 @@ const nav = translations(Astro.url);
                 if (this.slides && this.slides[this.activeSlide]) {
                     return this.slides[this.activeSlide];
                 }
-                return fallbackSlides[0];
+                return initialSlides[0];
             },
 
             nextSlide() {

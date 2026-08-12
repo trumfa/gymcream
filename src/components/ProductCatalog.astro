@@ -3,8 +3,38 @@ import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/data/cmsDefaults";
 import translations from "@utils/t.ts";
 import { getLocale } from "astro-i18n-aut";
 
+interface Props {
+	products?: any[];
+	categories?: any[];
+}
+const { products: serverProducts, categories: serverCategories } = Astro.props as Props;
+
 const nav = translations(Astro.url);
 const currentLocale = getLocale(Astro.url);
+
+// Mateixa lògica que buildProductUrl del client, aquí en servidor —
+// així el producte ja arriba amb la seva URL calculada, sense cap
+// pas addicional al navegador.
+function buildProductUrlServer(product: any): string {
+	try {
+		const rawName = product?.name ? String(product.name) : "producte";
+		const slug = rawName
+			.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, "-")
+			.replace(/(^-|-$)/g, "");
+		const id = product?.id ? product.id : "0";
+		const prefix = currentLocale === "ca" ? "" : `/${currentLocale}`;
+		return `${prefix}/botiga/${slug}-${id}`;
+	} catch {
+		const prefix = currentLocale === "ca" ? "" : `/${currentLocale}`;
+		return `${prefix}/botiga`;
+	}
+}
+
+const initialProducts = (serverProducts && serverProducts.length > 0 ? serverProducts : FALLBACK_PRODUCTS)
+	.map((p: any) => ({ ...p, url: buildProductUrlServer(p) }));
+const initialCategories = serverCategories && serverCategories.length > 0 ? serverCategories : FALLBACK_CATEGORIES;
 ---
 
 <!-- SECCIÓ DE PRODUCTES (FONS BLANC) -->
@@ -155,39 +185,18 @@ const currentLocale = getLocale(Astro.url);
     </div>
 </section>
 
-<script is:inline define:vars={{ fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS, currentLocale: currentLocale }}>
+<script is:inline define:vars={{ initialProducts: initialProducts, initialCategories: initialCategories, currentLocale: currentLocale }}>
     const registerCatalogState = () => {
         if (!window.Alpine) return;
         Alpine.data('catalogState', () => ({
             activeCategory: 'TOT',
-            allProducts: fallbackProducts,
-            categories: fallbackCategories,
+            allProducts: initialProducts,
+            categories: initialCategories,
 
             init() {
-                this.loadData();
-
                 window.addEventListener('filter-category', (e) => {
                     this.activeCategory = e.detail;
                 });
-            },
-
-            async loadData() {
-                try {
-                    const [prodRes, catRes] = await Promise.all([
-                        fetch('/api/cms/Products?lang=' + currentLocale),
-                        fetch('/api/cms/Categories?lang=' + currentLocale),
-                    ]);
-                    if (prodRes.ok) {
-                        const prod = await prodRes.json();
-                        if (Array.isArray(prod) && prod.length > 0) {
-                            this.allProducts = prod.map(p => ({ ...p, url: this.buildProductUrl(p) }));
-                        }
-                    }
-                    if (catRes.ok) {
-                        const cat = await catRes.json();
-                        if (Array.isArray(cat) && cat.length > 0) this.categories = cat;
-                    }
-                } catch (e) {}
             },
 
             get visibleProducts() {

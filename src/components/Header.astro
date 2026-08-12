@@ -3,6 +3,20 @@ import { FALLBACK_PHRASES, FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/d
 import translations from "@utils/t.ts";
 import { getLocale, getLocaleUrl, getUrlWithoutLocale } from "astro-i18n-aut";
 
+// Dades del CMS ja obtingudes en SERVIDOR per la pàgina que inclou
+// aquest Header (via Layout.astro) — mai es tornen a demanar des del
+// navegador. Si per algun motiu no arriben (pàgina antiga, error),
+// es fa servir el contingut de reserva perquè mai es quedi buit.
+interface Props {
+	products?: any[];
+	categories?: any[];
+	phrases?: any[];
+}
+const { products: serverProducts, categories: serverCategories, phrases: serverPhrases } = Astro.props as Props;
+const initialProducts = serverProducts && serverProducts.length > 0 ? serverProducts : FALLBACK_PRODUCTS;
+const initialCategories = serverCategories && serverCategories.length > 0 ? serverCategories : FALLBACK_CATEGORIES;
+const initialPhrases = serverPhrases && serverPhrases.length > 0 ? serverPhrases : FALLBACK_PHRASES;
+
 // Només per decidir el fons INICIAL de la barra de nav sense cap parpelleig:
 // a la Principal comença transparent (el carrusel es veu al darrere), a la
 // resta de pàgines comença sempre negra sòlida i mai canvia.
@@ -620,7 +634,7 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
 
 </div>
 
-<script is:inline define:vars={{ fallbackPhrases: FALLBACK_PHRASES, fallbackCategories: FALLBACK_CATEGORIES, fallbackProducts: FALLBACK_PRODUCTS, i18nTalla: nav.cart_talla, i18nToastPrefix: nav.toast_afegit_prefix, i18nToastSuffix: nav.toast_afegit_suffix, currentLocale: currentLocale }}>
+<script is:inline define:vars={{ initialProducts: initialProducts, initialCategories: initialCategories, initialPhrases: initialPhrases, i18nTalla: nav.cart_talla, i18nToastPrefix: nav.toast_afegit_prefix, i18nToastSuffix: nav.toast_afegit_suffix, currentLocale: currentLocale }}>
     const registerAppState = () => {
         if (!window.Alpine) return;
         Alpine.data('appState', () => ({
@@ -650,25 +664,14 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
             // Cart
             cart: [],
             
-            // Data loaded from CMS (Google Sheets vía Apps Script)
-            products: fallbackProducts,
-            categories: fallbackCategories,
-            phrases: fallbackPhrases,
+            // Data ja carregada en SERVIDOR (fresca, sense esperar cap
+            // fetch del navegador) — ve del Layout, que la demana un cop
+            // per pàgina i la reparteix a Header/Footer/etc.
+            products: initialProducts,
+            categories: initialCategories,
+            phrases: initialPhrases.map(p => (typeof p === 'string' ? p : p.text)),
             
             init() {
-                // Carga en vivo desde el CMS; si falla, se queda con el fallback mínimo
-                Promise.all([
-                    fetch('/api/cms/Products?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
-                    fetch('/api/cms/Categories?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
-                    fetch('/api/cms/Phrases?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
-                ]).then(([products, categories, phrases]) => {
-                    if (Array.isArray(products) && products.length > 0) this.products = products;
-                    if (Array.isArray(categories) && categories.length > 0) this.categories = categories;
-                    if (Array.isArray(phrases) && phrases.length > 0) {
-                        this.phrases = phrases.map(p => (typeof p === 'string' ? p : p.text));
-                    }
-                });
-
                 // Load cart
                 try {
                     const savedCart = localStorage.getItem('gymcream_cart');

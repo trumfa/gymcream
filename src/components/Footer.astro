@@ -3,6 +3,19 @@ import { FALLBACK_INFO_PAGES } from "@src/data/cmsDefaults";
 import { getLocale } from "astro-i18n-aut";
 import translations from "@utils/t.ts";
 
+interface Props {
+	infoPages?: any[];
+}
+const { infoPages: serverInfoPages } = Astro.props as Props;
+
+// InfoPages arriba com a array pla des del CMS; el footer el necessita
+// indexat per id per accedir-hi ràpid ("enviaments", "termes", etc.).
+let initialInfoPages: Record<string, any> = FALLBACK_INFO_PAGES;
+if (Array.isArray(serverInfoPages) && serverInfoPages.length > 0) {
+	initialInfoPages = {};
+	serverInfoPages.forEach((page: any) => { initialInfoPages[page.id] = page; });
+}
+
 const currentLocale = getLocale(Astro.url);
 const nav = translations(Astro.url);
 ---
@@ -185,7 +198,7 @@ const nav = translations(Astro.url);
     </div>
 </footer>
 
-<script is:inline define:vars={{ fallbackInfoPages: FALLBACK_INFO_PAGES, currentLocale: currentLocale, i18nAlertCamps: nav.footer_alert_camps, i18nContactError: nav.footer_contact_error }}>
+<script is:inline define:vars={{ initialInfoPages: initialInfoPages, currentLocale: currentLocale, i18nAlertCamps: nav.footer_alert_camps, i18nContactError: nav.footer_contact_error }}>
     const registerFooterState = () => {
         if (!window.Alpine) return;
         Alpine.data('footerState', () => ({
@@ -194,20 +207,7 @@ const nav = translations(Astro.url);
             contactEmail: '',
             contactMessage: '',
             contactSent: false,
-            infoPages: fallbackInfoPages,
-
-            init() {
-                fetch('/api/cms/InfoPages?lang=' + currentLocale)
-                    .then(r => r.ok ? r.json() : null)
-                    .then(data => {
-                        if (Array.isArray(data) && data.length > 0) {
-                            const keyed = {};
-                            data.forEach(page => { keyed[page.id] = page; });
-                            this.infoPages = keyed;
-                        }
-                    })
-                    .catch(() => {});
-            },
+            infoPages: initialInfoPages,
 
             openInfo(key) {
                 this.activeInfoKey = key;
