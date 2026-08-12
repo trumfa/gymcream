@@ -1,16 +1,49 @@
 ---
+// Es genera EN SERVIDOR (ISR): la primera visita construeix la
+// pàgina de veritat amb dades fresques del CMS, les visites següents
+// es serveixen des de la memòria cau de Vercel fins que caduqui o es
+// revalidi manualment en editar el Sheet.
+export const prerender = false;
+
 import Layout from "@layouts/Layout.astro";
 import HeroCarousel from "@components/HeroCarousel.astro";
 import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
 import translations from "@utils/t.ts";
 import { getLocale } from "astro-i18n-aut";
+import { getSheet } from "@src/lib/cms";
+import { getSharedLayoutData } from "@src/lib/pageData";
 
 const nav = translations(Astro.url);
 const currentLocale = getLocale(Astro.url);
+
+const shared = await getSharedLayoutData(currentLocale);
+
+let slides: any[] = [];
+let communityQuotes: any[] = [];
+let communityPhotos: any[] = [];
+try {
+	const [slidesData, quotesData, photosData] = await Promise.all([
+		getSheet<any>("Slides", currentLocale),
+		getSheet<any>("CommunityQuotes", currentLocale),
+		getSheet<any>("CommunityPhotos", currentLocale),
+	]);
+	slides = Array.isArray(slidesData) ? slidesData : [];
+	communityQuotes = Array.isArray(quotesData) ? quotesData : [];
+	communityPhotos = Array.isArray(photosData) ? photosData : [];
+} catch (err) {
+	console.error("[index.astro] Error carregant dades del CMS:", err);
+}
 ---
 
-<Layout title={nav.idx_meta_title} description={nav.idx_meta_description}>
-	<HeroCarousel />
+<Layout
+	title={nav.idx_meta_title}
+	description={nav.idx_meta_description}
+	products={shared.products}
+	categories={shared.categories}
+	phrases={shared.phrases}
+	infoPages={shared.infoPages}
+>
+	<HeroCarousel slides={slides} />
 
 	<!-- PART SOCIAL: continua directament sota el carrusel, sense separació -->
 	<div x-data="communityState">
@@ -244,16 +277,16 @@ const currentLocale = getLocale(Astro.url);
 	</div>
 </Layout>
 
-<script is:inline define:vars={{ fallbackQuotes: FALLBACK_COMMUNITY_QUOTES, fallbackPhotos: FALLBACK_COMMUNITY_PHOTOS, i18nTypeDiy: nav.type_diy, i18nTypeOficial: nav.type_oficial, i18nLoadingQuote: nav.idx_loading_quote, i18nErrorSubmit: nav.idx_error_submit, i18nToastSuccess: nav.idx_toast_success, currentLocale: currentLocale }}>
+<script is:inline define:vars={{ initialQuotes: communityQuotes.length > 0 ? communityQuotes : FALLBACK_COMMUNITY_QUOTES, initialPhotos: communityPhotos.length > 0 ? communityPhotos : FALLBACK_COMMUNITY_PHOTOS, i18nTypeDiy: nav.type_diy, i18nTypeOficial: nav.type_oficial, i18nLoadingQuote: nav.idx_loading_quote, i18nErrorSubmit: nav.idx_error_submit, i18nToastSuccess: nav.idx_toast_success, currentLocale: currentLocale }}>
     const registerCommunityState = () => {
         if (!window.Alpine) return;
         Alpine.data('communityState', () => ({
             quotes: [],
-            allQuotes: fallbackQuotes,
+            allQuotes: initialQuotes,
             instagramQuotes: [
                 { id: 'fallback-1', author: 'GymCream', quote: i18nLoadingQuote }
             ],
-            photos: fallbackPhotos,
+            photos: initialPhotos,
             communityFeed: [],
             lightboxPhoto: null,
             heartBeating: false,
@@ -272,22 +305,7 @@ const currentLocale = getLocale(Astro.url);
                 }, 600);
             },
 
-            async init() {
-                try {
-                    const [quotesRes, photosRes] = await Promise.all([
-                        fetch('/api/cms/CommunityQuotes?lang=' + currentLocale),
-                        fetch('/api/cms/CommunityPhotos?lang=' + currentLocale),
-                    ]);
-                    if (quotesRes.ok) {
-                        const quotes = await quotesRes.json();
-                        if (Array.isArray(quotes) && quotes.length > 0) this.allQuotes = quotes;
-                    }
-                    if (photosRes.ok) {
-                        const photos = await photosRes.json();
-                        if (Array.isArray(photos) && photos.length > 0) this.photos = photos;
-                    }
-                } catch (e) {}
-
+            init() {
                 this.applyQuotes();
                 this.buildCommunityFeed();
             },

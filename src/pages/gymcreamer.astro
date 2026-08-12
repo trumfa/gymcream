@@ -1,9 +1,15 @@
 ---
+export const prerender = false;
+
 import Layout from "@layouts/Layout.astro";
 import Container from "@src/components/Container.astro";
 import translations from "@utils/t.ts";
+import { getLocale } from "astro-i18n-aut";
+import { getSharedLayoutData } from "@src/lib/pageData";
 
 const nav = translations(Astro.url);
+const currentLocale = getLocale(Astro.url);
+const shared = await getSharedLayoutData(currentLocale);
 
 // Fitxers reals a /public/logos/{black,primary,white}/ — estàtics, no
 // gestionats des del Sheet perquè són arxius de marca fixos, no
@@ -42,7 +48,14 @@ const logoVariants = [
 ];
 ---
 
-<Layout title={nav.gc_meta_title} description={nav.gc_meta_description}>
+<Layout
+	title={nav.gc_meta_title}
+	description={nav.gc_meta_description}
+	products={shared.products}
+	categories={shared.categories}
+	phrases={shared.phrases}
+	infoPages={shared.infoPages}
+>
     <!-- CONTINGUT PRINCIPAL OPEN BRAND — ESTÈTICA 'L'ART DE L'ANTÍTESI' -->
 
     <main 
