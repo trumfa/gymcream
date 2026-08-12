@@ -25,7 +25,7 @@ export const POST: APIRoute = async ({ request }) => {
         notified: false,
       });
     } catch (err) {
-      console.warn('Avís: No s'ha pogut guardar la subscripció al CMS Sheet:', err);
+      console.warn("Avís: No s'ha pogut guardar la subscripció al CMS Sheet:", err);
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
