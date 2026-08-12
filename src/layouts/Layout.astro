@@ -6,6 +6,8 @@ import Header from "@components/Header.astro";
 import Footer from "@components/Footer.astro";
 import WhatsAppButton from "@components/WhatsAppButton.astro";
 import CookieBanner from "@components/CookieBanner.astro";
+import Analytics from "@vercel/analytics/astro";
+import SpeedInsights from "@vercel/speed-insights/astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "@src/consts";
 
 const locale = getLocale(Astro.url);
@@ -14,9 +16,23 @@ type Props = {
 	title?: string;
 	description?: string;
 	image?: string;
+	// Dades ja carregades en servidor per la pàgina que fa servir
+	// aquest Layout — es reparteixen cap avall a Header/Footer.
+	products?: any[];
+	categories?: any[];
+	phrases?: any[];
+	infoPages?: any[];
 };
 
-const { image, title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.props as Props;
+const {
+	image,
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	products,
+	categories,
+	phrases,
+	infoPages,
+} = Astro.props as Props;
 ---
 
 <html lang={locale || "ca"}>
@@ -26,13 +42,57 @@ const { image, title = SITE_TITLE, description = SITE_DESCRIPTION } = Astro.prop
 	</head>
 
 	<body class="bg-gcDark text-white font-sans antialiased overflow-x-hidden selection:bg-gcYellow selection:text-black">
-		<Header />
+		<Header products={products} categories={categories} phrases={phrases} />
 		<main class="pt-0">
 			<slot />
 		</main>
-		<Footer />
+		<Footer infoPages={infoPages} />
 		<WhatsAppButton />
 		<CookieBanner />
+
+		<!-- Vercel Analytics i Speed Insights: sense cookies per disseny
+		     (no identifiquen usuaris individuals), per això van sempre
+		     actius, sense dependre del consentiment de cookies. -->
+		<Analytics />
+		<SpeedInsights />
+
+		<!-- Microsoft Clarity: SÍ fa servir cookies/emmagatzematge per a
+		     mapes de calor i repeticions de sessió, per això només
+		     s'activa si l'usuari ha acceptat la categoria "analytics"
+		     al banner de cookies. -->
+		<script is:inline define:vars={{ clarityId: "y15np9pgtq" }}>
+			(function () {
+				function hasAnalyticsConsent() {
+					try {
+						const saved = localStorage.getItem('gymcream_cookie_consent');
+						if (!saved) return false;
+						const consent = JSON.parse(saved);
+						return consent.analytics === true;
+					} catch (e) {
+						return false;
+					}
+				}
+
+				function loadClarity() {
+					if (window.clarity) return; // ja carregat
+					(function (c, l, a, r, i, t, y) {
+						c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+						t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+						y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+					})(window, document, "clarity", "script", clarityId);
+				}
+
+				if (hasAnalyticsConsent()) {
+					loadClarity();
+				}
+
+				// Si l'usuari accepta les cookies MÉS TARD (en aquesta mateixa
+				// visita, sense recarregar), carreguem Clarity en aquell moment.
+				window.addEventListener('cookie-consent-updated', () => {
+					if (hasAnalyticsConsent()) loadClarity();
+				});
+			})();
+		</script>
 
 		<script is:inline>
 			document.addEventListener('astro:page-load', () => {
