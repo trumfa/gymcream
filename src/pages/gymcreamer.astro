@@ -47,128 +47,31 @@ const logoVariants = [
 
     <main 
         class="pt-20 sm:pt-24 bg-gcClassic text-black min-h-screen"
+        x-data="{ isFromQR: false, init() { const params = new URLSearchParams(window.location.search); this.isFromQR = params.get('from') === 'qr' || params.get('source') === 'card' || params.get('utm_source') === 'qr' || params.get('utm_medium') === 'card'; } }"
     >
-
-        <!-- 1. HERO + FILOSOFIA -->
-        <section class="py-14 sm:py-20 border-b border-gray-300 relative bg-gcClassic">
-            <Container>
-                <div class="max-w-3xl mx-auto text-center">
-                    <div class="h-20 sm:h-28 max-w-xs mx-auto mb-8 flex items-center justify-center">
-                        <img src="/logos/logo GC Black.png" alt="Gym Cream Logo Black" class="h-full w-auto object-contain" />
-                    </div>
-                </div>
-
-                <div class="max-w-2xl sm:max-w-3xl mx-auto font-serif text-base sm:text-lg text-gray-800 leading-relaxed space-y-5 text-justify">
-                    <p>
-                        {nav.gc_manifest_p1}
-                    </p>
-                    <p>
-                        {nav.gc_manifest_p2}
-                    </p>
-                    <p class="font-bold text-black">
-                        {nav.gc_manifest_p3}
-                    </p>
-                </div>
-
-                <!-- DOS VIES -->
-                <div class="max-w-2xl sm:max-w-4xl mx-auto mt-14">
-                    <p class="text-center font-serif italic text-lg sm:text-xl text-black mb-10">
-                        {nav.gc_dues_vies_intro}
-                    </p>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
-                        <!-- Via 1: LÍNIA OFICIAL -->
-                        <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <span class="font-mono text-xs text-gray-400">01</span>
-                                <div class="h-px flex-1 bg-gray-300"></div>
-                            </div>
-                            <h3 class="font-display font-black text-xl sm:text-2xl uppercase tracking-wide text-black mb-3">
-                                {nav.gc_oficial_title}
-                            </h3>
-                            <p class="font-serif text-sm sm:text-base text-gray-700 leading-relaxed text-justify">
-                                {nav.gc_oficial_text}
+        <!-- BANNER DE BENVINGUDA QR (SEEDING / TARGETES) -->
+        <template x-if="isFromQR">
+            <div class="bg-black text-white border-b-2 border-gcYellow py-4 px-4 shadow-xl">
+                <Container>
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-gcYellow text-black font-display font-black text-xs px-2.5 py-1 uppercase rounded-sm shrink-0">QR VIP</span>
+                            <p class="font-sans text-xs sm:text-sm text-gray-200">
+                                <strong class="text-gcYellow font-bold">Benvingut Gymcreamer!</strong> Has escanejat la teva targeta de regal. Digues la teva o descarrega els nostres logos gratuïts:
                             </p>
-                            <a href="/botiga" data-astro-reload class="inline-flex items-center gap-1.5 mt-4 font-display text-xs font-bold uppercase tracking-wider text-black hover:text-gray-600 transition-colors border-b border-black hover:border-gray-600 pb-0.5">
-                                {nav.btn_veure_botiga}
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <a href="/#comunitat" class="bg-gcYellow text-black hover:bg-white font-display font-bold text-[11px] uppercase tracking-wider px-3 py-1.5 transition-colors rounded-sm">
+                                Proposa Frase
+                            </a>
+                            <a href="#descarges" class="border border-gray-600 hover:border-white text-white font-display font-bold text-[11px] uppercase tracking-wider px-3 py-1.5 transition-colors rounded-sm">
+                                Logos DIY
                             </a>
                         </div>
-
-                        <!-- Via 2: FES-T'HO TU -->
-                        <div>
-                            <div class="flex items-center gap-3 mb-3">
-                                <span class="font-mono text-xs text-gray-400">02</span>
-                                <div class="h-px flex-1 bg-gray-300"></div>
-                            </div>
-                            <h3 class="font-display font-black text-xl sm:text-2xl uppercase tracking-wide text-black mb-3">
-                                {nav.gc_diy_title}
-                            </h3>
-                            <p class="font-serif text-sm sm:text-base text-gray-700 leading-relaxed text-justify">
-                                {nav.gc_diy_text}
-                            </p>
-                        </div>
                     </div>
-
-                    <!-- 3 CAIXES DE LOGOS, amb tots els formats reals de /public/logos -->
-                    <div id="descarges" class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10 scroll-mt-24">
-                        {logoVariants.map((variant) => (
-                            <div class="bg-white border border-gray-200 p-5 flex flex-col justify-between hover:border-gray-400 transition-colors group">
-                                <div>
-                                    <div class={`aspect-square border border-gray-200 p-6 flex items-center justify-center mb-4 relative overflow-hidden ${variant.previewBg}`}>
-                                        <img src={variant.previewSrc} alt={variant.title} class="max-h-full max-w-full object-contain transition-transform group-hover:scale-105" />
-                                    </div>
-                                    <h4 class="font-serif font-bold text-base text-black mb-1.5">{variant.title}</h4>
-                                    <p class="font-serif text-gray-600 text-xs leading-relaxed mb-4">{variant.description}</p>
-                                </div>
-
-                                <div class="pt-3 border-t border-gray-100">
-                                    <div class="text-[10px] text-gray-500 font-mono mb-2">{nav.gc_descarrega_format}</div>
-                                    <div class="grid grid-cols-3 gap-1.5">
-                                        {variant.files.map((file) => (
-                                            <a
-                                                href={file.href}
-                                                download
-                                                class="bg-gray-100 hover:bg-black hover:text-white text-gray-800 text-[10px] font-mono font-bold py-2 text-center border border-gray-200 transition-colors cursor-pointer"
-                                            >
-                                                {file.ext}
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <!-- LLICÈNCIA D'ÚS: continuació directa, sense secció apart -->
-                <div id="llicencia" class="max-w-2xl sm:max-w-3xl mx-auto mt-16 pt-10 border-t border-gray-300 text-gray-800 font-serif">
-                    <h3 class="font-serif font-bold text-lg sm:text-xl text-black mb-1">
-                        {nav.gc_llicencia_title}
-                    </h3>
-                    <p class="text-xs text-gray-500 font-mono mb-8">{nav.gc_llicencia_subtitle}</p>
-
-                    <div class="space-y-8">
-                        <div>
-                            <h4 class="font-serif font-bold text-sm text-emerald-800 uppercase tracking-wide mb-2">
-                                {nav.gc_us_personal_title}
-                            </h4>
-                            <p class="text-sm sm:text-base leading-relaxed text-gray-700 text-justify">
-                                {nav.gc_us_personal_text}
-                            </p>
-                        </div>
-
-                        <div>
-                            <h4 class="font-serif font-bold text-sm text-red-700 uppercase tracking-wide mb-2">
-                                {nav.gc_us_comercial_title}
-                            </h4>
-                            <p class="text-sm sm:text-base leading-relaxed text-red-700 text-justify">
-                                {nav.gc_us_comercial_text}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </Container>
-        </section>
+                </Container>
+            </div>
+        </template>
 
 
     </main>
