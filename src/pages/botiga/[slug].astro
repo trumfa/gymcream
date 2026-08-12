@@ -7,7 +7,6 @@ export const prerender = false;
 
 import Layout from "@layouts/Layout.astro";
 import Container from "@src/components/Container.astro";
-import { getSheet } from "@src/lib/cms";
 import { getLocale, getLocaleUrl } from "astro-i18n-aut";
 import translations from "@utils/t.ts";
 import { SITE_URL } from "@src/consts";
@@ -26,12 +25,22 @@ let categories: any[] = [];
 // TOT el que pot fallar (crida al CMS, parsing de camps, construcció
 // d'URLs...) queda dins d'aquest bloc — qualsevol error inesperat aquí
 // dins acaba en un 404 controlat, mai en un error 500 sense explicació.
+//
+// IMPORTANT: es demanen les dades al NOSTRE PROPI endpoint
+// (/api/cms/[sheet]) en comptes de trucar a Apps Script directament
+// (getSheet). Així aquesta pàgina es beneficia de la mateixa memòria
+// cau de Vercel que ja fa servir la resta del catàleg — només la
+// primera visita després que caduqui la caché paga la latència real
+// d'Apps Script, la resta són gairebé instantànies.
 try {
-	const [products, cats] = await Promise.all([
-		getSheet<any>("Products", currentLocale),
-		getSheet<any>("Categories", currentLocale),
+	const origin = Astro.url.origin;
+	const [prodRes, catRes] = await Promise.all([
+		fetch(`${origin}/api/cms/Products?lang=${currentLocale}`),
+		fetch(`${origin}/api/cms/Categories?lang=${currentLocale}`),
 	]);
-	product = products.find((p) => String(p.id) === String(productId)) || null;
+	const products = prodRes.ok ? await prodRes.json() : [];
+	const cats = catRes.ok ? await catRes.json() : [];
+	product = (Array.isArray(products) ? products : []).find((p: any) => String(p.id) === String(productId)) || null;
 	categories = Array.isArray(cats) ? cats : [];
 } catch (err) {
 	console.error("[botiga/[slug]] Error carregant el producte des del CMS:", err);
