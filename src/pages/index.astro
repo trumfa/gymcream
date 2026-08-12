@@ -1,47 +1,21 @@
 ---
-// Es genera EN SERVIDOR (ISR): la primera visita construeix la
-// pàgina de veritat amb dades fresques del CMS, les visites següents
-// es serveixen des de la memòria cau de Vercel fins que caduqui o es
-// revalidi manualment en editar el Sheet.
-export const prerender = false;
-
 import Layout from "@layouts/Layout.astro";
 import HeroCarousel from "@components/HeroCarousel.astro";
 import { FALLBACK_COMMUNITY_QUOTES, FALLBACK_COMMUNITY_PHOTOS } from "@src/data/cmsDefaults";
 import translations from "@utils/t.ts";
 import { getLocale } from "astro-i18n-aut";
-import { getSheet } from "@src/lib/cms";
-import { getSharedLayoutData } from "@src/lib/pageData";
 
 const nav = translations(Astro.url);
 const currentLocale = getLocale(Astro.url);
 
-const shared = await getSharedLayoutData(currentLocale);
-
-let slides: any[] = [];
-let communityQuotes: any[] = [];
-let communityPhotos: any[] = [];
-try {
-	const [slidesData, quotesData, photosData] = await Promise.all([
-		getSheet<any>("Slides", currentLocale),
-		getSheet<any>("CommunityQuotes", currentLocale),
-		getSheet<any>("CommunityPhotos", currentLocale),
-	]);
-	slides = Array.isArray(slidesData) ? slidesData : [];
-	communityQuotes = Array.isArray(quotesData) ? quotesData : [];
-	communityPhotos = Array.isArray(photosData) ? photosData : [];
-} catch (err) {
-	console.error("[index.astro] Error carregant dades del CMS:", err);
-}
+const slides: any[] = [];
+const communityQuotes: any[] = [];
+const communityPhotos: any[] = [];
 ---
 
 <Layout
 	title={nav.idx_meta_title}
 	description={nav.idx_meta_description}
-	products={shared.products}
-	categories={shared.categories}
-	phrases={shared.phrases}
-	infoPages={shared.infoPages}
 >
 	<HeroCarousel slides={slides} />
 
@@ -306,6 +280,25 @@ try {
             },
 
             init() {
+                this.loadData();
+            },
+
+            async loadData() {
+                try {
+                    const [quotesRes, photosRes] = await Promise.all([
+                        fetch('/api/cms/CommunityQuotes?lang=' + currentLocale),
+                        fetch('/api/cms/CommunityPhotos?lang=' + currentLocale),
+                    ]);
+                    if (quotesRes.ok) {
+                        const quotes = await quotesRes.json();
+                        if (Array.isArray(quotes) && quotes.length > 0) this.allQuotes = quotes;
+                    }
+                    if (photosRes.ok) {
+                        const photos = await photosRes.json();
+                        if (Array.isArray(photos) && photos.length > 0) this.photos = photos;
+                    }
+                } catch (e) {}
+
                 this.applyQuotes();
                 this.buildCommunityFeed();
             },

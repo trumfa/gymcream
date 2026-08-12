@@ -1,30 +1,16 @@
 ---
-export const prerender = false;
-
 import Layout from "@layouts/Layout.astro";
 import ProductCatalog from "@components/ProductCatalog.astro";
 import translations from "@utils/t.ts";
-import { getLocale } from "astro-i18n-aut";
-import { getSharedLayoutData } from "@src/lib/pageData";
 
 const nav = translations(Astro.url);
-const currentLocale = getLocale(Astro.url);
-
-// Products i Categories ja els demana getSharedLayoutData per al
-// Header (cerca, tags) — es reutilitzen tal qual per al catàleg,
-// sense tornar-los a demanar.
-const shared = await getSharedLayoutData(currentLocale);
 ---
 
 <Layout
 	title={nav.botiga_meta_title}
 	description="Trenca les regles - Marca independent d'equipament i apparel de gimnàs."
-	products={shared.products}
-	categories={shared.categories}
-	phrases={shared.phrases}
-	infoPages={shared.infoPages}
 >
 	<div class="pt-20 sm:pt-24">
-		<ProductCatalog products={shared.products} categories={shared.categories} />
+		<ProductCatalog />
 	</div>
 </Layout>
