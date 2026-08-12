@@ -20,7 +20,9 @@ export default defineConfig({
   },
 	site: SITE_URL,
 	output: "static",
-	adapter: isVercel ? vercel({ maxDuration: 30 }) : node({ mode: "standalone" }),
+	adapter: isVercel ? vercel({
+		maxDuration: 30, // marge generós per als 3 endpoints d'escriptura (contacte, subscripció, frases) que sí criden Apps Script en directe
+	}) : node({ mode: "standalone" }),
 	trailingSlash: "ignore",
 	build: {
 		format: "directory",
