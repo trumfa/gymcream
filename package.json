@@ -40,6 +40,8 @@
 		"astro-i18n-aut": "^0.7.3",
 		"tailwindcss": "^4.3.3",
 		"workbox-window": "^7.1.0"
+		"@vercel/analytics": "^2.0.1",
+		"@vercel/speed-insights": "^2.0.0",
 	},
 	"devDependencies": {
 		"@vite-pwa/assets-generator": "^0.2.4",
