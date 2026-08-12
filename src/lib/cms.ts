@@ -1,11 +1,16 @@
 const CMS_API_URL = import.meta.env.CMS_API_URL;
 const CMS_API_TOKEN = import.meta.env.CMS_API_TOKEN;
 
-// Marge de temps abans de donar per perdut Apps Script. Es queda per
-// sota del maxDuration de la funció de Vercel (30s) perquè el nostre
-// propi codi falli de forma controlada (i puguem tornar un 404 net)
-// ABANS que Vercel mati la funció sencera sense cap explicació.
-const CMS_TIMEOUT_MS = 20000;
+// Ara TOTA la crida al CMS passa durant el BUILD (cap visitant espera
+// mai res en directe) — no hi ha cap pressa real, així que val la
+// pena donar-li un marge generós abans de rendir-nos.
+const CMS_TIMEOUT_MS = 45000;
+
+// Si Apps Script falla o tarda massa, ho reintentem unes quantes
+// vegades abans de donar-ho per perdut del tot — un sol moment lent
+// (arrencada en fred, per exemple) no hauria de tombar tot el build.
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 3000;
 
 // Memòria cau EN MEMÒRIA del propi mòdul (sense cap crida de xarxa
 // addicional, a diferència d'intentar trucar al nostre propi domini
@@ -37,6 +42,10 @@ function assertConfigured() {
   }
 }
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function fetchWithTimeout(url: string, options?: RequestInit): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), CMS_TIMEOUT_MS);
@@ -52,6 +61,26 @@ async function fetchWithTimeout(url: string, options?: RequestInit): Promise<Res
   }
 }
 
+// Igual que fetchWithTimeout, però reintenta fins a MAX_RETRIES cops
+// (amb una petita espera entre intents) abans de donar l'error per
+// definitiu — pensat per a les crides del BUILD, on un fallada
+// puntual no s'ha de traduir en un deploy sencer trencat.
+async function fetchWithRetry(url: string, options?: RequestInit): Promise<Response> {
+  let lastError: any;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await fetchWithTimeout(url, options);
+    } catch (err) {
+      lastError = err;
+      console.warn(`[cms] Intent ${attempt}/${MAX_RETRIES} fallit per ${url}: ${(err as Error).message}`);
+      if (attempt < MAX_RETRIES) {
+        await sleep(RETRY_DELAY_MS * attempt); // espera creixent: 3s, 6s, 9s...
+      }
+    }
+  }
+  throw lastError;
+}
+
 export async function getSheet<T = any>(sheetName: string, lang?: string): Promise<T[]> {
   assertConfigured();
   const cacheKey = `sheet_${sheetName}_${lang || 'ca'}`;
@@ -60,7 +89,7 @@ export async function getSheet<T = any>(sheetName: string, lang?: string): Promi
 
   const params = new URLSearchParams({ sheet: sheetName });
   if (lang) params.set('lang', lang);
-  const res = await fetchWithTimeout(`${CMS_API_URL}?${params.toString()}`);
+  const res = await fetchWithRetry(`${CMS_API_URL}?${params.toString()}`);
   if (!res.ok) throw new Error(`Error leyendo ${sheetName}: ${res.status}`);
   const data = await res.json();
   setMemoryCache_(cacheKey, data);
@@ -71,7 +100,7 @@ export async function getAllSheets(lang?: string): Promise<Record<string, any[]>
   assertConfigured();
   const params = new URLSearchParams({ sheet: 'all' });
   if (lang) params.set('lang', lang);
-  const res = await fetchWithTimeout(`${CMS_API_URL}?${params.toString()}`);
+  const res = await fetchWithRetry(`${CMS_API_URL}?${params.toString()}`);
   if (!res.ok) throw new Error(`Error leyendo el CMS: ${res.status}`);
   return res.json();
 }
