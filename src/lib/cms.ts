@@ -1,5 +1,36 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
 const CMS_API_URL = import.meta.env.CMS_API_URL;
 const CMS_API_TOKEN = import.meta.env.CMS_API_TOKEN;
+
+// Si "npm run build" ha executat abans el script de precàrrega
+// (scripts/fetch-cms-data.mjs), aquí hi ha TOT el contingut del Sheet
+// ja demanat una sola vegada de forma controlada — es llegeix
+// directament del disc, sense cap petició de xarxa ni possibilitat
+// de fallar per lentitud o concurrència d'Apps Script.
+let preloadedData: Record<string, Record<string, any[]>> | null = null;
+try {
+	const __dirname = path.dirname(fileURLToPath(import.meta.url));
+	// cms.ts viu a src/lib/ — el fitxer precarregat és a l'arrel del projecte
+	const candidatePaths = [
+		path.join(__dirname, "..", "..", ".cms-cache", "data.json"),
+		path.join(process.cwd(), ".cms-cache", "data.json"),
+	];
+	for (const p of candidatePaths) {
+		try {
+			preloadedData = JSON.parse(readFileSync(p, "utf-8"));
+			break;
+		} catch {
+			// prova la següent ruta
+		}
+	}
+} catch {
+	// No hi ha fitxer precarregat (ex: desenvolupament local sense
+	// haver executat el script) — es farà servir la crida directa de
+	// sempre, més avall.
+}
 
 // Ara TOTA la crida al CMS passa durant el BUILD (cap visitant espera
 // mai res en directe) — no hi ha cap pressa real, així que val la
@@ -82,8 +113,17 @@ async function fetchWithRetry(url: string, options?: RequestInit): Promise<Respo
 }
 
 export async function getSheet<T = any>(sheetName: string, lang?: string): Promise<T[]> {
+  const effectiveLang = lang || 'ca';
+
+  // 1. Dades precarregades (sense xarxa) — el cas normal en producció.
+  if (preloadedData && preloadedData[sheetName] && preloadedData[sheetName][effectiveLang] !== undefined) {
+    return preloadedData[sheetName][effectiveLang] as T[];
+  }
+
+  // 2. Si no hi ha precàrrega (ex: desenvolupament local), es fa la
+  // crida directa de sempre, amb memòria cau i reintents.
   assertConfigured();
-  const cacheKey = `sheet_${sheetName}_${lang || 'ca'}`;
+  const cacheKey = `sheet_${sheetName}_${effectiveLang}`;
   const cached = getFromMemoryCache_(cacheKey);
   if (cached !== null) return cached;
 
