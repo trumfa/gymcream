@@ -2,6 +2,7 @@
 import { FALLBACK_CATEGORIES, FALLBACK_PRODUCTS } from "@src/data/cmsDefaults";
 import translations from "@utils/t.ts";
 import { getLocale } from "astro-i18n-aut";
+import { getSheet } from "@src/lib/cms";
 
 interface Props {
 	products?: any[];
@@ -12,17 +13,34 @@ const { products: serverProducts, categories: serverCategories } = Astro.props a
 const nav = translations(Astro.url);
 const currentLocale = getLocale(Astro.url);
 
-// Mateixa lògica que buildProductUrl del client, aquí en servidor —
-// així el producte ja arriba amb la seva URL calculada, sense cap
-// pas addicional al navegador.
+function slugify(text: string): string {
+	return String(text || "producte")
+		.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/(^-|-$)/g, "");
+}
+
+// IMPORTANT: la URL de cada producte SEMPRE es genera a partir del
+// nom en CATALÀ (és el que fa servir botiga/[slug].astro per crear
+// les pàgines reals al build) — encara que aquí mostrem el nom
+// traduït, l'enllaç ha d'apuntar a la mateixa URL estable en els 3
+// idiomes, si no en castellà/anglès l'enllaç no coincideix amb cap
+// pàgina real i dona 404.
+let catalanNameById: Record<string, string> = {};
+try {
+	const catalanProducts = currentLocale === "ca"
+		? (serverProducts || [])
+		: await getSheet<any>("Products", "ca");
+	catalanProducts.forEach((p: any) => { catalanNameById[String(p.id)] = p.name; });
+} catch (err) {
+	console.error("[ProductCatalog] Error obtenint noms en català per als enllaços:", err);
+}
+
 function buildProductUrlServer(product: any): string {
 	try {
-		const rawName = product?.name ? String(product.name) : "producte";
-		const slug = rawName
-			.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, "-")
-			.replace(/(^-|-$)/g, "");
+		const catalanName = catalanNameById[String(product?.id)] || product?.name;
+		const slug = slugify(catalanName);
 		const id = product?.id ? product.id : "0";
 		const prefix = currentLocale === "ca" ? "" : `/${currentLocale}`;
 		return `${prefix}/botiga/${slug}-${id}`;
