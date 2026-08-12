@@ -1,26 +1,35 @@
-export const prerender = false;
-
 import type { APIRoute } from 'astro';
 import { writeRow } from '../../lib/cms';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { email, message } = await request.json();
+    const { email, message, website, honeypot } = await request.json();
 
-    if (!email || !email.includes('@') || !message || !message.trim()) {
+    // Honeypot anti-spam
+    if (website || honeypot) {
+      return new Response(JSON.stringify({ success: true }), { status: 200 });
+    }
+
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const cleanMessage = String(message || '').replace(/<[^>]*>?/gm, '').trim();
+
+    if (!cleanEmail || !cleanEmail.includes('@') || !cleanMessage) {
       return new Response(JSON.stringify({ error: 'Dades no vàlides' }), { status: 400 });
     }
 
-    await writeRow('ContactMessages', 'create', {
-      email,
-      message: message.trim(),
-      read: false,
-    });
+    try {
+      await writeRow('ContactMessages', 'create', {
+        email: cleanEmail,
+        message: cleanMessage,
+        read: false,
+      });
+    } catch (err) {
+      console.warn('Avís: No s'ha pogut guardar el missatge al CMS Sheet:', err);
+    }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
-  } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message || 'Error del servidor' }), {
-      status: 500,
-    });
+  } catch (err) {
+    console.error('Error a /api/contact:', err);
+    return new Response(JSON.stringify({ error: 'Error del servidor' }), { status: 500 });
   }
 };
