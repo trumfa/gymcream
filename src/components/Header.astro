@@ -664,28 +664,13 @@ const urlInEn = getLocaleUrl(Astro.url, 'en');
             // Cart
             cart: [],
             
-            // Data ja carregada en SERVIDOR si la pàgina la passa (com la
-            // pàgina de producte), si no, contingut de reserva mentre
-            // arriba la petició des del navegador just a sota.
+            // Data ja incrustada al HTML des del build — no es torna a
+            // demanar mai des del navegador.
             products: initialProducts,
             categories: initialCategories,
             phrases: initialPhrases.map(p => (typeof p === 'string' ? p : p.text)),
             
             init() {
-                // Refresca sempre des del navegador (la pàgina és estàtica,
-                // no porta les dades incrustades) — manté la pàgina
-                // instantània i les dades arriben just després.
-                Promise.all([
-                    fetch('/api/cms/Products?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
-                    fetch('/api/cms/Categories?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
-                    fetch('/api/cms/Phrases?lang=' + currentLocale).then(r => r.ok ? r.json() : null).catch(() => null),
-                ]).then(([products, categories, phrases]) => {
-                    if (Array.isArray(products) && products.length > 0) this.products = products;
-                    if (Array.isArray(categories) && categories.length > 0) this.categories = categories;
-                    if (Array.isArray(phrases) && phrases.length > 0) {
-                        this.phrases = phrases.map(p => (typeof p === 'string' ? p : p.text));
-                    }
-                });
 
                 // Load cart
                 try {

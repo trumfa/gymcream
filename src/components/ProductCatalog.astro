@@ -194,30 +194,9 @@ const initialCategories = serverCategories && serverCategories.length > 0 ? serv
             categories: initialCategories,
 
             init() {
-                this.loadData();
-
                 window.addEventListener('filter-category', (e) => {
                     this.activeCategory = e.detail;
                 });
-            },
-
-            async loadData() {
-                try {
-                    const [prodRes, catRes] = await Promise.all([
-                        fetch('/api/cms/Products?lang=' + currentLocale),
-                        fetch('/api/cms/Categories?lang=' + currentLocale),
-                    ]);
-                    if (prodRes.ok) {
-                        const prod = await prodRes.json();
-                        if (Array.isArray(prod) && prod.length > 0) {
-                            this.allProducts = prod.map(p => ({ ...p, url: this.buildProductUrl(p) }));
-                        }
-                    }
-                    if (catRes.ok) {
-                        const cat = await catRes.json();
-                        if (Array.isArray(cat) && cat.length > 0) this.categories = cat;
-                    }
-                } catch (e) {}
             },
 
             get visibleProducts() {

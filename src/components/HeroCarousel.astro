@@ -156,21 +156,6 @@ const nav = translations(Astro.url);
             },
 
             init() {
-                this.loadSlides();
-            },
-
-            async loadSlides() {
-                try {
-                    const res = await fetch('/api/cms/Slides?lang=' + currentLocale);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (Array.isArray(data) && data.length > 0) {
-                            this.slides = data;
-                        }
-                    }
-                } catch (e) {}
-
-                this.loadedIndices = new Set([0]);
                 this.preloadNext();
             },
 

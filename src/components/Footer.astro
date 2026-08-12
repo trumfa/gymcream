@@ -209,19 +209,6 @@ const nav = translations(Astro.url);
             contactSent: false,
             infoPages: initialInfoPages,
 
-            init() {
-                fetch('/api/cms/InfoPages?lang=' + currentLocale)
-                    .then(r => r.ok ? r.json() : null)
-                    .then(data => {
-                        if (Array.isArray(data) && data.length > 0) {
-                            const keyed = {};
-                            data.forEach(page => { keyed[page.id] = page; });
-                            this.infoPages = keyed;
-                        }
-                    })
-                    .catch(() => {});
-            },
-
             openInfo(key) {
                 this.activeInfoKey = key;
                 this.contactSent = false;
