@@ -31,7 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
         status: 'pending',
       });
     } catch (err) {
-      console.warn('Avís: No s'ha pogut guardar la frase al CMS Sheet:', err);
+      console.warn("Avís: No s'ha pogut guardar la frase al CMS Sheet:", err);
     }
 
     return new Response(
