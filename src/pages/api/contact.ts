@@ -24,7 +24,7 @@ export const POST: APIRoute = async ({ request }) => {
         read: false,
       });
     } catch (err) {
-      console.warn('Avís: No s'ha pogut guardar el missatge al CMS Sheet:', err);
+      console.warn("Avís: No s'ha pogut guardar el missatge al CMS Sheet:", err);
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
