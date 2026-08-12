@@ -1,49 +1,37 @@
 ---
-/**
- * @desc This is the base head component that is used on all pages.
- */
-
-// Import the global.css file here so that it is included on
-// all pages through the use of the <BaseHead /> component.
-import "@styles/global.css";
-import "@fontsource-variable/inter";
-import { SEO } from "astro-seo";
-import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from "@src/consts";
-import { getLocale, getLocaleUrl } from "astro-i18n-aut";
+import "../styles/global.css";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 
 interface Props {
-	title: string;
-	description: string;
+	title?: string;
+	description?: string;
 	image?: string;
 }
 
-const locale = getLocale(Astro.url);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const resolvedImageWithDomain = new URL("/meta/opengraph.png", Astro.site).toString();
 
-const { title = SITE_TITLE, description = SITE_DESCRIPTION, image = "/blog-placeholder-1.jpg" } = Astro.props;
+const { title = SITE_TITLE, description = SITE_DESCRIPTION, image = "/Meta/opengraph.png" } = Astro.props;
 
-// Alternes d'idioma (hreflang): li diem a Google que aquesta mateixa
-// pàgina existeix en català, castellà i anglès, i quina és la versió
-// per defecte quan cap coincideix amb l'idioma del cercador.
-const SUPPORTED_LOCALES = ["ca", "es", "en"];
-const hreflangAlternates = SUPPORTED_LOCALES.map((lc) => ({
-	lang: lc,
-	url: new URL(getLocaleUrl(Astro.url, lc), Astro.site).toString(),
-}));
-const xDefaultUrl = new URL(getLocaleUrl(Astro.url, "ca"), Astro.site).toString();
+const imageWithDomain = image.startsWith("http")
+	? image
+	: new URL(image, Astro.site).toString();
 
-// Dades estructurades (JSON-LD) de l'organització — ajuden Google a
-// entendre qui ets més enllà del text pla, i habiliten resultats
-// enriquits a la cerca.
+const resolvedImageWithDomain = imageWithDomain;
+
 const organizationSchema = {
 	"@context": "https://schema.org",
 	"@type": "ClothingStore",
 	name: "Gym Cream",
-	url: SITE_URL,
+	url: Astro.site?.toString() || "https://gymcream.com",
 	logo: new URL("/logos/logo primary GC no GC.png", Astro.site).toString(),
 	image: resolvedImageWithDomain,
 	description: SITE_DESCRIPTION,
+	address: {
+		"@type": "PostalAddress",
+		addressCountry: "AD",
+		addressLocality: "Andorra la Vella",
+	},
+	areaServed: ["AD", "ES", "FR"],
 	sameAs: [],
 };
 ---
@@ -51,86 +39,53 @@ const organizationSchema = {
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 
+<!-- Google Search Console verification -->
+<meta name="google-site-verification" content={import.meta.env.PUBLIC_GSC_VERIFICATION || "GSC_VERIFICATION_TOKEN"} />
+
+<!-- Vercel Analytics & Speed Insights -->
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+
+<!-- Microsoft Clarity (Heatmaps & Session Recording gratuïts) -->
+<script type="text/javascript" is:inline>
+	(function(c,l,a,r,i,t,y){
+		c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+		t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+		y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+	})(window, document, "clarity", "script", "pr2014y78z");
+</script>
+
 <!-- Primary Meta Tags -->
 <title>{title}</title>
 
-<!-- Hreflang: versions per idioma d'aquesta mateixa pàgina -->
-{hreflangAlternates.map((alt) => (
-	<link rel="alternate" hreflang={alt.lang} href={alt.url} />
-))}
-<link rel="alternate" hreflang="x-default" href={xDefaultUrl} />
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<!-- Dades estructurades JSON-LD -->
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={resolvedImageWithDomain} />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={resolvedImageWithDomain} />
+
+<!-- Favicons & Manifest -->
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="64x64" href="/favicon-64x64.png" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
+<link rel="manifest" href="/manifest.webmanifest" />
+
+<!-- Structured Data -->
 <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
-
-<SEO
-	title={title}
-	description={description}
-	canonical={canonicalURL}
-	openGraph={{
-		basic: {
-			url: canonicalURL,
-			title: title,
-			type: "website",
-			image: resolvedImageWithDomain,
-		},
-		optional: {
-			description: description,
-			siteName: title,
-			locale: locale,
-		},
-		image: {
-			alt: title,
-		},
-	}}
-	twitter={{
-		card: "summary_large_image",
-		title: title,
-		description: description,
-		image: resolvedImageWithDomain,
-		imageAlt: title,
-	}}
-	extend={{
-		// extending the default link tags
-		link: [
-			{
-				rel: "icon",
-				type: "image/png",
-				href: "/logos/logo primary GC no GC.png",
-			},
-			{
-				rel: "icon",
-				type: "image/png",
-				sizes: "32x32",
-				href: "/favicon-32x32.png",
-			},
-			{
-				rel: "icon",
-				type: "image/png",
-				sizes: "64x64",
-				href: "/favicon-64x64.png",
-			},
-			{
-				rel: "icon",
-				type: "image/x-icon",
-				href: "/favicon.ico",
-			},
-			{
-				rel: "apple-touch-icon",
-				sizes: "180x180",
-				href: "/apple-touch-icon.png",
-			},
-		],
-		// extending the default meta tags
-		meta: [
-			{
-				name: "generator",
-				content: Astro.generator,
-			},
-			{
-				name: "viewport",
-				content: "width=device-width,initial-scale=1",
-			},
-		],
-	}}
-/>
